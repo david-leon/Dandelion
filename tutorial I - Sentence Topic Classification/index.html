@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="David Leon (Dawei Leng)">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>I - Sentence Topic Classification - Dandelion</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "I - Sentence Topic Classification";
+    var mkdocs_page_input_path = "tutorial I - Sentence Topic Classification.md";
+    var mkdocs_page_url = "/tutorial I - Sentence Topic Classification/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Dandelion</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Tutorials</span>
+    <ul class="subnav">
+                <li class=" current">
+                    
+    <a class="current" href="./">I - Sentence Topic Classification</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#tutorial-i-sentence-topic-classification">Tutorial I: Sentence topic classification</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#sentence-classification-task">Sentence Classification Task</a></li>
+        
+            <li><a class="toctree-l4" href="#model-definition-modules">Model Definition - Modules</a></li>
+        
+            <li><a class="toctree-l4" href="#model-definition-structures">Model Definition - Structures</a></li>
+        
+            <li><a class="toctree-l4" href="#unified-calling-interface">Unified Calling Interface</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l3"><a href="#model-compiling">Model Compiling</a></li>
+    
+
+    </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../tutorial%20II%20-%20Write%20Your%20Own%20Module/">II - Write Your Own Module</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../howtos/">III - Howtos</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Framework Interface</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../dandelion_module/">dandelion.module</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_functional/">dandelion.functional</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_objective/">dandelion.objective</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_activation/">dandelion.activation</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_update/">dandelion.update</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_initialization/">dandelion.initialization</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../history/">History</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Dandelion</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Tutorials &raquo;</li>
+        
+      
+    
+    <li>I - Sentence Topic Classification</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="tutorial-i-sentence-topic-classification">Tutorial I: Sentence topic classification</h1>
+<p>The best way to understand how Dandelion works is through practical examples. </p>
+<p>In the first part of this tutorial, you’ll be guided through model definition and train/test/predict function compiling with a practical sentence classification task.</p>
+<h2 id="sentence-classification-task">Sentence Classification Task</h2>
+<ul>
+<li>Objective: classify each sentence into different topic categories.</li>
+<li>Variant: single-tag classification vs multi-tag classification</li>
+</ul>
+<p>The sentence classification task is to using neural network model to determine the topic of each sentence, i.e., what each sentence is talking about. For example: time, location, cause, action and result.  </p>
+<p>To fulfill the task, we’ll build a model basically based on RNN, LSTM specifically. </p>
+<h2 id="model-definition-modules">Model Definition - Modules</h2>
+<p>For the full model definition, check the following code snippet:</p>
+<pre><code class="python">    import theano
+    import theano.tensor as tensor
+    from dandelion.module import *
+    from dandelion.update import *
+    from dandelion.functional import *
+    from dandelion.util import gpickle
+
+    class model(Module):
+        def __init__(self, batchsize=None, input_length=None, Nclass=6, noise=(0.5, 0.2, 0.7, 0.7, 0.7)):
+            super().__init__()
+            self.batchsize = batchsize
+            self.input_length = input_length
+            self.Nclass = Nclass
+            self.noise = noise
+
+            self.dropout0 = Dropout(name='dropout0')
+            self.dropout1 = Dropout(name='dropout1')
+            self.dropout2 = Dropout(name='dropout2')
+            self.dropout3 = Dropout(name='dropout3')
+            self.dropout4 = Dropout(name='dropout4') 
+            W = gpickle.load('word_embedding(6336, 256).gpkl')
+            self.embedding = Embedding(num_embeddings=6336, embedding_dim=256, W=W, name='Embedding')
+            self.lstm0 = LSTM(input_dims=256, hidden_dim=100, name='lstm0')
+            self.lstm1 = LSTM(input_dims=256, hidden_dim=100, name='lstm1')
+            self.lstm2 = LSTM(input_dims=200, hidden_dim=100, name='lstm2')
+            self.lstm3 = LSTM(input_dims=200, hidden_dim=100, name='lstm3')
+            self.lstm4 = LSTM(input_dims=200, hidden_dim=100, name='lstm4')
+            self.lstm5 = LSTM(input_dims=200, hidden_dim=100, name='lstm5')
+            self.dense = Dense(input_dims=200, output_dim=Nclass, name='dense')
+
+</code></pre>
+
+<p>All the neural network modules are defined in <code>dandelion.module</code> in Python. For the sentence classification task, the following four NN modules will be used: <code>Dropout</code>, <code>Embedding</code>, <code>LSTM</code> and <code>Dense</code>.  </p>
+<p>To define our model, we’ll need to subclass the <code>Module</code> class from <code>dandelion.module</code>. The <code>Module</code> class is the base class for all our NN modules. There’s no complex abstraction here, all <code>Module</code> class done is to define some convenient interfaces for model parameter manipulation and no more. The <code>Module</code> class is quite similar with Pytorch’s <code>nn.Module</code> class.  </p>
+<p>Now we define all the network modules as our model’s attributes, such as</p>
+<pre><code class="python">    self.dropout0 = Dropout(name='dropout0')
+</code></pre>
+
+<p>You can drop the name here, it’s optional. However for possible parameter manipulation convenience later, we’d suggest giving a unique name for each network module here. (After version 0.14.0, you don't need to set the module name manually any more, they will be auto-named by the sub-module keys)</p>
+<p>Note that all these definitions are done in the <code>model</code>’s <code>__init__()</code> part. Now we defined all the NN modules to be used in our model, but their relations, i.e., the network structure hasn’t been done. This part will be defined in model’s <code>forward()</code> and <code>predict()</code> functions later.</p>
+<p>If you’re familiar with Lasagne or Keras, you’d notice that for <code>LSTM</code> module, Dandelion requires both the input dimension via <code>input_dims</code> and output dimension via <code>hidden_dim</code> meanwhile Lasagne or Keras would only require the output dimension, leaving the input dimension determined automatically by the framework. This is the cost you’d pay for greater flexibility by using Dandelion. </p>
+<h2 id="model-definition-structures">Model Definition - Structures</h2>
+<p>Now we’ll go through the network structure part. Usually a model needs to be trained first then it can be used in inference, so the network structure would involve these two different processes, i.e., training and inference.</p>
+<p>We define the network structure for training in <code>Model</code>’s <code>forward()</code> function, as showed below.</p>
+<pre><code class="python">    def forward(self, x):
+        self.work_mode = 'train'
+        x = self.dropout0.forward(x, p=self.noise[0], rescale=False)
+        x = self.embedding.forward(x)         # (B, T, D)
+
+        x = self.dropout1.forward(x, p=self.noise[1], rescale=True)
+        x = x.dimshuffle((1, 0, 2))           # (B, T, D) -&gt; (T, B, D)
+        x_f = self.lstm0.forward(x, None, None, None)
+        x_b = self.lstm1.forward(x, None, None, None, backward=True)
+        x = tensor.concatenate([x_f, x_b], axis=2)
+
+        x = pool_1d(x, ws=2, ignore_border=True, mode='average_exc_pad', axis=0)
+
+        x = self.dropout2.forward(x, p=self.noise[2], rescale=True)
+        x_f = self.lstm2.forward(x, None, None, None)
+        x_b = self.lstm3.forward(x, None, None, None, backward=True)
+        x = tensor.concatenate([x_f, x_b], axis=2)
+
+        x = self.dropout3.forward(x, p=self.noise[3], rescale=True)
+        x_f = self.lstm4.forward(x, None, None, None, only_return_final=True)
+        x_b = self.lstm5.forward(x, None, None, None, only_return_final=True, backward=True)
+        x = tensor.concatenate([x_f, x_b], axis=1)
+
+        x = self.dropout4.forward(x, p=self.noise[4], rescale=True)
+        y = sigmoid(self.dense.forward(x))
+        return y
+</code></pre>
+
+<p>Within the <code>forward()</code> function, we first set the work mode to <code>train</code>. This is an optional step, which will be explained later. Then the input text sequence is fed through a <code>Dropout</code> and <code>Embedding</code> module to convert integer indices into character embedding vectors.  After that are two <code>LSTM</code> modules with forward and backward scanning directions, resulting in a bidirectional LSTM. Output of this bi-LSTM is then subsampled along the time dimension, and then fed into another bi-LSTM. Note that for the latter bi-LSTM, we only need the last time frame as output. Finally a <code>Dense</code> module followed by a <code>sigmoid</code> activation gives the sentence classification result.</p>
+<p>The network structure can be plotted as</p>
+<p><img alt="SC model structure" src="../SC_model.png" /></p>
+<p>Here the five <code>Dropout</code> modules are plotted with green color, means they only exist during training process.</p>
+<pre><code class="python">    def predict(self, x):
+        self.work_mode = 'inference'
+        x = self.embedding.predict(x)
+
+        x = x.dimshuffle((1, 0, 2))  # (B, T, D) -&gt; (T, B, D)
+        x_f = self.lstm0.predict(x, None, None, None)
+        x_b = self.lstm1.predict(x, None, None, None, backward=True)
+        x = tensor.concatenate([x_f, x_b], axis=2)
+
+        x = pool_1d(x, ws=2, ignore_border=True, mode='average_exc_pad', axis=0)
+
+        x_f = self.lstm2.predict(x, None, None, None)
+        x_b = self.lstm3.predict(x, None, None, None, backward=True)
+        x = tensor.concatenate([x_f, x_b], axis=2)
+
+        x_f = self.lstm4.predict(x, None, None, None, only_return_final=True)
+        x_b = self.lstm5.predict(x, None, None, None, only_return_final=True, backward=True)
+        x = tensor.concatenate([x_f, x_b], axis=1)
+
+        y = sigmoid(self.dense.predict(x))
+        return y
+</code></pre>
+
+<p>Now we define the network structure for inference in <code>model</code>’s <code>predict()</code> function, as showed above.</p>
+<p>During inference process, the <code>model</code>’s network structure is simpler than in training. Note that there’s no <code>Dropout</code> modules here. The rest part of the <code>predict()</code> function is quite the same with <code>forward()</code> function, except that now all the modules’ <code>predict()</code> interface are called instead of the <code>forward()</code> interface as in <code>model</code>’s <code>forward()</code> function.</p>
+<h2 id="unified-calling-interface">Unified Calling Interface</h2>
+<p>For users familiar with Keras or Lasagne, you might be confused that we define separate functions for both training and inference. In Keras/Lasagne, the common way is to define the model’s structure and use a flag parameter to tell the model to work in training mode or in inference mode.</p>
+<p>The reason we do this is because it allows us to use different network structures for different purpose, i.e., the model’s network structure for training can be quite different from the structure for inference.</p>
+<p>However the cost of this flexibility is that we’d have to define the network structure twice even though in most scenarios the model’s network structure is the same for both training and inference.</p>
+<p>Fortunately we’ve considered this and provide a <strong>unified calling interface</strong> in Dandelion. For the network structures defined before, they can be re-written by the unified calling interface as follows</p>
+<pre><code class="python">    def call(self, x, work_mode='train'):
+        self.work_mode = work_mode
+        x = self.dropout0(x, p=self.noise[0], rescale=False)
+        x = self.embedding(x)         # (B, T, D)
+
+        x = self.dropout1(x, p=self.noise[1], rescale=True)
+        x = x.dimshuffle((1, 0, 2))           # (B, T, D) -&gt; (T, B, D)
+        x_f = self.lstm0(x, None, None, None)
+        x_b = self.lstm1(x, None, None, None, backward=True)
+        x = tensor.concatenate([x_f, x_b], axis=2)
+
+        x = pool_1d(x, ws=2, ignore_border=True, mode='average_exc_pad', axis=0)
+
+        x = self.dropout2(x, p=self.noise[2], rescale=True)
+        x_f = self.lstm2(x, None, None, None)
+        x_b = self.lstm3(x, None, None, None, backward=True)
+        x = tensor.concatenate([x_f, x_b], axis=2)
+
+        x = self.dropout3(x, p=self.noise[3], rescale=True)
+        x_f = self.lstm4(x, None, None, None, only_return_final=True)
+        x_b = self.lstm5(x, None, None, None, only_return_final=True, backward=True)
+        x = tensor.concatenate([x_f, x_b], axis=1)
+
+        x = self.dropout4(x, p=self.noise[4], rescale=True)
+        y = sigmoid(self.dense(x))
+        return y
+</code></pre>
+
+<p>As we can see from the code above, now we do not call the sub-module’s <code>forward()</code> or <code>predict()</code> interface anymore. By setting the <code>work_mode</code> parameter, Dandelion will automatically call the sub-module’s <code>forward()</code> or <code>predict()</code> interface accordingly. Now we only need define the network structure for once, and use it for both training and inference.</p>
+<h1 id="model-compiling">Model Compiling</h1>
+<p>Theano requires compiling the computation graph before using it. The model compiling is actually more relevant to Theano than to Dandelion. </p>
+<pre><code class="python">    print('  compiling train func')
+    X            = tensor.imatrix('X')  
+    Y            = tensor.fmatrix('Y')       
+    output_score = model.forward(X)          
+    B            = Y.shape[0]
+    B            = tensor.cast(B, 'float32')
+    loss         = tensor.sqrt(tensor.sum((output_score - Y)**2)) / B * 100                                        
+
+    Y_out_positive = tensor.zeros_like(output_score)
+    Y_out_positive = tensor.switch(output_score&gt;0.5, Y, Y_out_positive)
+    acc_positive   = tensor.sum(Y_out_positive) / tensor.sum(Y)
+
+    Y_out_negative = tensor.zeros_like(output_score)
+    Y_out_negative = tensor.switch(output_score&lt;=0.5, 1.0 - Y, Y_out_negative)
+    acc_negative   = tensor.sum(Y_out_negative) / tensor.sum(1.0- Y)
+
+    params       = model.collect_params()
+    updates      = adadelta(loss, params)
+    updates.update(model.collect_self_updates())
+    train_fn = theano.function([X, Y], [loss, acc_positive, acc_negative], updates=updates, no_default_updates=False)
+</code></pre>
+
+<ul>
+<li>
+<p><strong>Model Calling</strong>
+Here we call the model defined before by <code>model.forward()</code>. Of course you can also call the model by the unified calling interface as <code>model.call(…, work_mode=‘train’)</code></p>
+</li>
+<li>
+<p><strong>Parameters Collecting</strong>
+Parameters to be trained by optimizer can be collected from the model by calling <code>model.collect_params()</code>, simply like that.</p>
+</li>
+<li>
+<p><strong>Updates Collecting</strong>
+In Dandelion, there’re two kinds of parameters: parameters to be updated by optimizer and parameters to be updated by other methods. The updates expression of the latter part of parameters can be collected by calling <code>model.collect_self_updates()</code>. Returned is a <code>dict</code> describing updates for each parameter accordingly.
+After these 3 steps, now we can compile the training function by Theano simply by</p>
+</li>
+</ul>
+<pre><code class="python">    train_fn = theano.function([X, Y], [loss, acc_positive, acc_negative], updates=updates, no_default_updates=False)
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../tutorial%20II%20-%20Write%20Your%20Own%20Module/" class="btn btn-neutral float-right" title="II - Write Your Own Module">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../tutorial%20II%20-%20Write%20Your%20Own%20Module/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/require.js"></script>
+      <script src="../search/search.js"></script>
+
+</body>
+</html>

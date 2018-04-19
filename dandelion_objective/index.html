@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="David Leon (Dawei Leng)">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>dandelion.objective - Dandelion</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "dandelion.objective";
+    var mkdocs_page_input_path = "dandelion_objective.md";
+    var mkdocs_page_url = "/dandelion_objective/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Dandelion</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Tutorials</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../tutorial%20I%20-%20Sentence%20Topic%20Classification/">I - Sentence Topic Classification</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../tutorial%20II%20-%20Write%20Your%20Own%20Module/">II - Write Your Own Module</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../howtos/">III - Howtos</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Framework Interface</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../dandelion_module/">dandelion.module</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_functional/">dandelion.functional</a>
+                </li>
+                <li class=" current">
+                    
+    <a class="current" href="./">dandelion.objective</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#ctc_cost_logscale">ctc_cost_logscale</a></li>
+    
+
+    <li class="toctree-l3"><a href="#ctc_best_path_decode">ctc_best_path_decode</a></li>
+    
+
+    <li class="toctree-l3"><a href="#ctc_cer">ctc_CER</a></li>
+    
+
+    </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_activation/">dandelion.activation</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_update/">dandelion.update</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_initialization/">dandelion.initialization</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../history/">History</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Dandelion</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Framework Interface &raquo;</li>
+        
+      
+    
+    <li>dandelion.objective</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p>Dandelion's <code>objective</code> module is mostly inherited from <a href="https://github.com/Lasagne/Lasagne">Lasagne</a> except for the CTC (Connectionist Temporal Classification) objective. </p>
+<p>You're recommended to refer to <a href="http://lasagne.readthedocs.io/en/latest/modules/objectives.html"><code>Lasagne.objectives</code> document</a> for the following objectives:</p>
+<ul>
+<li>binary_crossentropy</li>
+<li>categorical_crossentropy</li>
+<li>squared_error</li>
+<li>binary_hinge_loss</li>
+<li>multiclass_hinge_loss</li>
+<li>binary_accuracy</li>
+<li>categorical_accuracy</li>
+</ul>
+<hr />
+<h2 id="ctc_cost_logscale">ctc_cost_logscale</h2>
+<p>CTC cost calculated in <code>log</code> scale. This CTC objective is written purely in Theano, so it runs on both Windows and Linux. Theano itself also has a <a href="http://deeplearning.net/software/theano/library/tensor/nnet/ctc.html">wrapper</a> for Baidu's <code>warp-ctc</code> library, which requires separate install and only runs on Linux.</p>
+<pre><code class="python">ctc_cost_logscale(seq, sm, seq_mask=None, sm_mask=None, blank_symbol=None, align='pre')
+</code></pre>
+
+<ul>
+<li><strong>seq</strong>: query sequence, shape of <code>(L, B)</code>, <code>float32</code>-typed</li>
+<li><strong>sm</strong>: score matrix, shape of <code>(T, C+1, B)</code>, <code>float32</code>-typed</li>
+<li><strong>seq_mask</strong>: mask for query sequence, shape of <code>(L, B)</code>, <code>float32</code>-typed</li>
+<li><strong>sm_mask</strong>: mask for score matrix, shape of <code>(T, B)</code>, <code>float32</code>-typed</li>
+<li><strong>blank_symbol</strong>: scalar, = <code>C</code> by default</li>
+<li><strong>align</strong>: string, {'pre'/'post'}, indicating how input samples are aligned in one batch</li>
+<li><strong>return</strong>: negative log likelihood averaged over a batch</li>
+</ul>
+<hr />
+<h2 id="ctc_best_path_decode">ctc_best_path_decode</h2>
+<p>Decode the network output scorematrix by best-path-decoding scheme.</p>
+<pre><code class="python">ctc_best_path_decode(Y, Y_mask=None, blank_symbol=None)
+</code></pre>
+
+<ul>
+<li><strong>Y</strong>: output of a network, with shape <code>(B, T, C+1)</code></li>
+<li><strong>Y_mask</strong>: mask of Y, with shape <code>(B, T)</code></li>
+<li><strong>return</strong>: result sequence of shape <code>(T, B</code>), and result sequence mask of shape <code>(T, B)</code></li>
+</ul>
+<hr />
+<h2 id="ctc_cer">ctc_CER</h2>
+<p>Calculate the character error rate (CER) given ground truth <code>targetseq</code> and CTC decoding output <code>resultseq</code></p>
+<pre><code class="python">ctc_CER(resultseq, targetseq, resultseq_mask=None, targetseq_mask=None)
+</code></pre>
+
+<ul>
+<li><strong>resultseq</strong>: CTC decoding output, with shape <code>(T1, B)</code></li>
+<li><strong>targetseq</strong>: sequence ground truth, with shape <code>(T2, B)</code></li>
+<li><strong>return</strong>: tuple of <code>(CER, TE, TG)</code>, in which <code>TE</code> is the batch-wise total edit distance, <code>TG</code> is the batch-wise total ground truth sequence length, and <code>CER</code> equals to <code>TE/TG</code></li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../dandelion_activation/" class="btn btn-neutral float-right" title="dandelion.activation">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../dandelion_functional/" class="btn btn-neutral" title="dandelion.functional"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../dandelion_functional/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../dandelion_activation/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/require.js"></script>
+      <script src="../search/search.js"></script>
+
+</body>
+</html>

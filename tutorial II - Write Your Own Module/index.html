@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="David Leon (Dawei Leng)">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>II - Write Your Own Module - Dandelion</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "II - Write Your Own Module";
+    var mkdocs_page_input_path = "tutorial II - Write Your Own Module.md";
+    var mkdocs_page_url = "/tutorial II - Write Your Own Module/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Dandelion</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Tutorials</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../tutorial%20I%20-%20Sentence%20Topic%20Classification/">I - Sentence Topic Classification</a>
+                </li>
+                <li class=" current">
+                    
+    <a class="current" href="./">II - Write Your Own Module</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#tutorial-ii-write-your-own-module">Tutorial II: Write Your Own Module</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#center-loss">Center Loss</a></li>
+        
+            <li><a class="toctree-l4" href="#center-module">Center Module</a></li>
+        
+            <li><a class="toctree-l4" href="#summary">Summary</a></li>
+        
+        </ul>
+    
+
+    </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../howtos/">III - Howtos</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Framework Interface</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../dandelion_module/">dandelion.module</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_functional/">dandelion.functional</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_objective/">dandelion.objective</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_activation/">dandelion.activation</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_update/">dandelion.update</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_initialization/">dandelion.initialization</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../history/">History</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Dandelion</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Tutorials &raquo;</li>
+        
+      
+    
+    <li>II - Write Your Own Module</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="tutorial-ii-write-your-own-module">Tutorial II: Write Your Own Module</h1>
+<p>In this tutorial, you’ll learn how to write your own neural network module with the help of Dandelion. Here we’ll design a module which gives the class centers for classification output. It’s a simple case for Dandelion yet not so intuitive for Lasagne or Keras users.</p>
+<p>In image classification tasks, such as face recognition, document image classification, Imagenet contests, etc., we usually consider only the “positive” samples, i.e., we assume that given any input sample, it would be associated with at least one out of all the known class labels. However, in actual applications, we often also want the trained neural network model to be able to tell whether an input sample is an “outsider” or not.</p>
+<p>To accomplish this task, we can add an extra “negative” class to the final layer of the network, and then train this augmented network by feeding it with all kinds of “negative” samples you can collect. It’s pure data-driven, so the bottleneck is how many “negative” samples can be collected. </p>
+<p>Another way is algorithm-driven: we design a new network module to explore the intrinsic properties of the data, and use these “properties” to reject or accept an sample as “positive”. By this way we do not need to collect negative samples, and the model is more general and the most important: explainable.</p>
+<p>The data intrinsic property to explore here is the class center for each positive class. The intuition is that if we can get the center of each class, then we can use the sample-center distance to reject or accept an sample as “positive”. </p>
+<p>Now assume that the last layer of the neural network is a <code>Dense</code> module followed by a <code>softmax</code> activation which produces <code>N</code> class decisions. We’ll refer the input of this <code>Dense</code> module as feature of the input sample (extracted by the former part of the whole neural network). For plain network trained with only positive samples, the feature distribution can be typically visualized as</p>
+<p><img alt="fig1" src="../center_1.png" /></p>
+<ul>
+<li><em>A Discriminative Deep Feature Learning Approach for Face Recognitions</em>. Yandong Wen, Kaipeng Zhang, Zhifeng Li and Yu Qiao. European Conference on Computer Vision (ECCV) 2016</li>
+</ul>
+<h2 id="center-loss">Center Loss</h2>
+<p>Apparently the feature extracted by the plain model is not well centered, in other words, the feature distribution is not well-formed.</p>
+<p>Ideally, to reject or accept one sample as a certain class, we can set a probability threshold so that any sample whose feature satisfies
+𝑝(𝑓_𝑗│𝐶_𝑖)&lt;𝑇_𝑖 will be rejected as an “outsider” for this class with certainty 1−𝑇_𝑖</p>
+<p>But before we can do this, the distribution 𝑝(𝑓│𝐶_𝑖) must be known. To get this conditional distribution, we can either traverse all the train samples and use any probability estimation / modelling method to approximate the true distribution, or we can resort to the DL method by directly requiring the neural network to produce features satisfying predefined distributions.</p>
+<p>The reason we can do this is because a neural network can be trained to emulate any nonlinear functions, and we can always transform a compact distribution into Gaussian by a certain function. </p>
+<p>To restrain the neural network to extract Gaussian distributed features, we assume each class has a mean feature vector (i.e., center) 𝑓_𝜇𝑖 and require the model to minimize the distance between extracted feature and its corresponding center vector, i.e., </p>
+<p>min⁡‖𝑓_𝑗−𝑓_𝜇𝑖 ‖^2  𝑖𝑓 𝑠𝑎𝑚𝑝𝑙𝑒 𝑗 𝑏𝑒𝑙𝑜𝑛𝑔𝑠 𝑡𝑜 𝑐𝑙𝑎𝑠𝑠 𝑖</p>
+<p>We refer this objective as “center loss”, the details can be found in Ref. [A Discriminative Deep Feature Learning Approach for Face Recognition. Yandong Wen, Kaipeng Zhang, Zhifeng Li and Yu Qiao. European Conference on Computer Vision (ECCV) 2016]. The model is trained now with both the categorical cross entropy loss and the center loss as </p>
+<p>min⁡ 𝐶𝑎𝑡𝑒𝑔𝑜𝑟𝑖𝑐𝑎𝑙𝐶𝑟𝑜𝑠𝑠𝐸𝑛𝑡𝑟𝑜𝑝𝑦+𝜆∗𝐶𝑒𝑛𝑡𝑒𝑟𝐿𝑜𝑠𝑠  </p>
+<p><img alt="fig2" src="../center_2.png" /></p>
+<h2 id="center-module"><code>Center</code> Module</h2>
+<p>Now we’ll go through the code part to illustrate how the center loss can be actually computed. To compute the center loss, we need first to get the center estimation of each class. This is done through a new module referred as <code>Center</code>. Check the code snippet following.</p>
+<pre><code class="python">class Center(Module):
+    &quot;&quot;&quot;
+    Compute the class centers during training
+    Ref. to &quot;Discriminative feature learning approach for deep face recognition (2016)&quot;
+    &quot;&quot;&quot;
+    def __init__(self, feature_dim, center_num, alpha=0.9, center=init.GlorotUniform(), name=None):
+        &quot;&quot;&quot;
+        :param alpha: moving averaging coefficient
+        :param center: initial value of center
+        &quot;&quot;&quot;
+        super().__init__(name=name)
+        self.center = self.register_self_updating_variable(center, shape=[center_num, feature_dim], name=&quot;center&quot;)
+        self.alpha = alpha
+
+    def forward(self, features, labels):
+        &quot;&quot;&quot;
+        :param features: (B, D)
+        :param labels: (B,)
+        :return: categorical centers
+        &quot;&quot;&quot;
+        center_batch = self.center[labels, :]
+        diff = (self.alpha - 1.0) * (center_batch - features)
+        center_updated = tensor.inc_subtensor(self.center[labels, :], diff)
+        self.center.default_update = center_updated
+        return self.center
+
+    def predict(self):
+        return self.center
+
+</code></pre>
+
+<p>First, all our NN modules should subclass the root <code>Module</code> class, then we can use class methods and attributes to manipulate network parameters conveniently.</p>
+<p>Second, define the module initialization in <code>.__init__()</code> part. Here we do two things: we register a <code>center</code> tensor as network parameter and initialize it with a Glorot uniform random numpy array. The <code>center</code> tensor is of shape <code>(center_num, feature_dim)</code>, in which <code>center_num</code> should be equal to class number, and <code>feature_dim</code> is the dimension of extracted features by the network.</p>
+<p>In Dandelion, the network parameters are divided into two categories:  </p>
+<ul>
+<li>1) parameter to be updated by optimizer,  </li>
+<li>2) parameter to updated by user defined expression.</li>
+</ul>
+<p>The former parameters should be registered with class method <code>.register_param()</code>, and the latter parameters should be registered with class method <code>. register_self_updating_variable()</code>.</p>
+<p>Now we registered <code>center</code> tensor as self updating variable, its updating expression is given in <code>.forward()</code> function as <code>self.center.default_update = center_updated</code>. In Dandelion we use a specially named attribute <code>. default_update</code> to tell the framework that this parameter has an updating expression defined and the updating expression will be collected during Theano function compiling phase.</p>
+<p>The <code>.forward()</code> function will be used for training, and <code>.predict()</code> function will be used for inference. </p>
+<p>Basically, during training, the <code>.forward()</code> function computes moving averaging estimation of class centers; and during inference, we just use the stored center values as final estimated class centers. This is pretty much alike how <code>BatchNorm</code>’s mean and std are estimated and used.</p>
+<h2 id="summary">Summary</h2>
+<p>To summary, to write your own module, you only need to do the following three steps:</p>
+<ul>
+<li>1) subclass <code>Module</code> class</li>
+<li>2) register your module’s parameters by <code>.register_param()</code> or <code>. register_self_updating_variable()</code> and initialize them</li>
+<li>3) define the <code>.forward()</code> function for training and <code>.predict()</code> function for inference</li>
+</ul>
+<p>and that’s it! </p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../howtos/" class="btn btn-neutral float-right" title="III - Howtos">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../tutorial%20I%20-%20Sentence%20Topic%20Classification/" class="btn btn-neutral" title="I - Sentence Topic Classification"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../tutorial%20I%20-%20Sentence%20Topic%20Classification/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../howtos/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/require.js"></script>
+      <script src="../search/search.js"></script>
+
+</body>
+</html>
