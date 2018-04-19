@@ -83,7 +83,7 @@ In Dandelion, the network parameters are divided into two categories:
 
 The former parameters should be registered with class method `.register_param()`, and the latter parameters should be registered with class method `. register_self_updating_variable()`.
 
-Now we registered `center` tensor as self updating variable, its updating expression is given in `.forward()` function as `self.center.default_update = center_updated`. In Dandelion we use a specially named attribute `. default_update` to tell the framework that this parameter has an updating expression defined and the updating expression will be collected during Theano function compiling phase.
+Now we registered `center` tensor as self updating variable, its updating expression is given in `.forward()` function as `self.center.update = center_updated`. In Dandelion we use a specially named attribute `. update` to tell the framework that this parameter has an updating expression defined and the updating expression will be collected during Theano function compiling phase.
 
 The `.forward()` function will be used for training, and `.predict()` function will be used for inference. 
 
