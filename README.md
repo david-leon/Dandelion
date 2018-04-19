@@ -16,3 +16,6 @@ Unlike previous frameworks like Keras, Lasagne, etc., Dandelion operates directl
 * By “flexibility”, we means whether it is easy to modify or extend the framework. 
     * The famous DL framework Keras is designed to be beginner-friendly oriented, at the cost of being quite hard to modify.
     * Compared to Keras, another less-famous framework Lasagne provides more flexibility. It’s easier to write your own layer by Lasagne for small neural network, however, for complex neural networks it still needs quite manual works because like other existing frameworks, Lasagne operates on abstracted ‘Layer’ class instead of raw tensor variables.
+
+## Documentation
+Documentation is available online: [https://david-leon.github.io/Dandelion/](https://david-leon.github.io/Dandelion/)
