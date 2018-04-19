@@ -222,7 +222,7 @@
 <li>2) parameter to updated by user defined expression.</li>
 </ul>
 <p>The former parameters should be registered with class method <code>.register_param()</code>, and the latter parameters should be registered with class method <code>. register_self_updating_variable()</code>.</p>
-<p>Now we registered <code>center</code> tensor as self updating variable, its updating expression is given in <code>.forward()</code> function as <code>self.center.default_update = center_updated</code>. In Dandelion we use a specially named attribute <code>. default_update</code> to tell the framework that this parameter has an updating expression defined and the updating expression will be collected during Theano function compiling phase.</p>
+<p>Now we registered <code>center</code> tensor as self updating variable, its updating expression is given in <code>.forward()</code> function as <code>self.center.update = center_updated</code>. In Dandelion we use a specially named attribute <code>. update</code> to tell the framework that this parameter has an updating expression defined and the updating expression will be collected during Theano function compiling phase.</p>
 <p>The <code>.forward()</code> function will be used for training, and <code>.predict()</code> function will be used for inference. </p>
 <p>Basically, during training, the <code>.forward()</code> function computes moving averaging estimation of class centers; and during inference, we just use the stored center values as final estimated class centers. This is pretty much alike how <code>BatchNorm</code>’s mean and std are estimated and used.</p>
 <h2 id="summary">Summary</h2>
