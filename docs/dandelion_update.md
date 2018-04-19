@@ -1,0 +1,1 @@
+Dandelion's `update` module is mostly inherited from [Lasagne](https://github.com/Lasagne/Lasagne), you're recommended to refer to [`Lasagne.updates` document](http://lasagne.readthedocs.io/en/latest/modules/updates.html) for details.

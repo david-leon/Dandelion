@@ -1,0 +1,2 @@
+Dandelion's `initialization` module is mostly inherited from [Lasagne](https://github.com/Lasagne/Lasagne).
+You're recommended to refer to [`Lasagne.init` document](http://lasagne.readthedocs.io/en/latest/modules/init.html) for the details.

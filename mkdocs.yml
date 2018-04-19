@@ -1,0 +1,23 @@
+site_name: Dandelion
+site_author: David Leon (Dawei Leng)
+docs_dir: docs
+
+pages:
+    - Home: index.md
+    - Tutorials:
+      - I - Sentence Topic Classification: tutorial I - Sentence Topic Classification.md
+      - II - Write Your Own Module: tutorial II - Write Your Own Module.md
+      - III - Howtos: howtos.md
+#      - Document Image Classfication: tutorial II - Document Image Classification.md
+    - Framework Interface:
+      - dandelion.module: dandelion_module.md
+      - dandelion.functional: dandelion_functional.md
+      - dandelion.objective: dandelion_objective.md
+      - dandelion.activation: dandelion_activation.md
+      - dandelion.update: dandelion_update.md
+      - dandelion.initialization: dandelion_initialization.md
+    - History: history.md
+
+
+theme: readthedocs    
+    
