@@ -473,7 +473,7 @@ class Dropout(Module):
         `p`: float, probability to drop a value (set to 0)
         `shared_axes`: tuple of int, axes to share the dropout mask over. By default, each value is dropped individually.
                        shared_axes=(0,) uses the same mask across the batch. shared_axes=(2, 3) uses the same mask across
-                       the spatial dimensions of 2D feature maps.
+                       the spatial dimensions of 2D feature maps, i.e., drop channels.
     This class has no predict function, since there is no parameter to learn from training.
     """
     def __init__(self, seed=None, name=None):
@@ -494,13 +494,11 @@ class Dropout(Module):
         mask_shape = input.shape
 
         # apply dropout, respecting shared axes
-        if shared_axes:
-            shared_axes = tuple(a if a >= 0 else a + input.ndim
-                                for a in shared_axes)
-            mask_shape = tuple(1 if a in shared_axes else s
-                               for a, s in enumerate(mask_shape))
+        if len(shared_axes) > 0:
+            shared_axes = tuple(a if a >= 0 else a + input.ndim for a in shared_axes) # support for negative indexing
+            mask_shape = tuple(1 if a in shared_axes else s for a, s in enumerate(mask_shape))
         mask = self.srng.binomial(mask_shape, p=retain_p, dtype=input.dtype)
-        if shared_axes:
+        if len(shared_axes) > 0:
             bcast = tuple(bool(s == 1) for s in mask_shape)
             mask = tensor.patternbroadcast(mask, bcast)
         return input * mask
