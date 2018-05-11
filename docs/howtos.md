@@ -19,3 +19,14 @@ updates  = optimizer(loss, params)
 updates.update(model.colect_self_updates(exclude=['cnn0', 'cnn1']))
 train_fn = theano.function([...], [...], updates=updates, no_default_updates=False)
 ```
+
+### 2) How to add random noise to a tensor?
+Just use Theano's `MRG_RandomStreams` module.
+#### Example
+```python
+from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
+srng = RandomStreams(get_rng().randint(1, 2147462579))
+....
+y = x + srng.normal(x.shape, avg=0.0, std=self.sigma)   # add Gaussian noise to x
+```
+What you'd keep in mind is that if you used Theano's `MRG_RandomStreams` module, remember to set `no_default_updates=False` when compiling functions.
