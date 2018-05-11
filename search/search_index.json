@@ -87,7 +87,7 @@
         },
         {
             "location": "/howtos/",
-            "text": "Tutorial III: Howtos\n\n\n1) How to freeze a module during training like in Keras/Lasagne?\n\n\nTo \nfreeze\n a module during training, use the \ninclude\n and \nexclude\n arguments of module's \n.collect_params()\n and \n.collect_self_updates()\n functions.\n\n\nExample\n\n\nclass FOO(Module):\n    def __init__(self):\n        self.cnn0 = Conv2D(...)\n        self.cnn1 = Conv2D(...)\n        self.cnn2 = Conv2D(...)\n        ....\n\n# Now we will freeze cnn0 and cnn1 submodules during training\nmodel    = Foo()\nloss     = ...\nparams   = model.collect_params(exclude=['cnn0', 'cnn1'])\nupdates  = optimizer(loss, params)\nupdates.update(model.colect_self_updates(exclude=['cnn0', 'cnn1']))\ntrain_fn = theano.function([...], [...], updates=updates, no_default_updates=False)",
+            "text": "Tutorial III: Howtos\n\n\n1) How to freeze a module during training like in Keras/Lasagne?\n\n\nTo \nfreeze\n a module during training, use the \ninclude\n and \nexclude\n arguments of module's \n.collect_params()\n and \n.collect_self_updates()\n functions.\n\n\nExample\n\n\nclass FOO(Module):\n    def __init__(self):\n        self.cnn0 = Conv2D(...)\n        self.cnn1 = Conv2D(...)\n        self.cnn2 = Conv2D(...)\n        ....\n\n# Now we will freeze cnn0 and cnn1 submodules during training\nmodel    = Foo()\nloss     = ...\nparams   = model.collect_params(exclude=['cnn0', 'cnn1'])\nupdates  = optimizer(loss, params)\nupdates.update(model.colect_self_updates(exclude=['cnn0', 'cnn1']))\ntrain_fn = theano.function([...], [...], updates=updates, no_default_updates=False)\n\n\n\n\n2) How to add random noise to a tensor?\n\n\nJust use Theano's \nMRG_RandomStreams\n module.\n\n\nExample\n\n\nfrom theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams\nsrng = RandomStreams(get_rng().randint(1, 2147462579))\n....\ny = x + srng.normal(x.shape, avg=0.0, std=self.sigma)   # add Gaussian noise to x\n\n\n\n\nWhat you'd keep in mind is that if you used Theano's \nMRG_RandomStreams\n module, remember to set \nno_default_updates=False\n when compiling functions.",
             "title": "III - Howtos"
         },
         {
@@ -103,6 +103,16 @@
         {
             "location": "/howtos/#example",
             "text": "class FOO(Module):\n    def __init__(self):\n        self.cnn0 = Conv2D(...)\n        self.cnn1 = Conv2D(...)\n        self.cnn2 = Conv2D(...)\n        ....\n\n# Now we will freeze cnn0 and cnn1 submodules during training\nmodel    = Foo()\nloss     = ...\nparams   = model.collect_params(exclude=['cnn0', 'cnn1'])\nupdates  = optimizer(loss, params)\nupdates.update(model.colect_self_updates(exclude=['cnn0', 'cnn1']))\ntrain_fn = theano.function([...], [...], updates=updates, no_default_updates=False)",
+            "title": "Example"
+        },
+        {
+            "location": "/howtos/#2-how-to-add-random-noise-to-a-tensor",
+            "text": "Just use Theano's  MRG_RandomStreams  module.",
+            "title": "2) How to add random noise to a tensor?"
+        },
+        {
+            "location": "/howtos/#example_1",
+            "text": "from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams\nsrng = RandomStreams(get_rng().randint(1, 2147462579))\n....\ny = x + srng.normal(x.shape, avg=0.0, std=self.sigma)   # add Gaussian noise to x  What you'd keep in mind is that if you used Theano's  MRG_RandomStreams  module, remember to set  no_default_updates=False  when compiling functions.",
             "title": "Example"
         },
         {

@@ -75,6 +75,8 @@
         
             <li><a class="toctree-l4" href="#1-how-to-freeze-a-module-during-training-like-in-keraslasagne">1) How to freeze a module during training like in Keras/Lasagne?</a></li>
         
+            <li><a class="toctree-l4" href="#2-how-to-add-random-noise-to-a-tensor">2) How to add random noise to a tensor?</a></li>
+        
         </ul>
     
 
@@ -174,6 +176,17 @@ updates  = optimizer(loss, params)
 updates.update(model.colect_self_updates(exclude=['cnn0', 'cnn1']))
 train_fn = theano.function([...], [...], updates=updates, no_default_updates=False)
 </code></pre>
+
+<h3 id="2-how-to-add-random-noise-to-a-tensor">2) How to add random noise to a tensor?</h3>
+<p>Just use Theano's <code>MRG_RandomStreams</code> module.</p>
+<h4 id="example_1">Example</h4>
+<pre><code class="python">from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
+srng = RandomStreams(get_rng().randint(1, 2147462579))
+....
+y = x + srng.normal(x.shape, avg=0.0, std=self.sigma)   # add Gaussian noise to x
+</code></pre>
+
+<p>What you'd keep in mind is that if you used Theano's <code>MRG_RandomStreams</code> module, remember to set <code>no_default_updates=False</code> when compiling functions.</p>
               
             </div>
           </div>
