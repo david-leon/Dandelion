@@ -183,7 +183,7 @@ train_fn = theano.function([...], [...], updates=updates, no_default_updates=Fal
 <pre><code class="python">from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 srng = RandomStreams(get_rng().randint(1, 2147462579))
 ....
-y = x + srng.normal(x.shape, avg=0.0, std=self.sigma)   # add Gaussian noise to x
+y = x + srng.normal(x.shape, avg=0.0, std=0.1)   # add Gaussian noise to x
 </code></pre>
 
 <p>What you'd keep in mind is that if you used Theano's <code>MRG_RandomStreams</code> module, remember to set <code>no_default_updates=False</code> when compiling functions.</p>
