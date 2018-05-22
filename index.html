@@ -56,11 +56,15 @@
     
         <ul>
         
-            <li><a class="toctree-l3" href="#featuring">Featuring</a></li>
+            <li><a class="toctree-l3" href="#targeted-users">Targeted Users</a></li>
         
             <li><a class="toctree-l3" href="#why-another-dl-framework">Why Another DL Framework</a></li>
         
+            <li><a class="toctree-l3" href="#featuring">Featuring</a></li>
+        
             <li><a class="toctree-l3" href="#project-layout">Project Layout</a></li>
+        
+            <li><a class="toctree-l3" href="#credits">Credits</a></li>
         
         </ul>
     
@@ -156,7 +160,18 @@
             <div class="section">
               
                 <h1 id="dandelion">Dandelion</h1>
-<p>A quite light weight deep learning framework, on top of Theano, offering better balance between flexibility and abstraction</p>
+<p>A quite light weight deep learning framework, on top of Theano, offering better balance between flexibility and abstraction.</p>
+<h2 id="targeted-users">Targeted Users</h2>
+<p>Researchers who need flexibility as well as convenience to experiment all kinds of <em>unstandard</em> network structures, and also the stability of Theano.</p>
+<h2 id="why-another-dl-framework">Why Another DL Framework</h2>
+<ul>
+<li>The reason is more about the lack of flexibility for existing DL frameworks, such as Keras, Lasagne, Blocks, etc.</li>
+<li>By <strong>“flexibility”</strong>, we means whether it is easy to modify or extend the framework. <ul>
+<li>The famous DL framework Keras is designed to be beginner-friendly oriented, at the cost of being quite hard to modify.</li>
+<li>Compared to Keras, another less-famous framework Lasagne provides more flexibility. It’s easier to write your own layer by Lasagne for small neural network, however, for complex neural networks it still needs quite manual works because like other existing frameworks, Lasagne operates on abstracted ‘Layer’ class instead of raw tensor variables.</li>
+</ul>
+</li>
+</ul>
 <h2 id="featuring">Featuring</h2>
 <ul>
 <li><strong>Aiming to offer better balance between flexibility and abstraction.</strong><ul>
@@ -165,20 +180,11 @@
 </ul>
 </li>
 <li><strong>More like a handy library of deep learning modules.</strong><ul>
-<li>Common modules such as CNN, LSTM, GRU, Dense, and common optimization methods such as SGD, Adam, Adadelta, Rmsprop are ready out-of-the-box.</li>
+<li>Common modules such as CNN, LSTM, GRU, Dense, Dropout, Batch Normalization, and common optimization methods such as SGD, Adam, Adadelta, Rmsprop are ready out-of-the-box.</li>
 </ul>
 </li>
 <li><strong>Plug &amp; play, operating directly on Theano tensors, no upper abstraction applied.</strong><ul>
 <li>Unlike previous frameworks like Keras, Lasagne, etc., Dandelion operates directly on tensors instead of layer abstractions, making it quite easy to plug in 3rd part defined deep learning modules (layer defined by Keras/Lasagne) or vice versa.</li>
-</ul>
-</li>
-</ul>
-<h2 id="why-another-dl-framework">Why Another DL Framework</h2>
-<ul>
-<li>The reason is more about the lack of flexibility for existing DL frameworks, such as Keras, Lasagne, Blocks, etc.</li>
-<li>By “flexibility”, we means whether it is easy to modify or extend the framework. <ul>
-<li>The famous DL framework Keras is designed to be beginner-friendly oriented, at the cost of being quite hard to modify.</li>
-<li>Compared to Keras, another less-famous framework Lasagne provides more flexibility. It’s easier to write your own layer by Lasagne for small neural network, however, for complex neural networks it still needs quite manual works because like other existing frameworks, Lasagne operates on abstracted ‘Layer’ class instead of raw tensor variables.</li>
 </ul>
 </li>
 </ul>
@@ -221,6 +227,8 @@
 </tr>
 </tbody>
 </table>
+<h2 id="credits">Credits</h2>
+<p>The design of Dandelion heavily draws on <a href="https://github.com/Lasagne/Lasagne">Lasagne</a> and <a href="http://pytorch.org/">Pytorch</a>, both my favorate DL libraries.</p>
               
             </div>
           </div>
@@ -270,5 +278,5 @@
 
 <!--
 MkDocs version : 0.17.3
-Build Date UTC : 2018-05-11 05:09:07
+Build Date UTC : 2018-05-22 02:21:09
 -->
