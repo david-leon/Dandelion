@@ -2,7 +2,7 @@
 A quite light weight deep learning framework, on top of Theano, offering better balance between flexibility and abstraction.
 
 ## Targeted Users
-Researchers who need flexibility as well as convenience to experiment all kinds of *unstandard* network structures, and also the stability of Theano.
+Researchers who need flexibility as well as convenience to experiment all kinds of *nonstandard* network structures, and also the stability of Theano.
 
 ## Why Another DL Framework
 * The reason is more about the lack of flexibility for existing DL frameworks, such as Keras, Lasagne, Blocks, etc.
