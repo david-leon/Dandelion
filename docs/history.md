@@ -1,5 +1,10 @@
 # History
 
+## version 0.15.1 [5-25-2018]
+* **NEW**: add `model` module into master branch of Dandelion
+* **NEW**: add U-net FCN implementation into `model` module
+* **NEW**: add `align_crop()` into `functional` module
+
 ## version 0.14.4 [4-17-2018]
 Rename `updates.py` with `update.py`
 
