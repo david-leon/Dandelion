@@ -33,3 +33,16 @@ pool_3d(x, ws=(2,2,2), ignore_border=True, stride=None, pad=(0,0,0), mode='max')
 * **stride**: scalar tuple. The number of shifts over rows/cols to get the next pool region. If stride is None, it is considered equal to ws (no overlap on pooling regions).
 * **pad**: pad zeros to extend beyond border of the input
 * **mode**: {`max`, `sum`, `average_inc_pad`, `average_exc_pad`}. Operation executed on each window. `max` and `sum` always exclude the padding in the computation. `average` gives you the choice to include or exclude it.
+
+_______________________________________________________________________
+## align_crop
+Align a list of tensors at each axis by specified rules and crop them to make axis concatenation possible.
+```python
+align_crop(tensor_list, cropping)
+```
+* **tensor_list**: list of tensors to be processed, they much have the same `ndim`s.
+* **cropping**: list of cropping rules for each dimension. Acceptable rules include {`None`|`lower`|`upper`|`center`}. 
+  * `None`: this axis is not cropped, tensors are unchanged in this axis
+  * `lower`: tensors are cropped choosing the lower portion in this axis as `a[:crop_size, ...]`
+  * `upper`: tensors are cropped choosing the upper portion in this axis as `a[-crop_size:, ...]`
+  * `center`: tensors are cropped choosing the central portion in this axis as ``a[offset:offset+crop_size, ...]`` where ``offset = (a.shape[0]-crop_size)//2)``

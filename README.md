@@ -31,6 +31,8 @@ activation        | definition of all activation functions
 objective         | definition of all loss objectives
 update            | definition of all optimizers
 util              | utility functions
+model             | model implementations out-of-the-box
+
 
 ## Documentation
 Documentation is available online: [https://david-leon.github.io/Dandelion/](https://david-leon.github.io/Dandelion/)

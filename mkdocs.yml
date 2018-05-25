@@ -16,6 +16,7 @@ pages:
       - dandelion.activation: dandelion_activation.md
       - dandelion.update: dandelion_update.md
       - dandelion.initialization: dandelion_initialization.md
+      - dandelion.model: dandelion_model.md
     - History: history.md
 
 

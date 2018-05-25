@@ -269,6 +269,11 @@ class BatchNorm(input_shape=None, axes='auto', eps=1e-4, alpha=0.1, beta=init.Co
 * **alpha**: Coefficient for the exponential moving average of batch-wise means and standard deviations computed during training; the closer to one, the more it will depend on the last batches seen
 * **mode**: `low_mem` or `high_mem`. Specify which batch normalization implementation that will be used. As no intermediate representations are stored for the back-propagation, `low_mem` implementation lower the memory usage, however, it is 5-10% slower than `high_mem` implementation. Note that 5-10% computation time difference compare the batch normalization operation only, time difference between implementation is likely to be less important on the full model fprop/bprop.
 
+```python
+.forward(input, use_input_mean=True)
+```
+* **use_input_mean**: default, use mean & std of input batch for normalization; if `False`, `self.mean` and `self.std` will be used for normalization. The reason that input mean is used during training is because at the early training stage, `BatchNorm`'s `self.mean` is far from the expected mean value and can be detrimental for network convergence. It's recommended to use input mean for early stage training; after that, you can switch to `BatchNorm`'s `self.mean` for training & inference consistency.
+
 _______________________________________________________________________
 ## Center
 Estimate class centers by moving averaging.

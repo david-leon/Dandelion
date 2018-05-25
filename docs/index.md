@@ -29,6 +29,7 @@ activation        | definition of all activation functions
 objective         | definition of all loss objectives
 update            | definition of all optimizers
 util              | utility functions
+model             | model implementations out-of-the-box
 
 ## Credits
 The design of Dandelion heavily draws on [Lasagne](https://github.com/Lasagne/Lasagne) and [Pytorch](http://pytorch.org/), both my favorate DL libraries.
