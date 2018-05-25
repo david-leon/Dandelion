@@ -93,6 +93,9 @@
     <li class="toctree-l3"><a href="#pool_3d">pool_3d</a></li>
     
 
+    <li class="toctree-l3"><a href="#align_crop">align_crop</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -110,6 +113,10 @@
                 <li class="">
                     
     <a class="" href="../dandelion_initialization/">dandelion.initialization</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_model/">dandelion.model</a>
                 </li>
     </ul>
 	    </li>
@@ -193,6 +200,20 @@
 <li><strong>stride</strong>: scalar tuple. The number of shifts over rows/cols to get the next pool region. If stride is None, it is considered equal to ws (no overlap on pooling regions).</li>
 <li><strong>pad</strong>: pad zeros to extend beyond border of the input</li>
 <li><strong>mode</strong>: {<code>max</code>, <code>sum</code>, <code>average_inc_pad</code>, <code>average_exc_pad</code>}. Operation executed on each window. <code>max</code> and <code>sum</code> always exclude the padding in the computation. <code>average</code> gives you the choice to include or exclude it.</li>
+</ul>
+<hr />
+<h2 id="align_crop">align_crop</h2>
+<p>Align a list of tensors at each axis by specified rules and crop them to make axis concatenation possible.</p>
+<pre><code class="python">align_crop(tensor_list, cropping)
+</code></pre>
+
+<ul>
+<li><strong>tensor_list</strong>: list of tensors to be processed, they much have the same <code>ndim</code>s.</li>
+<li><strong>cropping</strong>: list of cropping rules for each dimension. Acceptable rules include {<code>None</code>|<code>lower</code>|<code>upper</code>|<code>center</code>}. </li>
+<li><code>None</code>: this axis is not cropped, tensors are unchanged in this axis</li>
+<li><code>lower</code>: tensors are cropped choosing the lower portion in this axis as <code>a[:crop_size, ...]</code></li>
+<li><code>upper</code>: tensors are cropped choosing the upper portion in this axis as <code>a[-crop_size:, ...]</code></li>
+<li><code>center</code>: tensors are cropped choosing the central portion in this axis as <code>a[offset:offset+crop_size, ...]</code> where <code>offset = (a.shape[0]-crop_size)//2)</code></li>
 </ul>
               
             </div>

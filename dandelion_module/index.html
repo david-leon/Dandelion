@@ -141,6 +141,10 @@
                     
     <a class="" href="../dandelion_initialization/">dandelion.initialization</a>
                 </li>
+                <li class="">
+                    
+    <a class="" href="../dandelion_model/">dandelion.model</a>
+                </li>
     </ul>
 	    </li>
           
@@ -461,6 +465,12 @@ The input of <code>Dense</code> can have any dimensions, and note that we do not
 <li><strong>eps</strong>: Small constant 𝜖 added to the variance before taking the square root and dividing by it, to avoid numerical problems</li>
 <li><strong>alpha</strong>: Coefficient for the exponential moving average of batch-wise means and standard deviations computed during training; the closer to one, the more it will depend on the last batches seen</li>
 <li><strong>mode</strong>: <code>low_mem</code> or <code>high_mem</code>. Specify which batch normalization implementation that will be used. As no intermediate representations are stored for the back-propagation, <code>low_mem</code> implementation lower the memory usage, however, it is 5-10% slower than <code>high_mem</code> implementation. Note that 5-10% computation time difference compare the batch normalization operation only, time difference between implementation is likely to be less important on the full model fprop/bprop.</li>
+</ul>
+<pre><code class="python">.forward(input, use_input_mean=True)
+</code></pre>
+
+<ul>
+<li><strong>use_input_mean</strong>: default, use mean &amp; std of input batch for normalization; if <code>False</code>, <code>self.mean</code> and <code>self.std</code> will be used for normalization. The reason that input mean is used during training is because at the early training stage, <code>BatchNorm</code>'s <code>self.mean</code> is far from the expected mean value and can be detrimental for network convergence. It's recommended to use input mean for early stage training; after that, you can switch to <code>BatchNorm</code>'s <code>self.mean</code> for training &amp; inference consistency.</li>
 </ul>
 <hr />
 <h2 id="center">Center</h2>
