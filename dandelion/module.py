@@ -24,6 +24,7 @@
                              5) add `.set_weights_by_name()` to `Module` class, you can use this function to set module weights saved
                              by previous version of Dandelion
                 4, 11, 2018  intercept name change of `Module` class and re-name its parameters accordingly
+                5, 28, 2018  fixed: `convTOP` should be constructed each time the `forward()` function of `ConvTransposed2D` is called.
 
   Note      :
     1) GRU & LSTM and their cell version have built-in activation (tanh), other modules have no built-in activations
