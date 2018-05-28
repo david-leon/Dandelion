@@ -1,5 +1,9 @@
 # History
 
+## version 0.15.2 [5-28-2018]
+* **FIXED**: `convTOP` should be constructed each time the `forward()` function of `ConvTransposed2D` is called.
+
+
 ## version 0.15.1 [5-25-2018]
 * **NEW**: add `model` module into master branch of Dandelion
 * **NEW**: add U-net FCN implementation into `model` module

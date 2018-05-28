@@ -978,6 +978,9 @@ class ConvTransposed2D(Module):
             else:
                 self.b = self.register_param(b, shape=[out_channels], name='b_TConv2D')
 
+        self.predict = self.forward                # predict() is the same with forward() for this layer
+
+    def forward(self, input):
         if self.pad[0] == 'same':
             border_mode = 'half'
         elif self.pad[0] == 'valid':
@@ -986,20 +989,17 @@ class ConvTransposed2D(Module):
             border_mode = 'full'
         else:
             border_mode = self.pad
-        self.convTOP = tensor.nnet.abstract_conv.AbstractConv2d_gradInputs(imshp=[None, self.out_channels, self.output_shape[0], self.output_shape[1]],
+        convTOP = tensor.nnet.abstract_conv.AbstractConv2d_gradInputs(imshp=[None, self.out_channels, self.output_shape[0], self.output_shape[1]],
                                                                            kshp=self.W_shape, border_mode=border_mode,
                                                                            subsample=self.stride, filter_flip=not self.flip_filters,
                                                                            filter_dilation=self.dilation,
                                                                            num_groups=self.num_groups)
-        self.predict = self.forward                # predict() is the same with forward() for this layer
-
-    def forward(self, input):
+        output_shape = self.output_shape
         if any(s is None for s in self.output_shape):
             B, C, H, W = input.shape
-            self.output_shape = tuple(conv_input_length(input, filter, stride, p)
+            output_shape = tuple(conv_input_length(input, filter, stride, p)
                                       for input, filter, stride, p in zip([H, W], self.kernel_size, self.stride, self.pad))
-
-        conved = self.convTOP(self.W, input, self.output_shape)
+        conved = convTOP(self.W, input, output_shape)
         if self.b is None:
             output = conved
         elif self.untie_bias:

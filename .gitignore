@@ -7,4 +7,3 @@ dandelion/__pycache__
 dandelion/model/__pycache__
 Cython/*.whl
 site
-Test
