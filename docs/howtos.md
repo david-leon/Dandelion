@@ -25,7 +25,7 @@ Just use Theano's `MRG_RandomStreams` module.
 #### Example
 ```python
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
-srng = RandomStreams(get_rng().randint(1, 2147462579))
+srng = RandomStreams(np.random.randint(1, 2147462579))
 ....
 y = x + srng.normal(x.shape, avg=0.0, std=0.1)   # add Gaussian noise to x
 ```
