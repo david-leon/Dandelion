@@ -8,7 +8,7 @@
   
   <meta name="author" content="David Leon (Dawei Leng)">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>III - Howtos - Dandelion</title>
+  <title>dandelion.ext.CV - Dandelion</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,9 +17,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "III - Howtos";
-    var mkdocs_page_input_path = "howtos.md";
-    var mkdocs_page_url = "/howtos/";
+    var mkdocs_page_name = "dandelion.ext.CV";
+    var mkdocs_page_input_path = "dandelion_ext_CV.md";
+    var mkdocs_page_url = "/dandelion_ext_CV/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -64,23 +64,9 @@
                     
     <a class="" href="../tutorial%20II%20-%20Write%20Your%20Own%20Module/">II - Write Your Own Module</a>
                 </li>
-                <li class=" current">
+                <li class="">
                     
-    <a class="current" href="./">III - Howtos</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#tutorial-iii-howtos">Tutorial III: Howtos</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#1-how-to-freeze-a-module-during-training-like-in-keraslasagne">1) How to freeze a module during training like in Keras/Lasagne?</a></li>
-        
-            <li><a class="toctree-l4" href="#2-how-to-add-random-noise-to-a-tensor">2) How to add random noise to a tensor?</a></li>
-        
-        </ul>
-    
-
-    </ul>
+    <a class="" href="../howtos/">III - Howtos</a>
                 </li>
     </ul>
 	    </li>
@@ -124,9 +110,18 @@
 		
     <span class="caption-text">Extensions</span>
     <ul class="subnav">
-                <li class="">
+                <li class=" current">
                     
-    <a class="" href="../dandelion_ext_CV/">dandelion.ext.CV</a>
+    <a class="current" href="./">dandelion.ext.CV</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#imread">imread</a></li>
+    
+
+    <li class="toctree-l3"><a href="#imsave">imsave</a></li>
+    
+
+    </ul>
                 </li>
     </ul>
 	    </li>
@@ -158,11 +153,11 @@
     
       
         
-          <li>Tutorials &raquo;</li>
+          <li>Extensions &raquo;</li>
         
       
     
-    <li>III - Howtos</li>
+    <li>dandelion.ext.CV</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -172,36 +167,27 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="tutorial-iii-howtos">Tutorial III: Howtos</h1>
-<h3 id="1-how-to-freeze-a-module-during-training-like-in-keraslasagne">1) How to freeze a module during training like in Keras/Lasagne?</h3>
-<p>To <em>freeze</em> a module during training, use the <code>include</code> and <code>exclude</code> arguments of module's <code>.collect_params()</code> and <code>.collect_self_updates()</code> functions.</p>
-<h4 id="example">Example</h4>
-<pre><code class="python">class FOO(Module):
-    def __init__(self):
-        self.cnn0 = Conv2D(...)
-        self.cnn1 = Conv2D(...)
-        self.cnn2 = Conv2D(...)
-        ....
-
-# Now we will freeze cnn0 and cnn1 submodules during training
-model    = Foo()
-loss     = ...
-params   = model.collect_params(exclude=['cnn0', 'cnn1'])
-updates  = optimizer(loss, params)
-updates.update(model.colect_self_updates(exclude=['cnn0', 'cnn1']))
-train_fn = theano.function([...], [...], updates=updates, no_default_updates=False)
+                <h2 id="imread">imread</h2>
+<p>Read image file and return as numpy <code>ndarray</code>, using PILLOW as backend. Support for EXIF rotation specification.</p>
+<pre><code class="python">imread(f, flatten=False, dtype='float32')
 </code></pre>
 
-<h3 id="2-how-to-add-random-noise-to-a-tensor">2) How to add random noise to a tensor?</h3>
-<p>Just use Theano's <code>MRG_RandomStreams</code> module.</p>
-<h4 id="example_1">Example</h4>
-<pre><code class="python">from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
-srng = RandomStreams(np.random.randint(1, 2147462579))
-....
-y = x + srng.normal(x.shape, avg=0.0, std=0.1)   # add Gaussian noise to x
+<ul>
+<li><strong>f</strong>: str or file object. The file name or file object to be read from.</li>
+<li><strong>flatten</strong>: bool. If <code>True</code>, flattens the color channels into a single gray-scale channel.</li>
+<li><strong>dtype</strong>: returned data type</li>
+</ul>
+<hr />
+<h2 id="imsave">imsave</h2>
+<p>Save an image <code>ndarray</code> into file, using PILLOW as backend </p>
+<pre><code class="python">imsave(f, I, **params)
 </code></pre>
 
-<p>What you'd keep in mind is that if you used Theano's <code>MRG_RandomStreams</code> module, remember to set <code>no_default_updates=False</code> when compiling functions.</p>
+<ul>
+<li><strong>f</strong>: str or file object. The file name or file object to be written into.</li>
+<li><strong>I</strong>: Image <code>ndarray</code>. Note for <code>jpeg</code> format, <code>I</code> should be of <code>uint8</code> type.</li>
+<li><strong>params</strong>: other parameters passed directly to PILLOW's <code>image.save()</code></li>
+</ul>
               
             </div>
           </div>
@@ -209,10 +195,10 @@ y = x + srng.normal(x.shape, avg=0.0, std=0.1)   # add Gaussian noise to x
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../dandelion_module/" class="btn btn-neutral float-right" title="dandelion.module">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../history/" class="btn btn-neutral float-right" title="History">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../tutorial%20II%20-%20Write%20Your%20Own%20Module/" class="btn btn-neutral" title="II - Write Your Own Module"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../dandelion_model/" class="btn btn-neutral" title="dandelion.model"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -238,10 +224,10 @@ y = x + srng.normal(x.shape, avg=0.0, std=0.1)   # add Gaussian noise to x
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../tutorial%20II%20-%20Write%20Your%20Own%20Module/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../dandelion_model/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../dandelion_module/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../history/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
