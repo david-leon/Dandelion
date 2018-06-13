@@ -17,6 +17,8 @@ pages:
       - dandelion.update: dandelion_update.md
       - dandelion.initialization: dandelion_initialization.md
       - dandelion.model: dandelion_model.md
+    - Extensions:
+      - dandelion.ext.CV: dandelion_ext_CV.md
     - History: history.md
 
 
