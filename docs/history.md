@@ -1,8 +1,11 @@
 # History
 
+## version 0.16.0 [6-13-2018]
+* **NEW**: add `ext` module into master branch of Dandelion. All the miscellaneous extensions will be organized in here.
+* **NEW**: add `ext.CV` sub-module, containing image I/O functions and basic image processing functions commonly used in model training.
+
 ## version 0.15.2 [5-28-2018]
 * **FIXED**: `convTOP` should be constructed each time the `forward()` function of `ConvTransposed2D` is called.
-
 
 ## version 0.15.1 [5-25-2018]
 * **NEW**: add `model` module into master branch of Dandelion
