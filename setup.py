@@ -16,8 +16,6 @@ version = re.search('__version__ = "(.*)"', init_py).groups()[0]
 
 with io.open(os.path.join(here, 'README.md'), 'r', encoding='utf-8') as f:
     README = f.read()
-with io.open(os.path.join(here, 'CHANGES.md'), 'r', encoding='utf-8') as f:
-    CHANGES = f.read()
 
 install_requires = [
     'numpy',
@@ -33,7 +31,8 @@ setup(
     name="Dandelion",
     version=version,
     description="A light weight deep learning framework",
-    long_description="\n\n".join([README, CHANGES]),
+    long_description=README,
+    long_description_content_type="text/markdown",
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",

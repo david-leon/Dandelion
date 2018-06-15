@@ -1,4 +1,6 @@
 # Dandelion
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://github.com/david-leon/Dandelion/blob/master/LICENSE)
+[![PyPI version](https://badge.fury.io/py/Dandelion.svg)](https://badge.fury.io/py/Dandelion)
 A quite light weight deep learning framework, on top of Theano, offering better balance between flexibility and abstraction.
 
 ## Targeted Users
@@ -34,3 +36,6 @@ ext               | extensions
 
 ## Credits
 The design of Dandelion heavily draws on [Lasagne](https://github.com/Lasagne/Lasagne) and [Pytorch](http://pytorch.org/), both my favorate DL libraries.
+
+## Special Thanks
+To **Radomir Dopieralski**, who transferred the `dandelion` project name on pypi to us. Now you can install the package by simply `pip install dandelion`.
