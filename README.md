@@ -32,6 +32,7 @@ objective         | definition of all loss objectives
 update            | definition of all optimizers
 util              | utility functions
 model             | model implementations out-of-the-box
+ext               | extensions
 
 
 ## Documentation
