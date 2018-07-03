@@ -1,4 +1,4 @@
-Dandelion's `activation` module is mostly inherited from [Lasagne](https://github.com/Lasagne/Lasagne) except for the `softmax()` activation. 
+Dandelion's `activation` module is mostly inherited from [Lasagne](https://github.com/Lasagne/Lasagne) except for the `softmax()` and `log_softmax()` activations. 
 
 You're recommended to refer to [`Lasagne.nonlinearities` document](http://lasagne.readthedocs.io/en/latest/modules/nonlinearities.html) for the following activations:
 
@@ -20,5 +20,13 @@ _______________________________________________________________________
 Apply softmax to the last dimension of input `x`
 ```python
 softmax(x)
+```
+* **x**: theano tensor of any shape
+
+_______________________________________________________________________
+## log_softmax
+Apply softmax to the last dimension of input `x`, in log domain
+```python
+log_softmax(x)
 ```
 * **x**: theano tensor of any shape

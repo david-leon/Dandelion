@@ -3,7 +3,6 @@ Dandelion's `objective` module is mostly inherited from [Lasagne](https://github
 You're recommended to refer to [`Lasagne.objectives` document](http://lasagne.readthedocs.io/en/latest/modules/objectives.html) for the following objectives:
 
 * binary_crossentropy
-* categorical_crossentropy
 * squared_error
 * binary_hinge_loss
 * multiclass_hinge_loss
@@ -43,3 +42,24 @@ ctc_CER(resultseq, targetseq, resultseq_mask=None, targetseq_mask=None)
 * **resultseq**: CTC decoding output, with shape `(T1, B)`
 * **targetseq**: sequence ground truth, with shape `(T2, B)`
 * **return**: tuple of `(CER, TE, TG)`, in which `TE` is the batch-wise total edit distance, `TG` is the batch-wise total ground truth sequence length, and `CER` equals to `TE/TG`
+
+_______________________________________________________________________
+## categorical_crossentropy
+Computes the categorical cross-entropy between predictions and targets
+```python
+categorical_crossentropy(predictions, targets, eps=1e-7)
+```
+* **predictions**: Theano 2D tensor, predictions in (0, 1), such as softmax output of a neural network, with data points in rows and class probabilities in columns.
+* **targets**: Theano 2D tensor or 1D tensor, either targets in [0, 1] matching the layout of `predictions`, or a vector of int giving the correct class index per data point. In the case of an integer vector argument, each element represents the position of the '1' in a one-hot encoding.
+* **eps**: epsilon added to `predictions` to prevent numerical unstability when using with softmax activation
+* **return**: Theano 1D tensor, an expression for the item-wise categorical cross-entropy.
+
+_______________________________________________________________________
+## categorical_crossentropy_log
+Computes the categorical cross-entropy between predictions and targets, in log-domain.
+```python
+categorical_crossentropy_log(log_predictions, targets)
+```
+* **log_predictions**: Theano 2D tensor, predictions in log of (0, 1), such as log_softmax output of a neural network, with data points in rows and class probabilities in columns.
+* **targets**: Theano 2D tensor or 1D tensor, either targets in [0, 1] matching the layout of `predictions`, or a vector of int giving the correct class index per data point. In the case of an integer vector argument, each element represents the position of the '1' in a one-hot encoding.
+* **return**: Theano 1D tensor, an expression for the item-wise categorical cross-entropy in log-domain

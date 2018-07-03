@@ -71,7 +71,7 @@ def binary_crossentropy(predictions, targets):
     return theano.tensor.nnet.binary_crossentropy(predictions, targets)
 
 
-def categorical_crossentropy(predictions, targets):
+def categorical_crossentropy(predictions, targets, eps=1e-7):
     """Computes the categorical cross-entropy between predictions and targets.
 
     .. math:: L_i = - \\sum_j{t_{i,j} \\log(p_{i,j})}
@@ -89,6 +89,7 @@ def categorical_crossentropy(predictions, targets):
         a vector of int giving the correct class index per data point.
         In the case of an integer vector argument, each element
         represents the position of the '1' in a one-hot encoding.
+    eps: epsilon added to `predictions` to prevent numerical unstability when using with softmax activation
 
     Returns
     -------
@@ -103,8 +104,24 @@ def categorical_crossentropy(predictions, targets):
     providing a vector of int for the targets is usually slightly more
     efficient than providing a matrix with a single 1.0 per row.
     """
+    if eps > 0:
+        predictions = theano.tensor.clip(predictions, eps, 1.0 - eps)
     return theano.tensor.nnet.categorical_crossentropy(predictions, targets)
 
+def categorical_crossentropy_log(log_predictions, targets):
+    """
+    Computes the categorical cross-entropy in log-domain.
+    :param log_predictions: usually returned by log_softmax()
+    :param targets:
+    :return:
+    """
+
+    if targets.ndim == log_predictions.ndim:
+        return -tensor.sum(targets * log_predictions, axis=log_predictions.ndim-1)
+    elif targets.ndim == log_predictions.ndim - 1:
+        return -tensor.sum(log_predictions[targets], axis=log_predictions.ndim-1)
+    else:
+        raise TypeError('shape mismatch between `log_predictions` and `targets`')
 
 def squared_error(a, b):
     """Computes the element-wise squared difference between two tensors.

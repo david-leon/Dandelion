@@ -12,6 +12,30 @@ relu               = tensor.nnet.relu
 softplus           = tensor.nnet.softplus
 ultra_fast_sigmoid = tensor.nnet.ultra_fast_sigmoid
 
+# def _log_softmax(x):
+#     xdev = x - x.max(1, keepdims=True)
+#     return xdev - T.log(T.sum(T.exp(xdev), axis=1, keepdims=True))
+
+#--- row-wise activation ---#
+def log_softmax(x):
+    """
+    Apply log_softmax to the last dimension of input x
+    :param x: tensor
+    :return:
+    """
+    ndim = x.ndim
+    if ndim <= 2:
+        return tensor.nnet.logsoftmax(x)
+    else:
+        original_shape = x.shape
+        M, N = 1, original_shape[-1]
+        for i in range(x.ndim - 1):
+            M = M * original_shape[i]
+        x = tensor.reshape(x, (M, N))
+        x = tensor.nnet.logsoftmax(x)
+        x = tensor.reshape(x, original_shape)
+        return x
+
 #--- row-wise activation ---#
 def softmax(x):
     """

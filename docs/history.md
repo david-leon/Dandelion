@@ -1,5 +1,10 @@
 # History
 
+## version 0.16.3 [7-3-2018]
+* **NEW**: add `activation::log_softmax()` for more numerically stable softmax.
+* **NEW**: add `objective::categorical_crossentropy_log()` for more numerically stable categorical cross-entropy
+* **MODIFIED**: add `eps` argument to `objective::categorical_crossentropy()` for numerical stability purpose. Note 1e-7 is set as default value of `eps`. You can set it to 0 to get the old `categorical_crossentropy()` back.
+
 ## version 0.16.0 [6-13-2018]
 * **NEW**: add `ext` module into master branch of Dandelion. All the miscellaneous extensions will be organized in here.
 * **NEW**: add `ext.CV` sub-module, containing image I/O functions and basic image processing functions commonly used in model training.
