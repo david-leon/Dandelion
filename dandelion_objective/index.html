@@ -97,6 +97,12 @@
     <li class="toctree-l3"><a href="#ctc_cer">ctc_CER</a></li>
     
 
+    <li class="toctree-l3"><a href="#categorical_crossentropy">categorical_crossentropy</a></li>
+    
+
+    <li class="toctree-l3"><a href="#categorical_crossentropy_log">categorical_crossentropy_log</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -174,7 +180,6 @@
 <p>You're recommended to refer to <a href="http://lasagne.readthedocs.io/en/latest/modules/objectives.html"><code>Lasagne.objectives</code> document</a> for the following objectives:</p>
 <ul>
 <li>binary_crossentropy</li>
-<li>categorical_crossentropy</li>
 <li>squared_error</li>
 <li>binary_hinge_loss</li>
 <li>multiclass_hinge_loss</li>
@@ -217,6 +222,29 @@
 <li><strong>resultseq</strong>: CTC decoding output, with shape <code>(T1, B)</code></li>
 <li><strong>targetseq</strong>: sequence ground truth, with shape <code>(T2, B)</code></li>
 <li><strong>return</strong>: tuple of <code>(CER, TE, TG)</code>, in which <code>TE</code> is the batch-wise total edit distance, <code>TG</code> is the batch-wise total ground truth sequence length, and <code>CER</code> equals to <code>TE/TG</code></li>
+</ul>
+<hr />
+<h2 id="categorical_crossentropy">categorical_crossentropy</h2>
+<p>Computes the categorical cross-entropy between predictions and targets</p>
+<pre><code class="python">categorical_crossentropy(predictions, targets, eps=1e-7)
+</code></pre>
+
+<ul>
+<li><strong>predictions</strong>: Theano 2D tensor, predictions in (0, 1), such as softmax output of a neural network, with data points in rows and class probabilities in columns.</li>
+<li><strong>targets</strong>: Theano 2D tensor or 1D tensor, either targets in [0, 1] matching the layout of <code>predictions</code>, or a vector of int giving the correct class index per data point. In the case of an integer vector argument, each element represents the position of the '1' in a one-hot encoding.</li>
+<li><strong>eps</strong>: epsilon added to <code>predictions</code> to prevent numerical unstability when using with softmax activation</li>
+<li><strong>return</strong>: Theano 1D tensor, an expression for the item-wise categorical cross-entropy.</li>
+</ul>
+<hr />
+<h2 id="categorical_crossentropy_log">categorical_crossentropy_log</h2>
+<p>Computes the categorical cross-entropy between predictions and targets, in log-domain.</p>
+<pre><code class="python">categorical_crossentropy_log(log_predictions, targets)
+</code></pre>
+
+<ul>
+<li><strong>log_predictions</strong>: Theano 2D tensor, predictions in log of (0, 1), such as log_softmax output of a neural network, with data points in rows and class probabilities in columns.</li>
+<li><strong>targets</strong>: Theano 2D tensor or 1D tensor, either targets in [0, 1] matching the layout of <code>predictions</code>, or a vector of int giving the correct class index per data point. In the case of an integer vector argument, each element represents the position of the '1' in a one-hot encoding.</li>
+<li><strong>return</strong>: Theano 1D tensor, an expression for the item-wise categorical cross-entropy in log-domain</li>
 </ul>
               
             </div>

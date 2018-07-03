@@ -95,6 +95,9 @@
     <li class="toctree-l3"><a href="#softmax">softmax</a></li>
     
 
+    <li class="toctree-l3"><a href="#log_softmax">log_softmax</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -164,7 +167,7 @@
           <div role="main">
             <div class="section">
               
-                <p>Dandelion's <code>activation</code> module is mostly inherited from <a href="https://github.com/Lasagne/Lasagne">Lasagne</a> except for the <code>softmax()</code> activation. </p>
+                <p>Dandelion's <code>activation</code> module is mostly inherited from <a href="https://github.com/Lasagne/Lasagne">Lasagne</a> except for the <code>softmax()</code> and <code>log_softmax()</code> activations. </p>
 <p>You're recommended to refer to <a href="http://lasagne.readthedocs.io/en/latest/modules/nonlinearities.html"><code>Lasagne.nonlinearities</code> document</a> for the following activations:</p>
 <ul>
 <li>sigmoid</li>
@@ -184,6 +187,15 @@
 <h2 id="softmax">softmax</h2>
 <p>Apply softmax to the last dimension of input <code>x</code></p>
 <pre><code class="python">softmax(x)
+</code></pre>
+
+<ul>
+<li><strong>x</strong>: theano tensor of any shape</li>
+</ul>
+<hr />
+<h2 id="log_softmax">log_softmax</h2>
+<p>Apply softmax to the last dimension of input <code>x</code>, in log domain</p>
+<pre><code class="python">log_softmax(x)
 </code></pre>
 
 <ul>
