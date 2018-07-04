@@ -1,5 +1,9 @@
 # History
 
+## version 0.16.4 [7-4-2018]
+* **FIXED**: wrong indexing when `targets` is int vector for `objective::categorical_crossentropy_log()`.
+
+
 ## version 0.16.3 [7-3-2018]
 * **NEW**: add `activation::log_softmax()` for more numerically stable softmax.
 * **NEW**: add `objective::categorical_crossentropy_log()` for more numerically stable categorical cross-entropy

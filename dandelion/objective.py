@@ -8,7 +8,7 @@
 import theano
 import theano.tensor as tensor
 from .ctc_theano import CTC_Timescale, CTC_Logscale
-from .util import as_theano_expression
+from .util import as_theano_expression, one_hot
 
 # __all__ = [
 #     "categorical_crossentropy",
@@ -108,18 +108,19 @@ def categorical_crossentropy(predictions, targets, eps=1e-7):
         predictions = theano.tensor.clip(predictions, eps, 1.0 - eps)
     return theano.tensor.nnet.categorical_crossentropy(predictions, targets)
 
-def categorical_crossentropy_log(log_predictions, targets):
+def categorical_crossentropy_log(log_predictions, targets, m=None):
     """
     Computes the categorical cross-entropy in log-domain.
     :param log_predictions: usually returned by log_softmax()
-    :param targets:
+    :param targets: Theano 2D tensor or 1D tensor
+    :param m: possible max value of `targets`'s element
     :return:
     """
 
     if targets.ndim == log_predictions.ndim:
         return -tensor.sum(targets * log_predictions, axis=log_predictions.ndim-1)
     elif targets.ndim == log_predictions.ndim - 1:
-        return -tensor.sum(log_predictions[targets], axis=log_predictions.ndim-1)
+        return -tensor.sum(one_hot(targets, m=m) * log_predictions, axis=log_predictions.ndim-1)
     else:
         raise TypeError('shape mismatch between `log_predictions` and `targets`')
 

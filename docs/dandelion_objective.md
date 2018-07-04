@@ -50,7 +50,7 @@ Computes the categorical cross-entropy between predictions and targets
 categorical_crossentropy(predictions, targets, eps=1e-7)
 ```
 * **predictions**: Theano 2D tensor, predictions in (0, 1), such as softmax output of a neural network, with data points in rows and class probabilities in columns.
-* **targets**: Theano 2D tensor or 1D tensor, either targets in [0, 1] matching the layout of `predictions`, or a vector of int giving the correct class index per data point. In the case of an integer vector argument, each element represents the position of the '1' in a one-hot encoding.
+* **targets**: Theano 2D tensor or 1D tensor, either targets in [0, 1] (float32 type) matching the layout of `predictions`, or a vector of int giving the correct class index per data point. In the case of an integer vector argument, each element represents the position of the '1' in a one-hot encoding.
 * **eps**: epsilon added to `predictions` to prevent numerical unstability when using with softmax activation
 * **return**: Theano 1D tensor, an expression for the item-wise categorical cross-entropy.
 
@@ -58,8 +58,9 @@ _______________________________________________________________________
 ## categorical_crossentropy_log
 Computes the categorical cross-entropy between predictions and targets, in log-domain.
 ```python
-categorical_crossentropy_log(log_predictions, targets)
+categorical_crossentropy_log(log_predictions, targets, m=None)
 ```
 * **log_predictions**: Theano 2D tensor, predictions in log of (0, 1), such as log_softmax output of a neural network, with data points in rows and class probabilities in columns.
-* **targets**: Theano 2D tensor or 1D tensor, either targets in [0, 1] matching the layout of `predictions`, or a vector of int giving the correct class index per data point. In the case of an integer vector argument, each element represents the position of the '1' in a one-hot encoding.
+* **targets**: Theano 2D tensor or 1D tensor, either targets in [0, 1] (float32 type) matching the layout of `predictions`, or a vector of int giving the correct class index per data point. In the case of an integer vector argument, each element represents the position of the '1' in a one-hot encoding.
+* **m**: possible max value of `targets`'s element, only used when `targets` is integer vector. When `targets` is integer vector, the implementation of `categorical_crossentropy_log` is different from `categorical_crossentropy`: the latter relies on `theano.tensor.nnet.categorical_crossentropy` whereas the former uses a simpler way, we transform the integer vector `targets` into one-hot encoded matrix. That's why we need the `m` argument here. The possible limitation is that our implementation does not allow `m` changing on-the-fly.
 * **return**: Theano 1D tensor, an expression for the item-wise categorical cross-entropy in log-domain
