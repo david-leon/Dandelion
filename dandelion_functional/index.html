@@ -99,6 +99,12 @@
     <li class="toctree-l3"><a href="#spatial_pyramid_pooling">spatial_pyramid_pooling</a></li>
     
 
+    <li class="toctree-l3"><a href="#upsample_2d">upsample_2d</a></li>
+    
+
+    <li class="toctree-l3"><a href="#upsample_2d_bilinear">upsample_2d_bilinear</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -240,7 +246,29 @@
 <li><strong>pyramid_dims</strong>: list or tuple of integers. Refer to Ref[1] for details.</li>
 <li><strong>mode</strong>: {<code>max</code>, <code>sum</code>, <code>average_inc_pad</code>, <code>average_exc_pad</code>}. Operation executed on each window. <code>max</code> and <code>sum</code> always exclude the padding in the computation. <code>average</code> gives you the choice to include or exclude it.</li>
 </ul>
-<p><sub>Ref[1]: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition. http://arxiv.org/pdf/1406.4729.pdf</sub></p>
+<p><sub>Ref [1]: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition. <a href="http://arxiv.org/pdf/1406.4729.pdf">http://arxiv.org/pdf/1406.4729.pdf</a></sub></p>
+<hr />
+<h2 id="upsample_2d">upsample_2d</h2>
+<p>Upsample 2 dimension along the last 2 dimensions of input, support for any dimensional input with ndim&gt;=2. Only integer upsampling ratio supported.</p>
+<pre><code class="python">upsample_2d(x, ratio, mode='repeat')
+</code></pre>
+
+<ul>
+<li><strong>ratio</strong>: ust be integer or tuple of integers &gt;=1</li>
+<li><strong>mode</strong>: {<code>repeat</code>, <code>dilate</code>}. Repeat element values or upsample leaving zeroes between upsampled elements. Default <code>repeat</code>.</li>
+</ul>
+<hr />
+<h2 id="upsample_2d_bilinear">upsample_2d_bilinear</h2>
+<p>Upsample 2D with bilinear interpolation. Support for fractional ratio, and only apply for 4D tensor.</p>
+<pre><code class="python">upsample_2d_bilinear(x, ratio=None, frac_ratio=None, use_1D_kernel=True)
+</code></pre>
+
+<ul>
+<li><strong>ratio</strong>: ust be integer or tuple of integers &gt;=1. You can only specify either <code>ratio</code> or <code>frac_ratio</code>, not both.</li>
+<li><strong>frac_ratio</strong>: None, tuple of int or tuple of tuples of int. A fractional upsampling scale is described by (numerator, denominator).</li>
+<li><strong>use_1D_kernel</strong>: only for speed matter.</li>
+</ul>
+<p>Note: due to Theano's implementation, when the upsampling ratio is even, the last row and column is repeated one extra time compared to the first row and column which makes the upsampled tensor asymmetrical on both sides. This does not happen when the upsampling ratio is odd.</p>
               
             </div>
           </div>
