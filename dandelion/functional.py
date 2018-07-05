@@ -10,6 +10,7 @@ import theano
 floatX = theano.config.floatX
 from theano import tensor
 from theano.tensor.signal import pool
+from .util import as_tuple
 
 def pool_1d(x, ws=2, ignore_border=True, stride=None, pad=0, mode='max', axis=-1):
     """
@@ -43,9 +44,29 @@ def pool_1d(x, ws=2, ignore_border=True, stride=None, pad=0, mode='max', axis=-1
     return x
 
 def pool_2d(x, ws=(2,2), ignore_border=True, stride=None, pad=(0, 0), mode='max'):
+    """
+    Pooling 2 dimension along the last 2 dimensions of input, support for any dimensional input with ndim>=2
+    :param x:
+    :param ws:
+    :param ignore_border:
+    :param stride:
+    :param pad:
+    :param mode:
+    :return:
+    """
     return pool.pool_2d(x, ws=ws, ignore_border=ignore_border, stride=stride, pad=pad, mode=mode)
 
 def pool_3d(x, ws=(2,2,2), ignore_border=True, stride=None, pad=(0, 0, 0), mode='max'):
+    """
+    Pooling 3 dimension along the last 3 dimensions of input, support for any dimensional input with ndim>=3.
+    :param x:
+    :param ws:
+    :param ignore_border:
+    :param stride:
+    :param pad:
+    :param mode:
+    :return:
+    """
     return pool.pool_3d(x, ws=ws, ignore_border=ignore_border, stride=stride, pad=pad, mode=mode)
 
 def align_crop(tensor_list, cropping):
@@ -216,6 +237,47 @@ def spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max'):
         section = section.flatten(3)
         section_list.append(section)
     return tensor.concatenate(section_list, axis=2)
+
+def upsample_2d(x, ratio, mode='repeat'):
+    """
+    Upsample 2 dimension along the last 2 dimensions of input, support for any dimensional input with ndim>=2.
+    :param x:
+    :param ratio: must be integer or tuple of integers >=1
+    :param mode: 'repeat' | 'dilate'. Repeat element values or upsample leaving zeroes between upsampled elements
+    :return:
+    """
+    a, b = as_tuple(ratio, 2)
+    upscaled = x
+    if mode == 'repeat':
+        if b > 1:
+            upscaled = tensor.extra_ops.repeat(upscaled, b, axis=-1)
+        if a > 1:
+            upscaled = tensor.extra_ops.repeat(upscaled, a, axis=-2)
+    elif mode == 'dilate':
+        if b > 1 or a > 1:
+            output_shape = list(x.shape)  # copy / convert to mutable list
+            if output_shape[-2] is not None:
+                output_shape[-2] *= a
+            if output_shape[-1] is not None:
+                output_shape[-1] *= b
+            upscaled = tensor.zeros(shape=tuple(output_shape), dtype=x.dtype)
+            upscaled = tensor.set_subtensor(upscaled[:, :, ::a, ::b], x)
+    else:
+        raise ValueError('mode = %s not supported' % mode)
+    return upscaled
+
+def upsample_2d_bilinear(x, ratio=None, frac_ratio=None, use_1D_kernel=True):
+    """
+    Upsample 2D with bilinear interpolation. Support for fractional ratio, and only apply for 4D tensor.
+    :param x: 4D tensor.
+    :param ratio: int or tuple of int >=1. You can only specify either `ratio` or `frac_ratio`, not both.
+    :param frac_ratio: None, tuple of int or tuple of tuples of int. A fractional upsampling scale is described by
+                       (numerator, denominator).
+    :param use_1D_kernel: only for speed matter
+    :return:
+    """
+    return tensor.nnet.abstract_conv.bilinear_upsampling(x, ratio=ratio, frac_ratio=frac_ratio, use_1D_kernel=use_1D_kernel)
+
 
 
 if __name__ == '__main__':

@@ -57,4 +57,26 @@ spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max')
 * **pyramid_dims**: list or tuple of integers. Refer to Ref[1] for details.
 * **mode**: {`max`, `sum`, `average_inc_pad`, `average_exc_pad`}. Operation executed on each window. `max` and `sum` always exclude the padding in the computation. `average` gives you the choice to include or exclude it.
 
-<sub>Ref[1]: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition. http://arxiv.org/pdf/1406.4729.pdf</sub>
+<sub>Ref [1]: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition. [http://arxiv.org/pdf/1406.4729.pdf](http://arxiv.org/pdf/1406.4729.pdf)</sub>
+
+
+_______________________________________________________________________
+## upsample_2d
+Upsample 2 dimension along the last 2 dimensions of input, support for any dimensional input with ndim>=2. Only integer upsampling ratio supported.
+```python
+upsample_2d(x, ratio, mode='repeat')
+```
+* **ratio**: ust be integer or tuple of integers >=1
+* **mode**: {`repeat`, `dilate`}. Repeat element values or upsample leaving zeroes between upsampled elements. Default `repeat`.
+
+_______________________________________________________________________
+## upsample_2d_bilinear
+Upsample 2D with bilinear interpolation. Support for fractional ratio, and only apply for 4D tensor.
+```python
+upsample_2d_bilinear(x, ratio=None, frac_ratio=None, use_1D_kernel=True)
+```
+* **ratio**: ust be integer or tuple of integers >=1. You can only specify either `ratio` or `frac_ratio`, not both.
+* **frac_ratio**: None, tuple of int or tuple of tuples of int. A fractional upsampling scale is described by (numerator, denominator).
+* **use_1D_kernel**: only for speed matter.
+
+Note: due to Theano's implementation, when the upsampling ratio is even, the last row and column is repeated one extra time compared to the first row and column which makes the upsampled tensor asymmetrical on both sides. This does not happen when the upsampling ratio is odd.

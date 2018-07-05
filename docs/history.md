@@ -1,5 +1,9 @@
 # History
 
+## version 0.16.6 [7-5-2018]
+* **NEW**: add `functional::upsample_2d()` for 2D upsampling
+* **NEW**: add `functional::upsample_2d_bilinear()`for bilinear 2D upsampling
+
 ## version 0.16.5 [7-5-2018]
 * **NEW**: add `functional::spatial_pyramid_pooling()` for SPP-net implementation.
 
