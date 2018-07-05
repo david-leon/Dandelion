@@ -62,7 +62,7 @@ spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max')
 
 _______________________________________________________________________
 ## upsample_2d
-Upsample 2 dimension along the last 2 dimensions of input, support for any dimensional input with ndim>=2. Only integer upsampling ratio supported.
+Upsample 2 dimension along the last 2 dimensions of input, support for any dimensional input with `ndim`>=2. Only integer upsampling ratio supported.
 ```python
 upsample_2d(x, ratio, mode='repeat')
 ```
