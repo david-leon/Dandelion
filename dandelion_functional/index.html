@@ -231,7 +231,7 @@
 </ul>
 <hr />
 <h2 id="spatial_pyramid_pooling">spatial_pyramid_pooling</h2>
-<p>Spatial pyramid pooling. This function will use different scale pooling pyramid to generate spatially fix-sized output no matter the spatial size of input, useful when CNN+FC used for image classification or detection.</p>
+<p>Spatial pyramid pooling. This function will use different scale pooling pyramid to generate spatially fix-sized output no matter the spatial size of input, useful when CNN+FC used for image classification or detection with variable-sized samples.</p>
 <pre><code class="python">spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max')
 </code></pre>
 
@@ -240,7 +240,7 @@
 <li><strong>pyramid_dims</strong>: list or tuple of integers. Refer to Ref[1] for details.</li>
 <li><strong>mode</strong>: {<code>max</code>, <code>sum</code>, <code>average_inc_pad</code>, <code>average_exc_pad</code>}. Operation executed on each window. <code>max</code> and <code>sum</code> always exclude the padding in the computation. <code>average</code> gives you the choice to include or exclude it.</li>
 </ul>
-<p>Ref[1]: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition. http://arxiv.org/pdf/1406.4729.pdf</p>
+<p><sub>Ref[1]: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition. http://arxiv.org/pdf/1406.4729.pdf</sub></p>
               
             </div>
           </div>
