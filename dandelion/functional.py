@@ -191,6 +191,36 @@ def align_crop(tensor_list, cropping):
         return [input[slices] for input, slices in
                 zip(tensor_list, slices_by_input)]
 
+def spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max'):
+    """
+    Spatial pyramid pooling. Refer to: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks
+    for Visual Recognition. http://arxiv.org/pdf/1406.4729.pdf and Lasagne's SpatialPyramidPoolingLayer implementation.
+    This function will generate spatially fix-sized output no matter the spatial size of input, useful when CNN+FC used for
+    image classification or detection.
+    :param x: 4D tensor, (B, C, H, W)
+    :param pyramid_dims: list of pyramid dims,
+    :param mode:
+    :return:
+    """
+    input_size = x.shape[2:]
+    section_list = []
+    for pyramid_dim in pyramid_dims:
+        win_size = tuple((i + pyramid_dim - 1) // pyramid_dim
+                         for i in input_size)
+        str_size = tuple(i // pyramid_dim for i in input_size)
+
+        section = pool.pool_2d(x,
+                       ws=win_size,
+                       stride=str_size,
+                       mode=mode,
+                       pad=None,
+                       ignore_border=True)
+        section = section.flatten(3)
+        section_list.append(section)
+
+    return tensor.concatenate(section_list, axis=2)
+
+
 if __name__ == '__main__':
     INFO = ['Dandelion framework: module pool\n',
             'Author: David Leon\n',

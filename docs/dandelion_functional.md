@@ -46,3 +46,15 @@ align_crop(tensor_list, cropping)
   * `lower`: tensors are cropped choosing the lower portion in this axis as `a[:crop_size, ...]`
   * `upper`: tensors are cropped choosing the upper portion in this axis as `a[-crop_size:, ...]`
   * `center`: tensors are cropped choosing the central portion in this axis as ``a[offset:offset+crop_size, ...]`` where ``offset = (a.shape[0]-crop_size)//2)``
+
+_______________________________________________________________________
+## spatial_pyramid_pooling
+Spatial pyramid pooling. This function will use different scale pooling pyramid to generate spatially fix-sized output no matter the spatial size of input, useful when CNN+FC used for image classification or detection.
+```python
+spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max')
+```
+* **x**: 4D tensor with shape (B, C, H, W)
+* **pyramid_dims**: list or tuple of integers. Refer to Ref[1] for details.
+* **mode**: {`max`, `sum`, `average_inc_pad`, `average_exc_pad`}. Operation executed on each window. `max` and `sum` always exclude the padding in the computation. `average` gives you the choice to include or exclude it.
+
+Ref[1]: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition. http://arxiv.org/pdf/1406.4729.pdf

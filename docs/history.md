@@ -1,5 +1,8 @@
 # History
 
+## version 0.16.5 [7-5-2018]
+* **NEW**: add `functional::spatial_pyramid_pooling()` for SPP-net implementation.
+
 ## version 0.16.4 [7-4-2018]
 * **FIXED**: wrong indexing when `targets` is int vector for `objective::categorical_crossentropy_log()`.
 
