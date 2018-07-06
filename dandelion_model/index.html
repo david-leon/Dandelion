@@ -107,6 +107,15 @@
     <li class="toctree-l3"><a href="#u-net-fcn">U-net FCN</a></li>
     
 
+    <li class="toctree-l3"><a href="#vgg-16-network">VGG-16 network</a></li>
+    
+
+    <li class="toctree-l3"><a href="#resnet-bottleneck">ResNet bottleneck</a></li>
+    
+
+    <li class="toctree-l3"><a href="#feature-pyramid-network">Feature Pyramid Network</a></li>
+    
+
     </ul>
                 </li>
     </ul>
@@ -165,8 +174,9 @@
             <div class="section">
               
                 <h2 id="u-net-fcn">U-net FCN</h2>
-<p>Implementation of U-net FCN</p>
-<pre><code class="python">class model_Unet(channel=1, im_height=128, im_width=128, Nclass=2, kernel_size=3, border_mode='same', base_n_filters=64, output_activation=softmax)
+<p>Reference implementation of <a href="https://arxiv.org/abs/1505.04597">U-net</a> FCN</p>
+<pre><code class="python">class model_Unet(channel=1, im_height=128, im_width=128, Nclass=2, kernel_size=3, 
+                 border_mode='same', base_n_filters=64, output_activation=softmax)
 </code></pre>
 
 <ul>
@@ -174,6 +184,42 @@
 <li><strong>Nclass</strong>: output channel number</li>
 </ul>
 <p>The model accepts input of shape in the order of (B, C, H, W), and outputs with shape in the order of (B, H, W, C).</p>
+<hr />
+<h2 id="vgg-16-network">VGG-16 network</h2>
+<p>Reference implementation of <a href="https://arxiv.org/abs/1409.1556">VGG-16</a> network</p>
+<pre><code class="python">class model_VGG16(channel=3, im_height=224, im_width=224, Nclass=1000, 
+                  kernel_size=3, border_mode=(1, 1))
+</code></pre>
+
+<ul>
+<li><strong>channel</strong>: input channel number</li>
+<li><strong>Nclass</strong>: output class number</li>
+</ul>
+<p>The model accepts input of shape in the order of (B, C, H, W), and outputs with shape (B, N).</p>
+<hr />
+<h2 id="resnet-bottleneck">ResNet bottleneck</h2>
+<p>Reference implementation of bottleneck building block of <a href="https://arxiv.org/abs/1512.03385">ResNet</a> network</p>
+<pre><code class="python">class ResNet_bottleneck(outer_channel=256, inner_channel=64, border_mode='same',
+                        batchnorm_mode=1, activation=relu)
+</code></pre>
+
+<ul>
+<li><strong>outer_channel</strong>: channel number of block input</li>
+<li><strong>inner_channel</strong>: channel number inside the block</li>
+<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last element-wise sum output.</strong></li>
+</ul>
+<p>The model accepts input of shape in the order of (B, C, H, W), and outputs with the same shape.</p>
+<hr />
+<h2 id="feature-pyramid-network">Feature Pyramid Network</h2>
+<p>Reference implementation of <a href="https://arxiv.org/abs/1612.03144">feature pyramid network</a></p>
+<pre><code class="python">class model_FPN(input_channel=3, base_n_filters=64, batchnorm_mode=1)
+</code></pre>
+
+<ul>
+<li><strong>batchnorm_mode</strong>: same with <code>ResNet_bottleneck</code></li>
+<li><strong>return</strong> 4-element tuple <code>(p2, p3, p4, p5)</code>,  CNN pyramid features at different scales, each with #channel = 4 * <code>base_n_filters</code></li>
+</ul>
               
             </div>
           </div>
