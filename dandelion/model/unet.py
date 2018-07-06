@@ -16,7 +16,7 @@ from ..activation import *
 
 class model_Unet(Module):
     """
-    Unet, same structure with Lasagne's [implementation](https://github.com/Lasagne/Recipes/blob/master/modelzoo/Unet.py)
+    Unet reference implementation, same structure with Lasagne's [implementation](https://github.com/Lasagne/Recipes/blob/master/modelzoo/Unet.py)
     Note that Dandelion's `BatchNorm` implementation is different from Lasagne's counter-part.
     `contr` := contract
     """

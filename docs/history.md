@@ -1,5 +1,10 @@
 # History
 
+## version 0.16.7 [7-6-2018]
+* **NEW**: add `model::vgg::model_VGG16` for VGG-16 reference implementation.
+* **NEW**: add `model::resnet::ResNet_bottleneck` for ResNet reference implementation
+* **NEW**: add `model::feature_pyramid_net::model_FPN` for Feature Pyramid Network reference implementation
+
 ## version 0.16.6 [7-5-2018]
 * **NEW**: add `functional::upsample_2d()` for 2D upsampling
 * **NEW**: add `functional::upsample_2d_bilinear()`for bilinear 2D upsampling
