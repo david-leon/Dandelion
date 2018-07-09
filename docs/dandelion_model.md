@@ -54,7 +54,7 @@ class model_FPN(input_channel=3, base_n_filters=64, batchnorm_mode=1)
 
 _______________________________________________________________________
 ## Depthwise Separable Convolution
-Reference implementation of [Depthwise Separable Convolution] (https://arxiv.org/abs/1610.02357)
+Reference implementation of [Depthwise Separable Convolution](https://arxiv.org/abs/1610.02357)
 
 ```python
 class DSConv2D(in_channels, out_channels, kernel_size=(3,3), stride=(1,1), 
