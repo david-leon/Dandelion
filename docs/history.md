@@ -1,5 +1,10 @@
 # History
 
+## version 0.16.8 [7-9-2018]
+* **NEW**: add `model::shufflenet::DSConv2D` for Depthwise Separable Convolution reference implementation.
+* **NEW**: add `model::shufflenet::ShuffleUnit` for ShuffleNet reference implementation
+* **FIXED**: `W_shape` of `module::Conv2D` should count for `num_groups`
+
 ## version 0.16.7 [7-6-2018]
 * **NEW**: add `model::vgg::model_VGG16` for VGG-16 reference implementation.
 * **NEW**: add `model::resnet::ResNet_bottleneck` for ResNet reference implementation
