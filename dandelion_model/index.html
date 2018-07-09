@@ -116,6 +116,12 @@
     <li class="toctree-l3"><a href="#feature-pyramid-network">Feature Pyramid Network</a></li>
     
 
+    <li class="toctree-l3"><a href="#depthwise-separable-convolution">Depthwise Separable Convolution</a></li>
+    
+
+    <li class="toctree-l3"><a href="#shufflenet">ShuffleNet</a></li>
+    
+
     </ul>
                 </li>
     </ul>
@@ -219,6 +225,36 @@
 <ul>
 <li><strong>batchnorm_mode</strong>: same with <code>ResNet_bottleneck</code></li>
 <li><strong>return</strong> 4-element tuple <code>(p2, p3, p4, p5)</code>,  CNN pyramid features at different scales, each with #channel = 4 * <code>base_n_filters</code></li>
+</ul>
+<hr />
+<h2 id="depthwise-separable-convolution">Depthwise Separable Convolution</h2>
+<p>Reference implementation of [Depthwise Separable Convolution] (https://arxiv.org/abs/1610.02357)</p>
+<pre><code class="python">class DSConv2D(in_channels, out_channels, kernel_size=(3,3), stride=(1,1), 
+               dilation=(1,1), pad='valid')
+</code></pre>
+
+<ul>
+<li><strong>input_channels</strong>: int. Input shape is (B, input_channels, H_in, W_in)</li>
+<li><strong>out_channels</strong>: int. Output shape is (B output_channels, H_out, W_out)</li>
+<li><strong>kernel_size</strong>: int scalar or tuple of int. Convolution kernel size</li>
+<li><strong>stride</strong>: Factor by which to subsample the output</li>
+<li><strong>pad</strong>: <code>same</code>/<code>valid</code>/<code>full</code> or 2-element tuple of int. Control image border padding.</li>
+<li><strong>dilation</strong>: factor by which to subsample (stride) the input.</li>
+</ul>
+<p>The model do the depthwise 2D convolution per-channel of input, then map the output to #out_channels number of channel by pointwise 1*1 convolution. No activation applied inside.</p>
+<hr />
+<h2 id="shufflenet">ShuffleNet</h2>
+<p>Reference implementation of <a href="https://arxiv.org/abs/1707.01083">shuffle-net</a> unit.</p>
+<pre><code class="python">class ShuffleUnit(outer_channel=256, inner_channel=64, group_num=4, border_mode='same', 
+                  batchnorm_mode=1, activation=relu)
+</code></pre>
+
+<ul>
+<li><strong>outer_channel</strong>: channel number of block input</li>
+<li><strong>inner_channel</strong>: channel number inside the block</li>
+<li><strong>group_num</strong>: convolution group number</li>
+<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last element-wise sum output.</strong></li>
 </ul>
               
             </div>
