@@ -17,16 +17,16 @@ version = re.search('__version__ = "(.*)"', init_py).groups()[0]
 with io.open(os.path.join(here, 'README.md'), 'r', encoding='utf-8') as f:
     README = f.read()
 
-install_requires = [
-    'numpy',
-    'Theano',
-    ]
-
-tests_require = [
-    'mock',
-    'pytest',
-    'pytest-cov',
-    ]
+# install_requires = [
+#     'numpy',
+#     'Theano',
+#     ]
+#
+# tests_require = [
+#     'mock',
+#     'pytest',
+#     'pytest-cov',
+#     ]
 setup(
     name="Dandelion",
     version=version,
@@ -49,10 +49,10 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=install_requires,
-    extras_require={
-        'testing': tests_require,
-        },
+    # install_requires=install_requires,
+    # extras_require={
+    #     'testing': tests_require,
+    #     },
     cmdclass=cmdclass,
     ext_modules=ext_modules,
     )

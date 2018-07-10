@@ -1,5 +1,8 @@
 # History
 
+## version 0.16.10 [7-10-2018]
+* **MODIFIED**: disable all install requirements to prevent possible conflict of pip and conda channel.
+
 ## version 0.16.9 [7-10-2018]
 * **MODIFIED**: import all model reference implementations into `dandelion.model`'s namespace
 * **FIXED**: `ConvTransposed2D`'s `W_shape` should use `in_channels` as first dimension; incorrect `W_shape` when `num_groups` > 1.
