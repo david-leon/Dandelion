@@ -126,6 +126,8 @@
     
         <ul>
         
+            <li><a class="toctree-l3" href="#version-0169-7-10-2018">version 0.16.9 [7-10-2018]</a></li>
+        
             <li><a class="toctree-l3" href="#version-0168-7-9-2018">version 0.16.8 [7-9-2018]</a></li>
         
             <li><a class="toctree-l3" href="#version-0167-7-6-2018">version 0.16.7 [7-6-2018]</a></li>
@@ -187,6 +189,11 @@
             <div class="section">
               
                 <h1 id="history">History</h1>
+<h2 id="version-0169-7-10-2018">version 0.16.9 [7-10-2018]</h2>
+<ul>
+<li><strong>MODIFIED</strong>: import all model reference implementations into <code>dandelion.model</code>'s namespace</li>
+<li><strong>FIXED</strong>: <code>ConvTransposed2D</code>'s <code>W_shape</code> should use <code>in_channels</code> as first dimension; incorrect <code>W_shape</code> when <code>num_groups</code> &gt; 1.</li>
+</ul>
 <h2 id="version-0168-7-9-2018">version 0.16.8 [7-9-2018]</h2>
 <ul>
 <li><strong>NEW</strong>: add <code>model::shufflenet::DSConv2D</code> for Depthwise Separable Convolution reference implementation.</li>
