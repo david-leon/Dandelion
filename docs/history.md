@@ -1,5 +1,9 @@
 # History
 
+## version 0.16.9 [7-10-2018]
+* **MODIFIED**: import all model reference implementations into `dandelion.model`'s namespace
+* **FIXED**: `ConvTransposed2D`'s `W_shape` should use `in_channels` as first dimension; incorrect `W_shape` when `num_groups` > 1.
+
 ## version 0.16.8 [7-9-2018]
 * **NEW**: add `model::shufflenet::DSConv2D` for Depthwise Separable Convolution reference implementation.
 * **NEW**: add `model::shufflenet::ShuffleUnit` for ShuffleNet reference implementation

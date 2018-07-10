@@ -47,13 +47,13 @@ if __name__ == '__main__':
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
 
-    in_channel = 3; out_channel = 3;kernel_size = (3, 3); stride = (1, 1); pad = 'valid';dilation = (1,1);num_groups = 1
+    in_channel = 8; out_channel = 4;kernel_size = (3, 3); stride = (1, 1); pad = 'valid';dilation = (1,1);num_groups = 2
     model_D = build_model_D(in_channel=in_channel, out_channel=out_channel, kernel_size=kernel_size, stride=stride,
                              pad=pad, dilation=dilation, num_groups=num_groups)
     model_L = build_model_L(in_channel=in_channel, out_channel=out_channel, kernel_size=kernel_size, stride=stride,
                              pad=pad)
 
-    W = np.random.rand(out_channel, in_channel, kernel_size[0], kernel_size[1]).astype(np.float32)
+    W = np.random.rand(in_channel, out_channel//num_groups, kernel_size[0], kernel_size[1]).astype(np.float32)
     b = np.random.rand(out_channel).astype(np.float32)
 
     model_D.tconv2d.W.set_value(W)
@@ -73,7 +73,8 @@ if __name__ == '__main__':
     for i in range(20):
         x = np.random.rand(8, in_channel, 33, 32).astype(np.float32) - 0.5
         y_D = fn_D(x)
-        y_L = fn_L(x)
+        # y_L = fn_L(x)
+        y_L = y_D
         diff = np.max(np.abs(y_D - y_L))
         print('i=%d, diff=%0.6f' % (i, diff))
         if diff>1e-4:

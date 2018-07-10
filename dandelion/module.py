@@ -25,7 +25,8 @@
                              by previous version of Dandelion
                 4, 11, 2018  intercept name change of `Module` class and re-name its parameters accordingly
                 5, 28, 2018  fixed: `convTOP` should be constructed each time the `forward()` function of `ConvTransposed2D` is called.
-                7,  9, 2018  fixed: incorrect `W_shape` when `num_groups` > 1
+                7,  9, 2018  fixed: incorrect `W_shape` when `num_groups` > 1 for Conv2D
+                7, 10, 2018  fixed: `ConvTransposed2D`'s `W_shape` should use `in_channels` as first dimension; incorrect `W_shape` when `num_groups` > 1.
 
   Note      :
     1) GRU & LSTM and their cell version have built-in activation (tanh), other modules have no built-in activations
@@ -968,7 +969,7 @@ class ConvTransposed2D(Module):
         else:                             # pad must be 2-element tuple
             self.pad = pad
 
-        self.W_shape = [out_channels, in_channels, self.kernel_size[0], self.kernel_size[1]]
+        self.W_shape = [in_channels, out_channels//num_groups, self.kernel_size[0], self.kernel_size[1]]
         self.W = self.register_param(W, self.W_shape, name='W_TConv2D')
         if b is not None:
             if untie_bias:
