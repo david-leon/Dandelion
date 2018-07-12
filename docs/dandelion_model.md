@@ -71,11 +71,8 @@ The model do the depthwise 2D convolution per-channel of input, then map the out
 
 
 _______________________________________________________________________
-## ShuffleNet
-Reference implementation of [shuffle-net](https://arxiv.org/abs/1707.01083)
-
-### ShuffleUnit
-Reference implementation of shuffle-net unit
+## ShuffleUnit
+Reference implementation of [shuffle-net](https://arxiv.org/abs/1707.01083) unit
 
 ```python
 class ShuffleUnit(in_channels=256, inner_channels=None, out_channels=None, group_num=4, border_mode='same', 
@@ -92,7 +89,7 @@ class ShuffleUnit(in_channels=256, inner_channels=None, out_channels=None, group
 * **fusion_mode**: {'add' | 'concat'}.
 * **return**: convolution result with #channel = `in_channels` when `fusion_mode`='add', #channel = `out_channels` when `fusion_mode`='concat'
 
-### ShuffleUnit_Stack
+## ShuffleUnit_Stack
 Reference implementation of shuffle-net unit stack
 
 ```python
@@ -107,8 +104,8 @@ class ShuffleUnit_Stack(in_channels, inner_channels=None, out_channels=None, gro
 * **activation**: default = relu. **Note no activation applied to the last output.**
 * **stack_size**: number of shuffle-unit in the stack
 
-### ShuffleNet
-Reference implementation of shuffle-net, without the final Dense layer.
+## ShuffleNet
+Reference implementation of [shuffle-net](https://arxiv.org/abs/1707.01083), without the final Dense layer.
 
 ```python
 class model_ShuffleNet(in_channels, group_num=4, stage_channels=(24, 272, 544, 1088), stack_size=(3, 7, 3), 

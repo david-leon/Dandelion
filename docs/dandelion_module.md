@@ -26,7 +26,7 @@ Register and possibly initialize a parameter tensor. Parameters to be updated by
 
 * **x**: Theano shared variable, expression, numpy array or callable. Initial value, expression or initializer for this parameter.
 * **shape**: tuple of int, optional. A tuple of integers representing the desired shape of the parameter tensor.
-* **name**: str, optional. A descriptive name for the parameter variable. If not specified, it'll be auto-named as [1]_[2]@[3], in which 1 is the variable instance name, 2 is the class name, and 3 is the module instance name
+* **name**: str, optional. It's recommended to let the Dandelion framework name the variable automatically.
 
 ```python
 .collect_params(include=None, exclude=None, include_self=True)
