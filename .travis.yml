@@ -1,0 +1,15 @@
+language: python
+sudo: false
+python:
+  - "3.5"
+before_install:
+  - pip install -U pip
+install:
+  - travis_wait travis_retry pip install git+https://github.com/david-leon/Lasagne_CTC.git
+  - travis_wait travis_retry pip install git+https://github.com/david-leon/Lasagne_Ext.git
+  - travis_wait travis_retry pip install git+https://github.com/Theano/Theano.git#egg=Theano
+  - travis_retry python setup.py install
+script: py.test Test
+cache:
+  - directories:
+    - $HOME/.theano
