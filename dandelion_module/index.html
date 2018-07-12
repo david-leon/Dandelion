@@ -551,7 +551,7 @@ The input of <code>Dense</code> can have any dimensions, and note that we do not
 </code></pre>
 
 <ul>
-<li><strong>module_list</strong>: list of network sub-modules, these modules <strong>MUST NOT</strong> be sum-modules of any other parent module.</li>
+<li><strong>module_list</strong>: list of network sub-modules, these modules <strong>MUST NOT</strong> be sub-modules of any other parent module.</li>
 <li><strong>activation</strong>: activation applied to output of each sub-module.</li>
 </ul>
 <pre><code class="python">.forward(x)
