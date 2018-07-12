@@ -327,3 +327,41 @@ CRF Viterbi decoding
 
 * **x**: output from previous RNN layer, in shape of (B, T, N)
 * **return**: decoded sequence
+
+_______________________________________________________________________
+## Sequential
+Sequential container for a list of modules, just for convenience.
+
+```python
+class Sequential(module_list, activation=linear, name=None)
+```
+* **module_list**: list of network sub-modules, these modules **MUST NOT** be sum-modules of any other parent module.
+* **activation**: activation applied to output of each sub-module.
+
+```python
+.forward(x)
+```
+Forward pass through the network module sequence.
+
+```python
+.predict(x)
+```
+Inference pass through the network module sequence.
+
+Example:
+```python
+        conv1 = Conv2D(in_channels=1, out_channels=3, stride=(2,2))
+        bn1   = BatchNorm(input_shape=(None, 3, None, None))
+        conv2 = Conv2D(in_channels=3, out_channels=5)
+        conv3 = Conv2D(in_channels=5, out_channels=8)
+        model = Sequential([conv1, bn1, conv2, conv3], activation=relu, name='Seq')
+
+        x = tensor.ftensor4('x')
+        y = model.forward(x)
+        print('compiling fn...')
+        fn = theano.function([x], y, no_default_updates=False)
+        print('run fn...')
+        input = np.random.rand(4, 1, 32, 33).astype(np.float32)
+        output = fn(input)
+        print(output)
+```

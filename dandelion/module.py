@@ -27,6 +27,10 @@
                 5, 28, 2018  fixed: `convTOP` should be constructed each time the `forward()` function of `ConvTransposed2D` is called.
                 7,  9, 2018  fixed: incorrect `W_shape` when `num_groups` > 1 for Conv2D
                 7, 10, 2018  fixed: `ConvTransposed2D`'s `W_shape` should use `in_channels` as first dimension; incorrect `W_shape` when `num_groups` > 1.
+                7, 12, 2018  1) modified: module's variable name convention changed to: `variable_name@parent_module_name`;
+                             2) modified: module's name convention changed to `class_name|instance_name@parent_module_name`
+                             3) remove all specified names for `register_param()` and `register_self_updating_variable()`. Leave the variables to be named automatically by
+                             their parent module.
 
   Note      :
     1) GRU & LSTM and their cell version have built-in activation (tanh), other modules have no built-in activations
@@ -213,14 +217,14 @@ class Module(object):
     """
     def __init__(self, name=None, work_mode='inference'):
         """
-
         :param name:
         :param work_mode: 'train' | 'inference'
         """
         self.params                  = []  # contains all the parameters which should be updated by optimizer (submodule excluded)
         self.self_updating_variables = []  # contains all the parameters which are updated by user specified expression (submodule excluded)
         self.sub_modules             = OrderedDict()
-        self.name                    = name
+        # self.name                    = name
+        self.name                    = '%s|%s' % (self.__class__.__name__, name)  # DO NOT CHANGE module.name directly, use `name` arg in `__init__()` instead
         self.work_mode               = work_mode
         if self.work_mode not in {'train', 'inference'}:
             raise ValueError('work_mode must be set to "train" or "inference"')
@@ -242,10 +246,8 @@ class Module(object):
 
          name : str (optional)
              a descriptive name for the parameter variable. This will be passed
-             to ``theano.shared`` when the variable is created, prefixed by the
-             layer's name if any (in the form ``'layer_name.param_name'``). If
-             ``spec`` is already a shared variable or expression, this parameter
-             will be ignored to avoid overwriting an existing name.
+             to ``theano.shared`` when the variable is created, suffixed by the
+             module's name.
 
          Returns
          -------
@@ -262,11 +264,11 @@ class Module(object):
     def register_self_updating_variable(self, x, shape=None, name=None):
         """
          Register and possibly initialize a parameter tensor.
-         Parameters self-updated should be registerd here.
-         All the registered parameters can be accessed via self.self_updating_variables attrribute.
+         Parameters self-updated should be registered here.
+         All the registered parameters can be accessed via self.self_updating_variables attribute.
         :param x:
         :param shape:
-        :param name:
+        :param name: optional, same with `register_param()`
         :return: Theano shared variable or Theano expression the resulting parameter variable or parameter expression
         """
         if name is not None:
@@ -281,19 +283,29 @@ class Module(object):
             if key in self.sub_modules:
                 warnings.warn('Duplicate assigning to sub-module %s' % key)
             self.sub_modules[key] = value
-            if self.sub_modules[key].name is None:
-                self.sub_modules[key].name = key  # if the sub-module is unnamed yet, name it with it instance name
+            self.sub_modules[key].name = '%s|%s' % (self.sub_modules[key].__class__.__name__, key)  # modify sub-modules' name accordingly
 
         elif isinstance(value, theano.Variable):
             if key in self.__dict__.keys():
                 warnings.warn('Duplicate assigning to variable %s @%s' % (key, self.name))
             if value.name is None:
-                value.name = '%s_%s@%s' % (key, self.__class__.__name__, self.name)  # a valid variable name has 3 part: [1]_[2]@[3], in which 1 is the variable instance name, 2 is the class name, and 3 is the module instance name
-        
+                value.name = '%s@%s' % (key, self.name)  # a valid variable name has 2 part: [1]@[2], [1] is the variable name, and [2] is it's father module name
+
         elif key == 'name':
             for variable in self.params + self.self_updating_variables:
-                substrs = variable.name.split('@')
+                substrs = variable.name.partition('@')
                 variable.name = substrs[0] + '@' + value
+            for _, v in self.sub_modules.items():
+                # print('value=', value)
+                # print('v.name_before=', v.name)
+                if '@' not in v.name:
+                    # print('v.name_after =',  v.name + '@' + value)
+                    v.name = v.name + '@' + value
+                else:
+                    substrs = v.name.partition('@')
+                    # print('v.name_after =', substrs[0] + '@' + value)
+                    v.name = substrs[0] + '@' + value
+
         
         object.__setattr__(self, key, value)
 
@@ -368,7 +380,7 @@ class Module(object):
 
     def _collect_params_and_self_updating_variables(self, include=None, exclude=None, include_self=True):
         """
-        Collect both parameters to be updated by optimizer and self_updating_variables
+        Collect parameters to be updated both by optimizer and self_updating_variables
         :param include: sub-module keys, means which sub-module to include
         :param exclude: sub-module keys, means which sub-module to exclude
         :param include_self: whether include self.params
@@ -555,11 +567,11 @@ class GRU(Module):
         b_in         = np.zeros(3*self.hidden_dim, floatX)
         W_hid        = initializer.sample((hidden_dim, 3 * hidden_dim))
         
-        self.W_in    = self.register_param(W_in,  name='W_in_GRU')  # (input_dim, 3*hidden_dim)
-        self.b_in    = self.register_param(b_in,  name='b_in_GRU')  # (3*hidden_dim)
-        self.W_hid   = self.register_param(W_hid, name='W_hid_GRU') # (hidden_dim, 3*hidden_dim)
+        self.W_in    = self.register_param(W_in)  # (input_dim, 3*hidden_dim)
+        self.b_in    = self.register_param(b_in)  # (3*hidden_dim)
+        self.W_hid   = self.register_param(W_hid) # (hidden_dim, 3*hidden_dim)
         if self.learn_ini:
-            self.h_ini   = self.register_param(np.zeros(self.hidden_dim, floatX), name='h_ini_GRU') # (hidden_dim, )
+            self.h_ini   = self.register_param(np.zeros(self.hidden_dim, floatX)) # (hidden_dim, )
 
         self.predict = self.forward                # predict() is the same with forward() for this layer
 
@@ -703,17 +715,17 @@ class LSTM(Module):
         b_in         = np.zeros(4*self.hidden_dim, floatX)
         W_hid        = initializer.sample((hidden_dim, 4 * hidden_dim))
 
-        self.W_in   = self.register_param(W_in, name='W_in_LSTM')  # (input_dim, 4*hidden_dim)
-        self.b_in   = self.register_param(b_in, name='b_in_LSTM')  # (4*hidden_dim)
-        self.W_hid  = self.register_param(W_hid, name='W_hid_LSTM')  # (hidden_dim, 4*hidden_dim)
+        self.W_in   = self.register_param(W_in)  # (input_dim, 4*hidden_dim)
+        self.b_in   = self.register_param(b_in)  # (4*hidden_dim)
+        self.W_hid  = self.register_param(W_hid)  # (hidden_dim, 4*hidden_dim)
         if self.learn_ini:
-            self.h_ini  = self.register_param(np.zeros(self.hidden_dim, floatX), name='h_ini_LSTM')  # (hidden_dim,)  hidden initial state
-            self.c_ini  = self.register_param(np.zeros(self.hidden_dim, floatX), name='c_ini_LSTM')  # (hidden_dim,)  cell initial state
+            self.h_ini  = self.register_param(np.zeros(self.hidden_dim, floatX))  # (hidden_dim,)  hidden initial state
+            self.c_ini  = self.register_param(np.zeros(self.hidden_dim, floatX))  # (hidden_dim,)  cell initial state
 
         if self.peephole:
-            self.w_cell_to_igate = self.register_param(np.squeeze(initializer.sample([hidden_dim, 1])), name='w_cell2igate_LSTM') # (hidden_dim,) peephole weights
-            self.w_cell_to_fgate = self.register_param(np.squeeze(initializer.sample([hidden_dim, 1])), name='w_cell2fgate_LSTM') # (hidden_dim,) peephole weights
-            self.w_cell_to_ogate = self.register_param(np.squeeze(initializer.sample([hidden_dim, 1])), name='w_cell2ogate_LSTM') # (hidden_dim,) peephole weights
+            self.w_cell_to_igate = self.register_param(np.squeeze(initializer.sample([hidden_dim, 1]))) # (hidden_dim,) peephole weights
+            self.w_cell_to_fgate = self.register_param(np.squeeze(initializer.sample([hidden_dim, 1]))) # (hidden_dim,) peephole weights
+            self.w_cell_to_ogate = self.register_param(np.squeeze(initializer.sample([hidden_dim, 1]))) # (hidden_dim,) peephole weights
 
         self.predict = self.forward                 # predict() is the same with forward() for this layer
 
@@ -892,16 +904,16 @@ class Conv2D(Module):
             self.pad = pad
 
         self.W_shape = [out_channels, in_channels//num_groups, self.kernel_size[0], self.kernel_size[1]]
-        self.W = self.register_param(W, self.W_shape, name='W_Conv2D')
+        self.W = self.register_param(W, self.W_shape)
         if b is not None:
             if untie_bias:
                 if input_shape[0] is None or input_shape[1] is None:
                     raise ValueError('input_shape must be specified as 2-element tuple of int')
                 output_shape = tuple(conv_output_length(input, filter, stride, p)
                                      for input, filter, stride, p in zip(input_shape, self.kernel_size, self.stride, self.pad))
-                self.b = self.register_param(b, shape=[out_channels, output_shape[0], output_shape[1]], name='b_Conv2D')
+                self.b = self.register_param(b, shape=[out_channels, output_shape[0], output_shape[1]])
             else:
-                self.b = self.register_param(b, shape=[out_channels], name='b_Conv2D')
+                self.b = self.register_param(b, shape=[out_channels])
 
         self.predict = self.forward                # predict() is the same with forward() for this layer
 
@@ -970,16 +982,16 @@ class ConvTransposed2D(Module):
             self.pad = pad
 
         self.W_shape = [in_channels, out_channels//num_groups, self.kernel_size[0], self.kernel_size[1]]
-        self.W = self.register_param(W, self.W_shape, name='W_TConv2D')
+        self.W = self.register_param(W, self.W_shape)
         if b is not None:
             if untie_bias:
                 if input_shape[0] is None or input_shape[1] is None:
                     raise ValueError('input_shape must be specified as 2-element tuple of int')
                 self.output_shape = tuple(conv_input_length(input, filter, stride, p)
                                      for input, filter, stride, p in zip(input_shape, self.kernel_size, self.stride, self.pad))
-                self.b = self.register_param(b, shape=[out_channels, self.output_shape[0], self.output_shape[1]], name='b_TConv2D')
+                self.b = self.register_param(b, shape=[out_channels, self.output_shape[0], self.output_shape[1]])
             else:
-                self.b = self.register_param(b, shape=[out_channels], name='b_TConv2D')
+                self.b = self.register_param(b, shape=[out_channels])
 
         self.predict = self.forward                # predict() is the same with forward() for this layer
 
@@ -1034,9 +1046,9 @@ class Dense(Module):
 
         if isinstance(W, init.Initializer):
             W = create_uneven_weight(self.input_dims, self.output_dim, W)
-        self.W = self.register_param(W, name='W_Dense')
+        self.W = self.register_param(W)
         if b is not None:
-            self.b = self.register_param(b, shape=[output_dim], name='b_Dense')
+            self.b = self.register_param(b, shape=[output_dim])
 
         self.predict = self.forward  # predict() is the same with forward() for this layer
 
@@ -1059,7 +1071,7 @@ class Embedding(Module):
         super().__init__(name=name)
         self.num_embeddings = num_embeddings
         self.embedding_dim  = embedding_dim
-        self.W = self.register_param(W, shape=(num_embeddings, embedding_dim), name='W_Embedding') # (num_embeddings, embedding_dim)
+        self.W = self.register_param(W, shape=(num_embeddings, embedding_dim)) # (num_embeddings, embedding_dim)
         self.predict = self.forward     # predict() is the same with forward() for this layer
 
     def forward(self, index_input):
@@ -1113,16 +1125,16 @@ class BatchNorm(Module):
         if beta is None:
             self.beta = None
         else:
-            self.beta = self.register_param(beta, shape=shape, name='beta_BN')
+            self.beta = self.register_param(beta, shape=shape)
 
         if gamma is None:
             self.gamma = None
         else:
-            self.gamma = self.register_param(gamma, shape=shape, name='gamma_BN')
+            self.gamma = self.register_param(gamma, shape=shape)
 
         #--- mean & inv_std are trained by self-updating ---#
-        self.mean = self.register_self_updating_variable(mean, shape=shape, name='mean_BN')
-        self.inv_std = self.register_self_updating_variable(inv_std, shape=shape, name='inv_std_BN')
+        self.mean = self.register_self_updating_variable(mean, shape=shape)
+        self.inv_std = self.register_self_updating_variable(inv_std, shape=shape)
 
     def forward(self, input, use_input_mean=True):
         """
@@ -1186,7 +1198,7 @@ class Center(Module):
         :param center: initial value of center
         """
         super().__init__(name=name)
-        self.center = self.register_self_updating_variable(center, shape=[center_num, feature_dim], name="center")
+        self.center = self.register_self_updating_variable(center, shape=[center_num, feature_dim])
         self.alpha = alpha
 
     def forward(self, features, labels):
@@ -1219,9 +1231,9 @@ class ChainCRF(Module):
         self.transition_matrix_normalization = transition_matrix_normalization
 
         if state_pad:
-            self.transitions = self.register_param(transitions, shape=[state_num+2, state_num+2], name='transition_ChainCRF')
+            self.transitions = self.register_param(transitions, shape=[state_num+2, state_num+2])
         else:
-            self.transitions = self.register_param(transitions, shape=[state_num, state_num], name='transition_ChainCRF')
+            self.transitions = self.register_param(transitions, shape=[state_num, state_num])
         self.transitions = tensor.clip(self.transitions, 0.0001, 1.0)
         if state_pad:
             self.transitions = tensor.set_subtensor(self.transitions[:, -2], 0)  # not possible to transit from other states to <sos>
@@ -1397,6 +1409,37 @@ class ChainCRF(Module):
         y = y[:, ::-1]
         y = tensor.cast(y, 'int32')
         return y  # (B, T)
+
+class Sequential(Module):
+    """
+    Sequential container for a list of modules
+    """
+    def __init__(self, module_list, activation=linear, name=None):
+        """
+        :param module_list: list of network modules, these modules MUST NOT be sum-modules of any other parent module.
+        :param activation: default linear
+        """
+        super().__init__()
+        self.submodule_num = len(module_list)
+        self.activation = activation
+        self.name=name
+        for i, module in enumerate(module_list):
+            setattr(self, 'submodule_%d'%i, module)
+
+    def forward(self, x):
+        for i in range(self.submodule_num):
+            submodule = getattr(self, 'submodule_%d'%i)
+            x = self.activation(submodule.forward(x))
+        return x
+
+    def predict(self, x):
+        for i in range(self.submodule_num):
+            submodule = getattr(self, 'submodule_%d' % i)
+            x = self.activation(submodule.predict(x))
+        return x
+
+
+
 
 
 if __name__ == '__main__':

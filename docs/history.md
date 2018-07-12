@@ -1,5 +1,17 @@
 # History
 
+## version 0.17.0 [7-12-2018]
+In this version the `Module`'s parameter and sum-module naming conventions are changed to make sure unique name for each variable/module in a complex network. 
+It's **incompatible** with previous version if your work accessed their names, otherwise there is no impact. 
+From this version, it's recommonded to let the framework auto-name the module parameters when you define your own module with `register_param()` and `register_self_updating_variable()`.
+
+* **MODIFIED**: module's variable name convention changed to `variable_name@parent_module_name` to make sure unique name for each variable in a complex network
+* **MODIFIED**: module's name convention changed to `class_name|instance_name@parent_module_name` to make sure unique name for each module in a complex network
+* **MODIFIED**: remove all specified names for `register_param()` and `register_self_updating_variable()`. Leave the variables to be named automatically by their parent module.
+* **MODIFIED**: improve `model::shufflenet::ShuffleUnit`.
+* **NEW**: add `Sequential` container in `dandelion.module` for usage convenience.
+* **NEW**: add `model::shufflenet::ShuffleUnit_Stack` and `model::shufflenet::ShuffleNet` for ShuffleNet reference implementation.
+
 ## version 0.16.10 [7-10-2018]
 * **MODIFIED**: disable all install requirements to prevent possible conflict of pip and conda channel.
 
