@@ -5,7 +5,7 @@
 # All rights reserved
 #------------------------------------------------------------------------------------------------
 __author__ = 'dawei.leng'
-import os, sys, psutil
+import os, sys
 os.environ['THEANO_FLAGS'] = "floatX=float32, mode=FAST_RUN, warn_float64='raise'"
 
 import theano
