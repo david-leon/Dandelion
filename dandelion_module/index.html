@@ -119,6 +119,9 @@
     <li class="toctree-l3"><a href="#chaincrf">ChainCRF</a></li>
     
 
+    <li class="toctree-l3"><a href="#sequential">Sequential</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -541,6 +544,40 @@ The input of <code>Dense</code> can have any dimensions, and note that we do not
 <li><strong>x</strong>: output from previous RNN layer, in shape of (B, T, N)</li>
 <li><strong>return</strong>: decoded sequence</li>
 </ul>
+<hr />
+<h2 id="sequential">Sequential</h2>
+<p>Sequential container for a list of modules, just for convenience.</p>
+<pre><code class="python">class Sequential(module_list, activation=linear, name=None)
+</code></pre>
+
+<ul>
+<li><strong>module_list</strong>: list of network sub-modules, these modules <strong>MUST NOT</strong> be sum-modules of any other parent module.</li>
+<li><strong>activation</strong>: activation applied to output of each sub-module.</li>
+</ul>
+<pre><code class="python">.forward(x)
+</code></pre>
+
+<p>Forward pass through the network module sequence.</p>
+<pre><code class="python">.predict(x)
+</code></pre>
+
+<p>Inference pass through the network module sequence.</p>
+<p>Example:</p>
+<pre><code class="python">        conv1 = Conv2D(in_channels=1, out_channels=3, stride=(2,2))
+        bn1   = BatchNorm(input_shape=(None, 3, None, None))
+        conv2 = Conv2D(in_channels=3, out_channels=5)
+        conv3 = Conv2D(in_channels=5, out_channels=8)
+        model = Sequential([conv1, bn1, conv2, conv3], activation=relu, name='Seq')
+
+        x = tensor.ftensor4('x')
+        y = model.forward(x)
+        print('compiling fn...')
+        fn = theano.function([x], y, no_default_updates=False)
+        print('run fn...')
+        input = np.random.rand(4, 1, 32, 33).astype(np.float32)
+        output = fn(input)
+        print(output)
+</code></pre>
               
             </div>
           </div>

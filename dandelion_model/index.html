@@ -121,6 +121,16 @@
 
     <li class="toctree-l3"><a href="#shufflenet">ShuffleNet</a></li>
     
+        <ul>
+        
+            <li><a class="toctree-l4" href="#shuffleunit">ShuffleUnit</a></li>
+        
+            <li><a class="toctree-l4" href="#shuffleunit_stack">ShuffleUnit_Stack</a></li>
+        
+            <li><a class="toctree-l4" href="#shufflenet_1">ShuffleNet</a></li>
+        
+        </ul>
+    
 
     </ul>
                 </li>
@@ -244,17 +254,53 @@
 <p>The model do the depthwise 2D convolution per-channel of input, then map the output to #out_channels number of channel by pointwise 1*1 convolution. No activation applied inside.</p>
 <hr />
 <h2 id="shufflenet">ShuffleNet</h2>
-<p>Reference implementation of <a href="https://arxiv.org/abs/1707.01083">shuffle-net</a> unit.</p>
-<pre><code class="python">class ShuffleUnit(outer_channel=256, inner_channel=64, group_num=4, border_mode='same', 
-                  batchnorm_mode=1, activation=relu)
+<p>Reference implementation of <a href="https://arxiv.org/abs/1707.01083">shuffle-net</a></p>
+<h3 id="shuffleunit">ShuffleUnit</h3>
+<p>Reference implementation of shuffle-net unit</p>
+<pre><code class="python">class ShuffleUnit(in_channels=256, inner_channels=None, out_channels=None, group_num=4, border_mode='same', 
+                  batchnorm_mode=1, activation=relu, stride=(1,1), dilation=(1,1), fusion_mode='add')
 </code></pre>
 
 <ul>
-<li><strong>outer_channel</strong>: channel number of block input</li>
-<li><strong>inner_channel</strong>: channel number inside the block</li>
-<li><strong>group_num</strong>: convolution group number</li>
+<li><strong>in_channels</strong>: channel number of unit input</li>
+<li><strong>inner_channel</strong>: optional, channel number inside the unit, default = <code>in_channels//4</code></li>
+<li><strong>out_channels</strong>: channel number of unit output, only used when <code>fusion_mode</code> = 'concat', and must &gt; <code>in_channels</code></li>
+<li><strong>group_num</strong>: number of convolution groups</li>
+<li><strong>border_mode</strong>: only <code>same</code> allowed</li>
 <li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
-<li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last element-wise sum output.</strong></li>
+<li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
+<li><strong>stride, dilation</strong>: only used for depthwise separable convolution module inside</li>
+<li><strong>fusion_mode</strong>: {'add' | 'concat'}.</li>
+<li><strong>return</strong>: convolution result with #channel = <code>in_channels</code> when <code>fusion_mode</code>='add', #channel = <code>out_channels</code> when <code>fusion_mode</code>='concat'</li>
+</ul>
+<h3 id="shuffleunit_stack">ShuffleUnit_Stack</h3>
+<p>Reference implementation of shuffle-net unit stack</p>
+<pre><code class="python">class ShuffleUnit_Stack(in_channels, inner_channels=None, out_channels=None, group_num=4, batchnorm_mode=1, 
+                        activation=relu, stack_size=3)
+</code></pre>
+
+<ul>
+<li><strong>in_channels</strong>: channel number of input</li>
+<li><strong>inner_channel</strong>: optional, channel number inside the shuffle-unit, default = <code>in_channels//4</code></li>
+<li><strong>out_channels</strong>: channel number of stack output, must &gt; <code>in_channels</code></li>
+<li><strong>group_num</strong>: number of convolution groups</li>
+<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
+<li><strong>stack_size</strong>: number of shuffle-unit in the stack</li>
+</ul>
+<h3 id="shufflenet_1">ShuffleNet</h3>
+<p>Reference implementation of shuffle-net, without the final Dense layer.</p>
+<pre><code class="python">class model_ShuffleNet(in_channels, group_num=4, stage_channels=(24, 272, 544, 1088), stack_size=(3, 7, 3), 
+                       batchnorm_mode=1, activation=relu)
+</code></pre>
+
+<ul>
+<li><strong>in_channels</strong>: channel number of input</li>
+<li><strong>group_num</strong>: number of convolution groups</li>
+<li><strong>stage_channels</strong>: channel number of each stage output.</li>
+<li><strong>stack_size</strong>: size of each stack.</li>
+<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 </ul>
               
             </div>
