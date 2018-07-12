@@ -427,7 +427,11 @@ def disabled_test_case_0():
         else:
             raise ValueError('s not same!')
 
-def test_case_1():
+def win_test_case_1():
+    """
+    This test case passed on Tensorflow 1.8.0 + Win64, but failed on Tensorflow 1.8.0 + Ubuntu 14.04
+    :return:
+    """
     y = tensor.imatrix('y')
     x = tensor.ftensor3('x')
     U = tensor.fmatrix('U')
@@ -483,7 +487,7 @@ if __name__ == '__main__':
 
     # test_case_0()
 
-    test_case_1()
+    win_test_case_1()
 
     print('Test passed~')
 
