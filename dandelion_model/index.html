@@ -119,17 +119,13 @@
     <li class="toctree-l3"><a href="#depthwise-separable-convolution">Depthwise Separable Convolution</a></li>
     
 
-    <li class="toctree-l3"><a href="#shufflenet">ShuffleNet</a></li>
+    <li class="toctree-l3"><a href="#shuffleunit">ShuffleUnit</a></li>
     
-        <ul>
-        
-            <li><a class="toctree-l4" href="#shuffleunit">ShuffleUnit</a></li>
-        
-            <li><a class="toctree-l4" href="#shuffleunit_stack">ShuffleUnit_Stack</a></li>
-        
-            <li><a class="toctree-l4" href="#shufflenet_1">ShuffleNet</a></li>
-        
-        </ul>
+
+    <li class="toctree-l3"><a href="#shuffleunit_stack">ShuffleUnit_Stack</a></li>
+    
+
+    <li class="toctree-l3"><a href="#shufflenet">ShuffleNet</a></li>
     
 
     </ul>
@@ -253,10 +249,8 @@
 </ul>
 <p>The model do the depthwise 2D convolution per-channel of input, then map the output to #out_channels number of channel by pointwise 1*1 convolution. No activation applied inside.</p>
 <hr />
-<h2 id="shufflenet">ShuffleNet</h2>
-<p>Reference implementation of <a href="https://arxiv.org/abs/1707.01083">shuffle-net</a></p>
-<h3 id="shuffleunit">ShuffleUnit</h3>
-<p>Reference implementation of shuffle-net unit</p>
+<h2 id="shuffleunit">ShuffleUnit</h2>
+<p>Reference implementation of <a href="https://arxiv.org/abs/1707.01083">shuffle-net</a> unit</p>
 <pre><code class="python">class ShuffleUnit(in_channels=256, inner_channels=None, out_channels=None, group_num=4, border_mode='same', 
                   batchnorm_mode=1, activation=relu, stride=(1,1), dilation=(1,1), fusion_mode='add')
 </code></pre>
@@ -273,7 +267,7 @@
 <li><strong>fusion_mode</strong>: {'add' | 'concat'}.</li>
 <li><strong>return</strong>: convolution result with #channel = <code>in_channels</code> when <code>fusion_mode</code>='add', #channel = <code>out_channels</code> when <code>fusion_mode</code>='concat'</li>
 </ul>
-<h3 id="shuffleunit_stack">ShuffleUnit_Stack</h3>
+<h2 id="shuffleunit_stack">ShuffleUnit_Stack</h2>
 <p>Reference implementation of shuffle-net unit stack</p>
 <pre><code class="python">class ShuffleUnit_Stack(in_channels, inner_channels=None, out_channels=None, group_num=4, batchnorm_mode=1, 
                         activation=relu, stack_size=3)
@@ -288,8 +282,8 @@
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 <li><strong>stack_size</strong>: number of shuffle-unit in the stack</li>
 </ul>
-<h3 id="shufflenet_1">ShuffleNet</h3>
-<p>Reference implementation of shuffle-net, without the final Dense layer.</p>
+<h2 id="shufflenet">ShuffleNet</h2>
+<p>Reference implementation of <a href="https://arxiv.org/abs/1707.01083">shuffle-net</a>, without the final Dense layer.</p>
 <pre><code class="python">class model_ShuffleNet(in_channels, group_num=4, stage_channels=(24, 272, 544, 1088), stack_size=(3, 7, 3), 
                        batchnorm_mode=1, activation=relu)
 </code></pre>

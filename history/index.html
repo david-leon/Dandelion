@@ -194,8 +194,8 @@
               
                 <h1 id="history">History</h1>
 <h2 id="version-0170-7-12-2018">version 0.17.0 [7-12-2018]</h2>
-<p>In this version the <code>Module</code>'s parameter and sum-module naming conventions are changed to make sure unique name for each variable/module in a complex network. 
-It's <strong>incompatible</strong> with previous version if your work accessed their names, otherwise there is no impact. 
+<p>In this version the <code>Module</code>'s parameter and sub-module naming conventions are changed to make sure unique name for each variable/module in a complex network.<br />
+It's <strong>incompatible</strong> with previous version if your work accessed their names, otherwise there is no impact.<br />
 From this version, it's recommonded to let the framework auto-name the module parameters when you define your own module with <code>register_param()</code> and <code>register_self_updating_variable()</code>.</p>
 <ul>
 <li><strong>MODIFIED</strong>: module's variable name convention changed to <code>variable_name@parent_module_name</code> to make sure unique name for each variable in a complex network</li>
