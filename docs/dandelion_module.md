@@ -335,7 +335,7 @@ Sequential container for a list of modules, just for convenience.
 ```python
 class Sequential(module_list, activation=linear, name=None)
 ```
-* **module_list**: list of network sub-modules, these modules **MUST NOT** be sum-modules of any other parent module.
+* **module_list**: list of network sub-modules, these modules **MUST NOT** be sub-modules of any other parent module.
 * **activation**: activation applied to output of each sub-module.
 
 ```python
