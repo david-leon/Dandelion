@@ -18,7 +18,7 @@ import dandelion
 dandelion_path = os.path.split(dandelion.__file__)[0]
 print('dandelion path = %s\n' % dandelion_path)
 
-if __name__ == '__main__':
+def test_case_0():
     im_height, im_width = 224, 224
     model = model_VGG16(channel=1, im_height=im_height, im_width=im_width)
     x = tensor.ftensor4('x')
@@ -30,6 +30,10 @@ if __name__ == '__main__':
     output = fn(input)
     print(output)
     print(output.shape)
+
+if __name__ == '__main__':
+
+    test_case_0()
 
     print('Test passed')
 

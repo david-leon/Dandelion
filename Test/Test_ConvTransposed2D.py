@@ -42,8 +42,7 @@ def build_model_L(in_channel=3, out_channel=3, kernel_size=(3,3), stride=(1,1), 
                         name='tconv0')
     return tconv0
 
-
-if __name__ == '__main__':
+def test_case_0():
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
 
@@ -81,6 +80,10 @@ if __name__ == '__main__':
             print('y_D=\n', y_D)
             print('y_L=\n', y_L)
             raise ValueError('diff is too big')
+
+if __name__ == '__main__':
+
+    test_case_0()
 
     print('Test passed')
 

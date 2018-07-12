@@ -40,8 +40,7 @@ def build_model_L(ratio=[2,3], mode='repeat'):
     x  = Upscale2DLayer(input0, scale_factor=ratio, mode=mode)
     return x
 
-
-if __name__ == '__main__':
+def test_case_0():
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
 
@@ -74,6 +73,10 @@ if __name__ == '__main__':
             print('y_D=\n', y_D)
             print('y_L=\n', y_L)
             raise ValueError('diff is too big')
+
+if __name__ == '__main__':
+
+    test_case_0()
 
     print('Test passed')
 

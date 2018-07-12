@@ -13,6 +13,10 @@ from theano import tensor
 from dandelion.module import *
 from dandelion.functional import *
 
+import dandelion
+dandelion_path = os.path.split(dandelion.__file__)[0]
+print('dandelion path = %s\n' % dandelion_path)
+
 def pool_1d_Lasagne(x, axis=1, mode='max'):
     """
     Lasagne requires x is 3D, and pooling is done on the last dimension
@@ -34,7 +38,7 @@ def pool_1d_Lasagne(x, axis=1, mode='max'):
         pooled = pooled.dimshuffle((0, 2, 1, 3))
     return pooled[:, :, :, 0]
 
-if __name__ == '__main__':
+def test_case_0():
     import numpy as np
 
     x_3d = tensor.ftensor3('x')
@@ -56,6 +60,10 @@ if __name__ == '__main__':
             print('y_D=\n', y_D)
             print('y_L=\n', y_L)
             raise ValueError('diff is too big')
+
+if __name__ == '__main__':
+
+    test_case_0()
 
     print('Test passed')
 

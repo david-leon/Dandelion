@@ -15,12 +15,16 @@ from dandelion.activation import *
 from lasagne.layers import InputLayer, GRULayer, get_output
 import lasagne.nonlinearities as LACT
 
+import dandelion
+dandelion_path = os.path.split(dandelion.__file__)[0]
+print('dandelion path = %s\n' % dandelion_path)
+
 class build_model_D(Module):
     def __init__(self, in_dim=3, out_dim=3):
         super().__init__()
         self.in_dim = in_dim
         self.out_dim = out_dim
-        self.gru = GRU(input_dims=self.in_dim, hidden_dim=self.out_dim)
+        self.gru = GRU(input_dims=self.in_dim, hidden_dim=self.out_dim, learn_ini=True)
         self.predict = self.forward
 
     def forward(self, x):
@@ -43,8 +47,7 @@ def build_model_L(in_dim=3, out_dim=3):
                       name='gru0')
     return gru0
 
-
-if __name__ == '__main__':
+def test_case_0():
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
 
@@ -52,31 +55,30 @@ if __name__ == '__main__':
     model_D = build_model_D(in_dim=in_dim, out_dim=out_dim)
     model_L = build_model_L(in_dim=in_dim, out_dim=out_dim)
 
-    W_in = np.random.rand(in_dim, 3*out_dim).astype(np.float32)
-    b_in = np.random.rand(3*out_dim).astype(np.float32)
-    W_hid = np.random.rand(out_dim, 3*out_dim).astype(np.float32)
+    W_in = np.random.rand(in_dim, 3 * out_dim).astype(np.float32)
+    b_in = np.random.rand(3 * out_dim).astype(np.float32)
+    W_hid = np.random.rand(out_dim, 3 * out_dim).astype(np.float32)
     h_ini = np.random.rand(out_dim).astype(np.float32)
 
     model_D.gru.W_in.set_value(W_in)
     model_D.gru.b_in.set_value(b_in)
     model_D.gru.W_hid.set_value(W_hid)
     model_D.gru.h_ini.set_value(h_ini)
- 
+
     gru_L = get_layer_by_name(model_L, 'gru0')
     gru_L.W_in_to_resetgate.set_value(W_in[:, :out_dim])
-    gru_L.W_in_to_updategate.set_value(W_in[:, out_dim:2*out_dim])
-    gru_L.W_in_to_hidden_update.set_value(W_in[:, 2*out_dim:3*out_dim])
+    gru_L.W_in_to_updategate.set_value(W_in[:, out_dim:2 * out_dim])
+    gru_L.W_in_to_hidden_update.set_value(W_in[:, 2 * out_dim:3 * out_dim])
 
     gru_L.W_hid_to_resetgate.set_value(W_hid[:, :out_dim])
-    gru_L.W_hid_to_updategate.set_value(W_hid[:, out_dim:2*out_dim])
-    gru_L.W_hid_to_hidden_update.set_value(W_hid[:, 2*out_dim:3*out_dim])
+    gru_L.W_hid_to_updategate.set_value(W_hid[:, out_dim:2 * out_dim])
+    gru_L.W_hid_to_hidden_update.set_value(W_hid[:, 2 * out_dim:3 * out_dim])
 
     gru_L.b_resetgate.set_value(b_in[:out_dim])
-    gru_L.b_updategate.set_value(b_in[out_dim:2*out_dim])
-    gru_L.b_hidden_update.set_value(b_in[2*out_dim:3*out_dim])
+    gru_L.b_updategate.set_value(b_in[out_dim:2 * out_dim])
+    gru_L.b_hidden_update.set_value(b_in[2 * out_dim:3 * out_dim])
 
     gru_L.hid_init.set_value(h_ini.reshape((1, out_dim)))
-
 
     X = get_layer_by_name(model_L, 'input0').input_var
     y_D = model_D.forward(X)
@@ -91,10 +93,15 @@ if __name__ == '__main__':
         y_L = fn_L(x)
         diff = np.max(np.abs(y_D - y_L))
         print('i=%d, diff=%0.6f' % (i, diff))
-        if diff>1e-4:
+        if diff > 1e-4:
             print('y_D=\n', y_D)
             print('y_L=\n', y_L)
             raise ValueError('diff is too big')
+
+
+if __name__ == '__main__':
+
+    test_case_0()
 
     print('Test passed')
 

@@ -15,12 +15,16 @@ from dandelion.activation import *
 from lasagne.layers import InputLayer, DenseLayer, LSTMLayer, get_output, Upscale2DLayer, TransposedConv2DLayer
 import lasagne.nonlinearities as LACT
 
+import dandelion
+dandelion_path = os.path.split(dandelion.__file__)[0]
+print('dandelion path = %s\n' % dandelion_path)
+
 class build_model_D(Module):
     def __init__(self, in_dim=3, out_dim=3):
         super().__init__()
         self.in_dim = in_dim
         self.out_dim = out_dim
-        self.lstm = LSTM(input_dims=self.in_dim, hidden_dim=self.out_dim, peephole=True)
+        self.lstm = LSTM(input_dims=self.in_dim, hidden_dim=self.out_dim, peephole=True, learn_ini=True)
         self.predict = self.forward
 
     def forward(self, x):
@@ -43,8 +47,7 @@ def build_model_L(in_dim=3, out_dim=3):
                       name='lstm0')
     return lstm0
 
-
-if __name__ == '__main__':
+def test_case_0():
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
 
@@ -110,6 +113,10 @@ if __name__ == '__main__':
             print('y_D=\n', y_D)
             print('y_L=\n', y_L)
             raise ValueError('diff is too big')
+
+if __name__ == '__main__':
+
+    test_case_0()
 
     print('Test passed')
 

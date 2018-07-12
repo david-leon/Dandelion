@@ -14,6 +14,10 @@ from keras.engine import Layer, InputSpec
 import theano, numpy as np
 import theano.tensor as tensor
 
+import dandelion
+dandelion_path = os.path.split(dandelion.__file__)[0]
+print('dandelion path = %s\n' % dandelion_path)
+
 def log_sum_exp(x, axis=None, keepdims=False):
     """
     Stable log of a sum of exponentials
@@ -375,110 +379,113 @@ def CRF_forward_nobatch(observations, transitions, viterbi=False, return_alpha=F
             return log_sum_exp(alpha[-1],
                                axis=0)  # p(x). Here alpha is equivalent to beta in "CRF as NN Layer", Page10.
 
+def disabled_test_case_0():
+    y = tensor.imatrix('y')
+    x = tensor.ftensor3('x')
+    U = tensor.fmatrix('U')
+    x_nobatch = tensor.fmatrix('x_nobatch')
 
+    cost1 = free_energy0(x, U)
+    cost2 = CRF_forward(x, U)
+    cost3 = CRF_forward_nobatch(x_nobatch, U)
+    seq1 = viterbi_decode(x, U)
+    seq2 = CRF_decode(x, U)
+    print('compiling f1 & f2 ...')
+    f1 = theano.function([x, U], cost1)
+    f2 = theano.function([x, U], cost2)
+    print('compiling f3 ...')
+    f3 = theano.function([x, U], seq1)
+    print('compiling f4 ...')
+    f4 = theano.function([x, U], seq2)
+    print('compiling f5 ...')
+    f5 = theano.function([x_nobatch, U], cost3)
+
+    B, T, N = 7, 100, 20
+    for i in range(1):
+        x = np.random.rand(B, T, N).astype(np.float32)
+        U = np.random.rand(N, N).astype(np.float32)
+
+        c1 = f1(x, U)
+        c2 = f2(x, U)
+        s1 = f3(x, U)
+        s2 = f4(x, U)
+        print(c1)
+        print(c2)
+        print(c1 == c2)
+        if np.all(c1 == c2):
+            print('c pass')
+        else:
+            raise ValueError('c not same!')
+
+        print(s1)
+        print(s2)
+        print(s1.shape)
+        print(s2.shape)
+        print(s1 == s2)
+        if np.all(s1 == s2):
+            print('s pass')
+        else:
+            raise ValueError('s not same!')
+
+def test_case_1():
+    y = tensor.imatrix('y')
+    x = tensor.ftensor3('x')
+    U = tensor.fmatrix('U')
+    x_nobatch = tensor.fmatrix('x_nobatch')
+
+    cost2 = CRF_forward(x, U)
+    cost3 = CRF_forward_nobatch(x_nobatch, U, return_alpha=True)
+    seq2 = CRF_decode(x, U)
+    seq3 = CRF_forward_nobatch(x_nobatch, U, viterbi=True, return_best_sequence=True)
+    print('compiling f2 ...')
+    f2 = theano.function([x, U], cost2)
+    print('compiling f4 ...')
+    f4 = theano.function([x, U], seq2)
+    print('compiling f5 ...')
+    f5 = theano.function([x_nobatch, U], cost3)
+    print('compiling f6 ...')
+    f6 = theano.function([x_nobatch, U], seq3)
+
+    B, T, N = 2, 5, 3
+    for i in range(10):
+        x = np.random.rand(B, T, N).astype(np.float32)
+        U = np.random.rand(N, N).astype(np.float32)
+
+        c2 = f2(x, U)
+        s2 = f4(x, U)
+
+        c3_list = []
+        s3_list = []
+        for j in range(B):
+            c3_nobatch = f5(x[j, :, :], U)
+            s3_nobatch = f6(x[j, :, :], U)
+            c3_list.append(np.expand_dims(c3_nobatch, 0))
+            s3_list.append(np.expand_dims(s3_nobatch, 0))
+        c3 = np.concatenate(c3_list, axis=0)
+        s3 = np.concatenate(s3_list, axis=0)
+
+        # if np.all(c2 == c3):
+        #     print('c pass')
+        # else:
+        print(c2)
+        print(c3)
+        # raise ValueError('c not same!')
+
+        print(s2)
+        print(s3)
+        if np.all(s2 == s3):
+            print('s pass')
+        else:
+
+            raise ValueError('s not same!')
 
 if __name__ == '__main__':
 
-    if 0:
-        y = tensor.imatrix('y')
-        x = tensor.ftensor3('x')
-        U = tensor.fmatrix('U')
-        x_nobatch = tensor.fmatrix('x_nobatch')
+    # test_case_0()
 
-        cost1 = free_energy0(x, U)
-        cost2 = CRF_forward(x, U)
-        cost3 = CRF_forward_nobatch(x_nobatch, U)
-        seq1  = viterbi_decode(x, U)
-        seq2  = CRF_decode(x, U)
-        print('compiling f1 & f2 ...')
-        f1 = theano.function([x,U], cost1)
-        f2 = theano.function([x,U], cost2)
-        print('compiling f3 ...')
-        f3 = theano.function([x,U], seq1)
-        print('compiling f4 ...')
-        f4 = theano.function([x,U], seq2)
-        print('compiling f5 ...')
-        f5 = theano.function([x_nobatch, U], cost3)
+    test_case_1()
 
-        B, T, N = 7, 100, 20
-        for i in range(1):
-            x = np.random.rand(B, T, N).astype(np.float32)
-            U = np.random.rand(N, N).astype(np.float32)
-
-            c1 = f1(x,U)
-            c2 = f2(x,U)
-            s1 = f3(x, U)
-            s2 = f4(x, U)
-            print(c1)
-            print(c2)
-            print(c1==c2)
-            if np.all(c1==c2):
-                print('c pass')
-            else:
-                raise ValueError('c not same!')
-
-            print(s1)
-            print(s2)
-            print(s1.shape)
-            print(s2.shape)
-            print(s1==s2)
-            if np.all(s1==s2):
-                print('s pass')
-            else:
-                raise ValueError('s not same!')
-
-    if 1:
-        y = tensor.imatrix('y')
-        x = tensor.ftensor3('x')
-        U = tensor.fmatrix('U')
-        x_nobatch = tensor.fmatrix('x_nobatch')
-
-        cost2 = CRF_forward(x, U)
-        cost3 = CRF_forward_nobatch(x_nobatch, U, return_alpha=True)
-        seq2  = CRF_decode(x, U)
-        seq3  = CRF_forward_nobatch(x_nobatch, U, viterbi=True, return_best_sequence=True)
-        print('compiling f2 ...')
-        f2 = theano.function([x, U], cost2)
-        print('compiling f4 ...')
-        f4 = theano.function([x, U], seq2)
-        print('compiling f5 ...')
-        f5 = theano.function([x_nobatch, U], cost3)
-        print('compiling f6 ...')
-        f6 = theano.function([x_nobatch, U], seq3)
-
-        B, T, N = 2, 5, 3
-        for i in range(10):
-            x = np.random.rand(B, T, N).astype(np.float32)
-            U = np.random.rand(N, N).astype(np.float32)
-
-            c2 = f2(x, U)
-            s2 = f4(x, U)
-
-            c3_list = []
-            s3_list = []
-            for j in range(B):
-                c3_nobatch = f5(x[j,:,:], U)
-                s3_nobatch = f6(x[j, :, :], U)
-                c3_list.append(np.expand_dims(c3_nobatch, 0))
-                s3_list.append(np.expand_dims(s3_nobatch, 0))
-            c3 = np.concatenate(c3_list, axis=0)
-            s3 = np.concatenate(s3_list, axis=0)
-
-            # if np.all(c2 == c3):
-            #     print('c pass')
-            # else:
-            print(c2)
-            print(c3)
-                # raise ValueError('c not same!')
-
-            print(s2)
-            print(s3)
-            if np.all(s2 == s3):
-                print('s pass')
-            else:
-
-                raise ValueError('s not same!')
-
+    print('Test passed~')
 
 
 

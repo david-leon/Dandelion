@@ -1,5 +1,9 @@
 # History
 
+## version 0.17.1 [7-12-2018]
+* **MODIFIED**: modify all `Test/Test_*.py` to be compatible with pytest. 
+* **TODO**: the only obstacle for Travis CI integration is that the Lasagne package used in test is a fork version used inside. 
+
 ## version 0.17.0 [7-12-2018]
 In this version the `Module`'s parameter and sub-module naming conventions are changed to make sure unique name for each variable/module in a complex network.  
 It's **incompatible** with previous version if your work accessed their names, otherwise there is no impact.  

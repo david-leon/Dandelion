@@ -18,7 +18,7 @@ import dandelion
 dandelion_path = os.path.split(dandelion.__file__)[0]
 print('dandelion path = %s\n' % dandelion_path)
 
-if __name__ == '__main__':
+def test_case_0():
     model = ResNet_bottleneck(outer_channel=16, inner_channel=4, border_mode='same', batchnorm_mode=0, activation=relu)
     x = tensor.ftensor4('x')
     y = model.forward(x)
@@ -29,6 +29,10 @@ if __name__ == '__main__':
     output = fn(input)
     print(output)
     print(output.shape)
+
+if __name__ == '__main__':
+
+    test_case_0()
 
     print('Test passed')
 

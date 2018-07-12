@@ -44,8 +44,7 @@ def fix_update_bcasts(updates):
             updates[param] = tensor.patternbroadcast(update, param.broadcastable)
     return updates
 
-
-if __name__ == '__main__':
+def test_case_0():
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
 
@@ -88,5 +87,9 @@ if __name__ == '__main__':
             print(y_D)
             print(y_L)
             raise ValueError('diff is too big')
+
+if __name__ == '__main__':
+
+    test_case_0()
 
     print('Test passed')

@@ -15,6 +15,10 @@ from dandelion.activation import *
 from lasagne.layers import InputLayer, DenseLayer, get_output
 import lasagne.nonlinearities as LACT
 
+import dandelion
+dandelion_path = os.path.split(dandelion.__file__)[0]
+print('dandelion path = %s\n' % dandelion_path)
+
 class build_model_D(Module):
     def __init__(self, in_dim=3, out_dim=3):
         super().__init__()
@@ -34,8 +38,7 @@ def build_model_L(in_dim=3, out_dim=3):
     dense0 = DenseLayer(input0, num_units=out_dim, nonlinearity=LACT.softmax, name='dense0')
     return dense0
 
-
-if __name__ == '__main__':
+def test_case_0():
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
 
@@ -65,6 +68,10 @@ if __name__ == '__main__':
         print('i=%d, diff=%0.6f' % (i, diff))
         if diff>1e-4:
             raise ValueError('diff is too big')
+
+if __name__ == '__main__':
+
+    test_case_0()
 
     print('Test passed')
 

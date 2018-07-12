@@ -39,8 +39,7 @@ def build_model_L(pyramid_dims=[6, 4, 2, 1]):
     x  = SpatialPyramidPoolingLayer(input0, pool_dims=pyramid_dims)
     return x
 
-
-if __name__ == '__main__':
+def test_case_0():
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
 
@@ -72,6 +71,10 @@ if __name__ == '__main__':
             print('y_D=\n', y_D)
             print('y_L=\n', y_L)
             raise ValueError('diff is too big')
+
+if __name__ == '__main__':
+
+    test_case_0()
 
     print('Test passed')
 
