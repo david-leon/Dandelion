@@ -9,6 +9,7 @@ install:
   - travis_wait travis_retry pip install pytest
   - travis_wait travis_retry pip install pydot
   - travis_wait travis_retry pip install psutil
+  - travis_wait travis_retry pip install keras
   - travis_wait travis_retry pip install git+https://github.com/david-leon/Lasagne_CTC.git
   - travis_wait travis_retry pip install git+https://github.com/david-leon/Lasagne_Ext.git
   - travis_wait travis_retry pip install git+https://github.com/Theano/Theano.git#egg=Theano
