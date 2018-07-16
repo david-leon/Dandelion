@@ -1,7 +1,7 @@
 # Dandelion
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://github.com/david-leon/Dandelion/blob/master/LICENSE)
 [![PyPI version](https://badge.fury.io/py/Dandelion.svg)](https://badge.fury.io/py/Dandelion)
-![Travis CI](https://travis-ci.org/david-leon/Dandelion.svg?branch=master)
+[![Travis CI](https://travis-ci.org/david-leon/Dandelion.svg?branch=master)](https://travis-ci.org/david-leon/Dandelion)
 
 A quite light weight deep learning framework, on top of Theano, offering better balance between flexibility and abstraction
 
@@ -45,6 +45,12 @@ Use pip channel
 ```
 pip install dandelion --upgrade
 ```
+Dependicy
+* Theano >=1.0
+* Scipy (required by `dandelion.ext.CV`)
+* Pillow (required by `dandelion.ext.CV`)
+* OpenCV (required by `dandelion.ext.CV`)
+
 ## Credits
 The design of Dandelion heavily draws on [Lasagne](https://github.com/Lasagne/Lasagne) and [Pytorch](http://pytorch.org/), both my favorate DL libraries.
 
