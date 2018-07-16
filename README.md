@@ -45,7 +45,7 @@ Use pip channel
 ```
 pip install dandelion --upgrade
 ```
-Dependicy
+Dependency
 * Theano >=1.0
 * Scipy (required by `dandelion.ext.CV`)
 * Pillow (required by `dandelion.ext.CV`)
