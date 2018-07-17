@@ -128,6 +128,9 @@
     <li class="toctree-l3"><a href="#shufflenet">ShuffleNet</a></li>
     
 
+    <li class="toctree-l3"><a href="#shuffle-seg-network">Shuffle-Seg network</a></li>
+    
+
     </ul>
                 </li>
     </ul>
@@ -295,6 +298,22 @@
 <li><strong>stack_size</strong>: size of each stack.</li>
 <li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
+</ul>
+<hr />
+<h2 id="shuffle-seg-network">Shuffle-Seg network</h2>
+<p>Model reference implementation of <a href="https://arxiv.org/abs/1803.03816">ShuffleSeg</a></p>
+<pre><code class="python">class model_ShuffleSeg(in_channels=1, Nclass=6, SF_group_num=4, SF_stage_channels=(24, 272, 544, 1088), 
+                       SF_stack_size=(3, 7, 3), SF_batchnorm_mode=1, SF_activation=relu)
+</code></pre>
+
+<ul>
+<li><strong>in_channels</strong>: channel number of input</li>
+<li><strong>Nclass</strong>: output class number</li>
+<li><strong>SF_group_num</strong>: number of convolution groups for inside ShuffleNet encoder.</li>
+<li><strong>SF_stage_channels</strong>: channel number of each stage output for inside ShuffleNet encoder.</li>
+<li><strong>SF_stack_size</strong>: size of each stack for inside ShuffleNet encoder.</li>
+<li><strong>SF_batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn. For inside ShuffleNet encoder</li>
+<li><strong>SF_activation</strong>: default = relu. For inside ShuffleNet encoder.</li>
 </ul>
               
             </div>

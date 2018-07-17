@@ -443,6 +443,9 @@
                        flip_filters=True, input_shape=(None,None), untie_bias=False, name=None)
 </code></pre>
 
+<ul>
+<li><strong>return</strong>: output shape = <code>(B, C, H, W)</code>, in which <code>H = ((H_in - 1) * stride_H) + kernel_H - 2 * pad_H</code>, and the same with <code>W</code>.</li>
+</ul>
 <p>All the parameters have the same meanings with <code>Conv2D</code> module. In fact, the transposed convolution is equal to upsampling the input then doing conventional convolution. However, for efficiency purpose, here the transposed convolution is implemented via Theano’s <code>AbstractConv2d_gradInputs</code> as what is done in Lasagne.</p>
 <hr />
 <h2 id="dense">Dense</h2>
