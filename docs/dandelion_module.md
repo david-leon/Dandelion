@@ -232,6 +232,8 @@ class ConvTransposed2D(in_channels, out_channels, kernel_size=(3,3), stride=(1,1
                        dilation=(1,1), num_groups=1, W=init.GlorotUniform(), b=init.Constant(0.), 
                        flip_filters=True, input_shape=(None,None), untie_bias=False, name=None)
 ```
+* **return**: output shape = `(B, C, H, W)`, in which `H = ((H_in - 1) * stride_H) + kernel_H - 2 * pad_H`, and the same with `W`.
+
 All the parameters have the same meanings with `Conv2D` module. In fact, the transposed convolution is equal to upsampling the input then doing conventional convolution. However, for efficiency purpose, here the transposed convolution is implemented via Theano’s `AbstractConv2d_gradInputs` as what is done in Lasagne.
 
 _______________________________________________________________________

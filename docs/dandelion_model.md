@@ -117,3 +117,19 @@ class model_ShuffleNet(in_channels, group_num=4, stage_channels=(24, 272, 544, 1
 * **stack_size**: size of each stack.
 * **batchnorm_mode**: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
+
+_______________________________________________________________________
+## Shuffle-Seg network
+Model reference implementation of [ShuffleSeg](https://arxiv.org/abs/1803.03816)
+
+```python
+class model_ShuffleSeg(in_channels=1, Nclass=6, SF_group_num=4, SF_stage_channels=(24, 272, 544, 1088), 
+                       SF_stack_size=(3, 7, 3), SF_batchnorm_mode=1, SF_activation=relu)
+```
+* **in_channels**: channel number of input
+* **Nclass**: output class number
+* **SF_group_num**: number of convolution groups for inside ShuffleNet encoder.
+* **SF_stage_channels**: channel number of each stage output for inside ShuffleNet encoder.
+* **SF_stack_size**: size of each stack for inside ShuffleNet encoder.
+* **SF_batchnorm_mode**: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn. For inside ShuffleNet encoder
+* **SF_activation**: default = relu. For inside ShuffleNet encoder.

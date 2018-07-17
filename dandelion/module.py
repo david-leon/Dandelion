@@ -48,7 +48,7 @@ from theano.gradient import grad_clip
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
 from . import initialization as init
-from .util import create_param, one_hot, batch_gather
+from .util import create_param, one_hot, batch_gather, as_tuple
 from .activation import *
 import warnings
 
@@ -946,6 +946,7 @@ class Conv2D(Module):
 class ConvTransposed2D(Module):
     """
     Transposed convolution 2D. Also known as fractionally-strided convolution or deconvolution (although it is not an actual deconvolution operation)
+    Output shape (B, C, H, W), in which H = ((H_in - 1) * stride_H) + kernel_H - 2 * pad_H, and the same with W.
     """
     def __init__(self, in_channels, out_channels, kernel_size=(3,3), stride=(1,1), pad='valid', dilation=(1,1), num_groups=1,
                  W=init.GlorotUniform(), b=init.Constant(0.), flip_filters=False,
@@ -955,16 +956,10 @@ class ConvTransposed2D(Module):
 
         self.in_channels  = in_channels
         self.out_channels = out_channels
-        self.kernel_size  = kernel_size
-        if isinstance(kernel_size, int):
-            self.kernel_size = [kernel_size] * 2
         self.flip_filters = flip_filters
-        self.stride       = stride
-        if isinstance(stride, int):
-            self.stride = [stride] * 2
-        self.dilation     = dilation
-        if isinstance(dilation, int):
-            self.dilation = [dilation] * 2
+        self.kernel_size  = as_tuple(kernel_size, 2)
+        self.stride       = as_tuple(stride, 2)
+        self.dilation     = as_tuple(dilation, 2)
         self.num_groups   = num_groups
         self.untie_bias   = untie_bias
         self.input_shape  = input_shape   # tuple of 2 int or tensor variable, stands for H and W of image

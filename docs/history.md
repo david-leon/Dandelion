@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.2 [7-17-2018]
+* **NEW**: add `model::shufflenet::model_ShuffleSeg` for Shuffle-Seg model reference implementation.
+
 ## version 0.17.1 [7-12-2018]
 * **MODIFIED**: modify all `Test/Test_*.py` to be compatible with pytest. 
 * **NEW**: add Travis CI for automatic unit test.

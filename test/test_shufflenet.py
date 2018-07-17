@@ -13,7 +13,7 @@ import theano
 from theano import tensor
 from dandelion.module import *
 from dandelion.activation import *
-from dandelion.model.shufflenet import ShuffleUnit, model_ShuffleNet
+from dandelion.model.shufflenet import ShuffleUnit, model_ShuffleNet, model_ShuffleSeg
 
 import dandelion
 dandelion_path = os.path.split(dandelion.__file__)[0]
@@ -29,7 +29,7 @@ def test_case_0():
     print('run fn...')
     input = np.random.rand(4, 16, 33, 32).astype(np.float32)
     output = fn(input)
-    print(output)
+    # print(output)
     print(output.shape)
 
 def test_case_1():
@@ -46,14 +46,46 @@ def test_case_1():
     print('run fn...')
     input = np.random.rand(4, 1, 224, 224).astype(np.float32)
     output = fn(input)
-    print(output)
+    # print(output)
     print(output.shape)
+
+def test_case_2():
+    model = model_ShuffleSeg.ShuffleNet(in_channels=1, out_channels=6)
+    x = tensor.ftensor4('x')
+    y = model.forward(x)
+    print('compiling fn...')
+    fn = theano.function([x], y, no_default_updates=False)
+    print('run fn...')
+    input = np.random.rand(4, 1, 224, 224).astype(np.float32)
+    output = fn(input)
+    print(output[0].shape)
+    print(output[1].shape)
+    print(output[2].shape)
+
+def test_case_3():
+    model = model_ShuffleSeg()
+    # from dandelion.util import gpickle
+    # gpickle.dump((model.get_weights(), None), 'shuffleseg.gpkl')
+    x = tensor.ftensor4('x')
+    y = model.forward(x)
+    print('compiling fn...')
+    fn = theano.function([x], y, no_default_updates=False, on_unused_input='ignore')
+    print('run fn...')
+    input = np.random.rand(4, 1, 224, 224).astype(np.float32)
+    output = fn(input)
+    print(output.shape)
+
+
 
 if __name__ == '__main__':
 
-    test_case_0()
+    # test_case_0()
 
-    test_case_1()
+    # test_case_1()
+
+    # test_case_2()
+
+    test_case_3()
 
     print('Test passed')
 

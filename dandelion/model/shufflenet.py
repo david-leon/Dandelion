@@ -273,10 +273,101 @@ class model_ShuffleNet(Module):
 class model_ShuffleSeg(Module):
     """
     Model reference implementation of [ShuffleSeg](https://arxiv.org/abs/1803.03816)
-    todo: unfinished
     """
-    def __init__(self, channel=1, im_height=64, im_width=None, Nclass=6, kernel_size=3, border_mode='same',
-                 base_n_filters=64, output_activation=log_softmax,
-                 noise=(0.2, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1)):
+    class ShuffleNet(model_ShuffleNet):
+        """
+        Same with model_ShuffleNet. Output two more heads: feed1 & feed2
+        """
+        def __init__(self, in_channels, out_channels, group_num=4, stage_channels=(24, 272, 544, 1088), stack_size=(3, 7, 3), batchnorm_mode=1, activation=relu):
+            super().__init__(in_channels=in_channels, group_num=group_num, stage_channels=stage_channels,
+                             stack_size=stack_size, batchnorm_mode=batchnorm_mode, activation=activation)
+            self.conv2 = Conv2D(in_channels=stage_channels[3], out_channels=out_channels, kernel_size=(1,1), pad='same')
+       
+        def forward(self, x):
+            """
+             :param x: (B, C, H, W)
+             :return:
+             """
+            self.work_mode = 'train'
+
+            x = self.conv1.forward(x)
+            x = relu(self.bn1.forward(x))
+            x = pool_2d(x, ws=(3, 3), stride=(2, 2), mode='max')
+            x = relu(self.stage2.forward(x))
+            feed2 = x
+            x = relu(self.stage3.forward(x))
+            feed1 = x
+            x = relu(self.stage4.forward(x))
+            x = self.conv2.forward(x)
+            return x, feed1, feed2  # (H, W) = [(7,7), (14, 14), (28, 28)] for (224, 224) input
+        
+        def predict(self, x):
+            """
+             :param x: (B, C, H, W)
+             :return:
+             """
+            self.work_mode = 'inference'
+
+            x = self.conv1.predict(x)
+            x = relu(self.bn1.predict(x))
+            x = pool_2d(x, ws=(3, 3), stride=(2, 2), mode='max')
+            x = relu(self.stage2.predict(x))
+            feed2 = x
+            x = relu(self.stage3.predict(x))
+            feed1 = x
+            x = relu(self.stage4.predict(x))
+            x = self.conv2.predict(x)
+            return x, feed1, feed2
+
+    def __init__(self, in_channels=1, Nclass=6, SF_group_num=4, SF_stage_channels=(24, 272, 544, 1088), SF_stack_size=(3, 7, 3), SF_batchnorm_mode=1, SF_activation=relu):
         super().__init__()
+        self.encoder = self.ShuffleNet(in_channels=in_channels, out_channels=Nclass, group_num=SF_group_num, stage_channels=SF_stage_channels,
+                                       stack_size=SF_stack_size, batchnorm_mode=SF_batchnorm_mode, activation=SF_activation)
+        #--- decoder part ---#
+        self.convT1  = ConvTransposed2D(in_channels=Nclass, out_channels=Nclass, kernel_size=(4,4), stride=(2,2), pad=(1,1))
+        self.bn1     = BatchNorm(input_shape=(None, Nclass, None, None))
+        self.conv1   = Conv2D(in_channels=SF_stage_channels[2], out_channels=Nclass, kernel_size=(1,1), pad='same')
+        self.bn2     = BatchNorm(input_shape=(None, Nclass, None, None))
+        self.convT2  = ConvTransposed2D(in_channels=Nclass, out_channels=Nclass, kernel_size=(4,4), stride=(2,2), pad=(1,1))
+        self.bn3     = BatchNorm(input_shape=(None, Nclass, None, None))
+        self.conv2   = Conv2D(in_channels=SF_stage_channels[1], out_channels=Nclass, kernel_size=(1,1), pad='same')
+        self.bn4     = BatchNorm(input_shape=(None, Nclass, None, None))
+        self.convT3  = ConvTransposed2D(in_channels=Nclass, out_channels=Nclass, kernel_size=(16,16), stride=(8,8), pad=(4,4))
+
+    def forward(self, x):
+        """
+        No activation applied in decoder part, same with the reference paper.
+        :param x:
+        :return:
+        """
+        self.work_mode = 'train'
+
+        encoder_out, feed1, feed2 = self.encoder.forward(x)
+        upscore2    = self.bn1.forward(self.convT1.forward(encoder_out))
+        score_feed1 = self.bn2.forward(self.conv1.forward(feed1))
+        fuse_feed1  = score_feed1 + upscore2
+        upscore4    = self.bn3.forward(self.convT2.forward(fuse_feed1))
+        score_feed2 = self.bn4.forward(self.conv2.forward(feed2))
+        fuse_feed2  = score_feed2 + upscore4
+        x           = self.convT3.forward(fuse_feed2)
+        return x
+
+    def predict(self, x):
+        self.work_mode = 'inference'
+
+        encoder_out, feed1, feed2 = self.encoder.predict(x)
+        upscore2    = self.bn1.predict(self.convT1.predict(encoder_out))
+        score_feed1 = self.bn2.predict(self.conv1.predict(feed1))
+        fuse_feed1  = score_feed1 + upscore2
+        upscore4    = self.bn3.predict(self.convT2.predict(fuse_feed1))
+        score_feed2 = self.bn4.predict(self.conv2.predict(feed2))
+        fuse_feed2  = score_feed2 + upscore4
+        x           = self.convT3.predict(fuse_feed2)
+        return x
+
+
+
+
+
+
 
