@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.3 [7-18-2018]
+* **FIXED**: pooling mode in `model::shufflenet::ShuffleUnit` changed to `average_inc_pad` for correct gradient.
+
 ## version 0.17.2 [7-17-2018]
 * **NEW**: add `model::shufflenet::model_ShuffleSeg` for Shuffle-Seg model reference implementation.
 

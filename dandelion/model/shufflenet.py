@@ -89,7 +89,7 @@ class ShuffleUnit(Module):
         if border_mode not in {'same'}:
             raise ValueError('Only "same" border mode is supported')
         self.fusion_mode    = fusion_mode
-        self.conv1 = Conv2D(in_channels=in_channels, out_channels=self.inner_channels, kernel_size=1, pad=border_mode, num_groups=group_num)
+        self.conv1 = Conv2D(in_channels=in_channels, out_channels=self.inner_channels, kernel_size=1, pad=border_mode, num_groups=group_num) #todo: [Theano BUG] the ShuffleSeg model won't train on GPU if self.conv1.num_groups>1
         self.conv2 = DSConv2D(in_channels=self.inner_channels, out_channels=self.inner_channels, kernel_size=3, pad=border_mode, stride=self.stride, dilation=self.dilation)
         self.conv3 = Conv2D(in_channels=self.inner_channels, out_channels=self.out_channels, kernel_size=1, pad=border_mode, num_groups=group_num)
         if batchnorm_mode == 0:   # no batch normalization
@@ -116,7 +116,7 @@ class ShuffleUnit(Module):
         x = x.dimshuffle((0, 2, 3, 1)) # (B, H, W, c*g)
         B, H, W, C = x.shape
         x = tensor.reshape(x, (B, H, W, C//group_num, group_num))
-        # x = tensor.reshape(x, (B, H, W, group_num, C//group_num,))
+        # x = tensor.reshape(x, (B, H, W, group_num, C//group_num))
         x = x.dimshuffle((0, 1, 2, 4, 3))
         x = x.flatten(ndim=4)
         x = x.dimshuffle(0, 3, 1, 2)
@@ -145,7 +145,7 @@ class ShuffleUnit(Module):
         x = self.activation(x)
 
         if np.max(self.stride) > 1:
-            x0 = pool_2d(x0, ws=(3,3), stride=self.stride, pad=[1,1], ignore_border=True, mode='average_exc_pad')
+            x0 = pool_2d(x0, ws=(3,3), stride=self.stride, pad=[1,1], ignore_border=True, mode='average_inc_pad')
         if self.fusion_mode == 'add':
             x = x0 + x
         elif self.fusion_mode == 'concat':
@@ -174,7 +174,7 @@ class ShuffleUnit(Module):
         x = self.activation(x)
 
         if np.max(self.stride) > 1:
-            x0 = pool_2d(x0, ws=(3,3), stride=self.stride, pad=[1,1], ignore_border=True, mode='average_exc_pad')
+            x0 = pool_2d(x0, ws=(3, 3), stride=self.stride, pad=[1, 1], ignore_border=True, mode='average_inc_pad')
         if self.fusion_mode == 'add':
             x = x0 + x
         elif self.fusion_mode == 'concat':
@@ -189,7 +189,7 @@ class ShuffleUnit_Stack(Module):
     Stack of shuffle-unit
     """
 
-    def __init__(self, in_channels, inner_channels=None, out_channels=None, group_num=4, batchnorm_mode=1, activation=relu, stack_size=3):
+    def __init__(self, in_channels, out_channels, inner_channels=None, group_num=4, batchnorm_mode=1, activation=relu, stack_size=3):
         """
         :param in_channels: channel number of stack input
         :param inner_channels: channel number inside the shuffle-units
@@ -206,7 +206,7 @@ class ShuffleUnit_Stack(Module):
         for i in range(stack_size):
             shuffleunit = ShuffleUnit(in_channels=out_channels, inner_channels=inner_channels, group_num=group_num,
                                            batchnorm_mode=batchnorm_mode, activation=activation, fusion_mode='add')
-            setattr(self, 'shuffleunit_%d'%(i+1), shuffleunit)
+            setattr(self, 'shuffleunit%d'%(i+1), shuffleunit)
 
             self.shuffleunit_stack.append(shuffleunit)
 
