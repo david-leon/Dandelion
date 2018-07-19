@@ -1,5 +1,6 @@
 # coding:utf-8
 # GPU DeBUG for ShuffleSeg: model_ShuffleSeg can be trained on CPU, but when trained on GPU, error raised as "images and kernel must have the same stack size"
+# BUG fixed with PR: https://github.com/Theano/Theano/pull/6624
 # Created   :   7, 18, 2018
 # Revised   :   7, 18, 2018
 # All rights reserved
