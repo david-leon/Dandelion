@@ -538,3 +538,38 @@ def get_weight_by_name(module_weights, name):
         if name == w_name:
             return w
     return None
+
+def theano_safe_run(fn, input_list):
+    """
+    Help catch theano memory exceptions during running theano functions.
+    :param fn:
+    :param input_list:
+    :return: (status, result), status > 0 means exception catched.
+    """
+    try:
+        result = fn(*input_list)
+        status = 0
+        return status, result
+    except MemoryError:
+        print('Memory error catched')
+        status = 1
+        return status, None
+    except RuntimeError as e:
+        print('RuntimeError encountered')
+        if e.args[0].startswith('CudaNdarray_ZEROS: allocation failed.'):
+            print('Memory error catched')
+            status = 2
+            return status, None
+        elif str(e).startswith('gpudata_alloc: cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory'):
+            print('Memory error catched')
+            status = 3
+            return status, None
+        else:
+            raise e
+    except Exception as e:
+        if e.args[0].startswith("b'cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory'"):
+            print('New backend memory error catched')
+            status = 4
+            return status, None
+        else:
+            raise e

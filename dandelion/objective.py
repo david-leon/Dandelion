@@ -71,56 +71,51 @@ def binary_crossentropy(predictions, targets):
     return theano.tensor.nnet.binary_crossentropy(predictions, targets)
 
 
-def categorical_crossentropy(predictions, targets, eps=1e-7):
-    """Computes the categorical cross-entropy between predictions and targets.
-
-    .. math:: L_i = - \\sum_j{t_{i,j} \\log(p_{i,j})}
-
-    :math:`p` are the predictions, :math:`t` are the targets, :math:`i`
-    denotes the data point and :math:`j` denotes the class.
-
-    Parameters
-    ----------
-    predictions : Theano 2D tensor
-        Predictions in (0, 1), such as softmax output of a neural network,
-        with data points in rows and class probabilities in columns.
-    targets : Theano 2D tensor or 1D tensor
-        Either targets in [0, 1] matching the layout of `predictions`, or
-        a vector of int giving the correct class index per data point.
-        In the case of an integer vector argument, each element
-        represents the position of the '1' in a one-hot encoding.
-    eps: epsilon added to `predictions` to prevent numerical unstability when using with softmax activation
-
-    Returns
-    -------
-    Theano 1D tensor
-        An expression for the item-wise categorical cross-entropy.
-
-    Notes
-    -----
-    This is the loss function of choice for multi-class classification
-    problems and softmax output units. For hard targets, i.e., targets
-    that assign all of the probability to a single class per data point,
-    providing a vector of int for the targets is usually slightly more
-    efficient than providing a matrix with a single 1.0 per row.
+def categorical_crossentropy(predictions, targets, eps=1e-7, m=None, class_weight=None):
+    """
+    Computes the categorical cross-entropy.
+    :param predictions: usually returned by softmax(), 2D tensor with shape (B, N)
+    :param targets: Theano 2D tensor or 1D tensor, with shape (B, N) or (B,)
+    :param m: possible max value of `targets`'s element, required when `targets` is 1D tensor and `class_weight` is not None.
+    :param class_weight: tensor vector with shape (Nclass,), for class weighting, optional.
+    :return:
     """
     if eps > 0:
         predictions = theano.tensor.clip(predictions, eps, 1.0 - eps)
-    return theano.tensor.nnet.categorical_crossentropy(predictions, targets)
 
-def categorical_crossentropy_log(log_predictions, targets, m=None):
+    if targets.ndim == predictions.ndim:
+        if class_weight is None:
+            return -tensor.sum(targets * tensor.log(predictions), axis=predictions.ndim - 1)
+        else:
+            return -tensor.sum(targets * tensor.log(predictions) * class_weight, axis=predictions.ndim - 1)
+    elif targets.ndim == predictions.ndim - 1:
+        if class_weight is None:
+            return theano.tensor.nnet.crossentropy_categorical_1hot(coding_dist, true_dist)
+        else:
+            return -tensor.sum(one_hot(targets, m=m) * tensor.log(predictions) * class_weight, axis=log_predictions.ndim - 1)
+    else:
+        raise TypeError('shape mismatch between `predictions` and `targets`')
+
+def categorical_crossentropy_log(log_predictions, targets, m=None, class_weight=None):
     """
     Computes the categorical cross-entropy in log-domain.
     :param log_predictions: usually returned by log_softmax()
     :param targets: Theano 2D tensor or 1D tensor
-    :param m: possible max value of `targets`'s element
+    :param m: possible max value of `targets`'s element, required when `targets` is 1D tensor.
+    :param class_weight: tensor vector with shape (Nclass,), for class weighting, optional.
     :return:
     """
 
     if targets.ndim == log_predictions.ndim:
-        return -tensor.sum(targets * log_predictions, axis=log_predictions.ndim-1)
+        if class_weight is None:
+            return -tensor.sum(targets * log_predictions, axis=log_predictions.ndim-1)
+        else:
+            return -tensor.sum(targets * log_predictions * class_weight, axis=log_predictions.ndim-1)
     elif targets.ndim == log_predictions.ndim - 1:
-        return -tensor.sum(one_hot(targets, m=m) * log_predictions, axis=log_predictions.ndim-1)
+        if class_weight is None:
+            return -tensor.sum(one_hot(targets, m=m) * log_predictions, axis=log_predictions.ndim-1)
+        else:
+            return -tensor.sum(one_hot(targets, m=m) * log_predictions * class_weight, axis=log_predictions.ndim - 1)
     else:
         raise TypeError('shape mismatch between `log_predictions` and `targets`')
 

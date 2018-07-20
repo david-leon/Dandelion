@@ -1,5 +1,9 @@
 # History
 
+## version 0.17.4 [7-20-2018]
+* **NEW**: add class weighting support for `objective::categorical_crossentropy()` and `objective::categorical_crossentropy_log()`
+* **NEW**: add `util::theano_safe_run()` to help catch memory exceptions when running theano functions.
+
 ## version 0.17.3 [7-18-2018]
 * **FIXED**: pooling mode in `model::shufflenet::ShuffleUnit` changed to `average_inc_pad` for correct gradient.
 
