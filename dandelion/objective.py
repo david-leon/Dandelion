@@ -90,9 +90,9 @@ def categorical_crossentropy(predictions, targets, eps=1e-7, m=None, class_weigh
             return -tensor.sum(targets * tensor.log(predictions) * class_weight, axis=predictions.ndim - 1)
     elif targets.ndim == predictions.ndim - 1:
         if class_weight is None:
-            return theano.tensor.nnet.crossentropy_categorical_1hot(coding_dist, true_dist)
+            return theano.tensor.nnet.crossentropy_categorical_1hot(predictions, targets)
         else:
-            return -tensor.sum(one_hot(targets, m=m) * tensor.log(predictions) * class_weight, axis=log_predictions.ndim - 1)
+            return -tensor.sum(one_hot(targets, m=m) * tensor.log(predictions) * class_weight, axis=predictions.ndim - 1)
     else:
         raise TypeError('shape mismatch between `predictions` and `targets`')
 
