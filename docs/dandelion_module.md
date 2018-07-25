@@ -64,7 +64,7 @@ Set module weights by default order (same order with `.get_weights()`)
 * **check_name**: `ignore`|`warn`|`raise`. What to do if a weight's name does not match its corresponding variable's name.
 
 ```python
-.set_weights_by_name(module_weights, unmatched='ignore')
+.set_weights_by_name(module_weights, unmatched='raise')
 ```
 Set module weights by matching name.
 

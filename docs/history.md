@@ -1,5 +1,9 @@
 # History
 
+## version 0.17.6 [7-25-2018]
+* **MODIFIED**: change default value of `Module.set_weights_by_name()`'s arg `unmatched` from `ignore` to `raise`
+* **MODIFIED**: change default value of `model.vgg.model_VGG16()`'s arg `flip_filters` from `True` to `False`
+
 ## version 0.17.5 [7-20-2018]
 * **FIXED**: fixed typo in `objective::categorical_crossentropy()`
 

@@ -17,7 +17,7 @@ Reference implementation of [VGG-16](https://arxiv.org/abs/1409.1556) network
 
 ```python
 class model_VGG16(channel=3, im_height=224, im_width=224, Nclass=1000, 
-                  kernel_size=3, border_mode=(1, 1))
+                  kernel_size=3, border_mode=(1, 1), flip_filters=False)
 ```
 * **channel**: input channel number
 * **Nclass**: output class number
