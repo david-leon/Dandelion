@@ -8,3 +8,4 @@ dist
 Dandelion.egg-info
 Cython/*.whl
 site
+weights

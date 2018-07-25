@@ -443,7 +443,7 @@ class Module(object):
                 raise ValueError('variable name inconsistent: %s <-> %s' % (variable.name, name))
             variable.set_value(value)
 
-    def set_weights_by_name(self, module_weights, unmatched='ignore', name_map=dict()):
+    def set_weights_by_name(self, module_weights, unmatched='raise', name_map=dict()):
         """
         Set module weights by matching name
         :param module_weights:

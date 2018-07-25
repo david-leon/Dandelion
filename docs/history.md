@@ -20,6 +20,7 @@
 ## version 0.17.0 [7-12-2018]
 In this version the `Module`'s parameter and sub-module naming conventions are changed to make sure unique name for each variable/module in a complex network.  
 It's **incompatible** with previous version if your work accessed their names, otherwise there is no impact.  
+Note: to set weights saved by previous dandelion(>=version 0.14.0), use `.set_weights()` instead of `.set_weights_by_name()`. For weights saved by dandelion of version < 0.14.0, the quick way is to set the model's submodule weight explicitly as `model_new_dandelion.conv1.W.set_value(model_old_dandelion.conv1.W.get_value())`.    
 From this version, it's recommonded to let the framework auto-name the module parameters when you define your own module with `register_param()` and `register_self_updating_variable()`.
 
 * **MODIFIED**: module's variable name convention changed to `variable_name@parent_module_name` to make sure unique name for each variable in a complex network
