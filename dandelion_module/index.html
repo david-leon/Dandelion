@@ -269,7 +269,7 @@
 <li><strong>module_weights</strong>: same with the return of <code>.get_weights()</code></li>
 <li><strong>check_name</strong>: <code>ignore</code>|<code>warn</code>|<code>raise</code>. What to do if a weight's name does not match its corresponding variable's name.</li>
 </ul>
-<pre><code class="python">.set_weights_by_name(module_weights, unmatched='ignore')
+<pre><code class="python">.set_weights_by_name(module_weights, unmatched='raise')
 </code></pre>
 
 <p>Set module weights by matching name.</p>
