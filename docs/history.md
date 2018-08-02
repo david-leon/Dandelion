@@ -1,7 +1,7 @@
 # History
 
 ## version 0.17.7 [8-2-2018]
-From this version the documentaiton supports latex math officially.
+From this version the documentaiton supports latex math officially.  
 * **MODIFIED**: move arg `alpha` of `Module.Center` from class delcaration to its `.forward()` interface.
 
 ## version 0.17.6 [7-25-2018]

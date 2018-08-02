@@ -134,7 +134,5 @@ model             | model implementations out-of-the-box
 ext               | extensions
 
 ## Credits
-The design of Dandelion heavily draws on [Lasagne](https://github.com/Lasagne/Lasagne) and [Pytorch](http://pytorch.org/), both my favorate DL libraries.
-
-## Special Thanks
-To **Radomir Dopieralski**, who transferred the `dandelion` project name on pypi to us. Now you can install the package by simply `pip install dandelion`.
+The design of Dandelion heavily draws on [Lasagne](https://github.com/Lasagne/Lasagne) and [Pytorch](http://pytorch.org/), both my favorate DL libraries.  
+Special thanks to **Radomir Dopieralski**, who transferred the `dandelion` project name on pypi to us. Now you can install the package by simply `pip install dandelion`.
