@@ -229,7 +229,7 @@
 <pre><code class="python">    self.dropout0 = Dropout(name='dropout0')
 </code></pre>
 
-<p>You can drop the name here, it’s optional. However for possible parameter manipulation convenience later, we’d suggest giving a unique name for each network module here. (After version 0.14.0, you don't need to set the module name manually any more, they will be auto-named by the sub-module keys)</p>
+<p>You can drop the name here, it’s optional. <del>However for possible parameter manipulation convenience later, we’d suggest giving a unique name for each network module here.</del> (After version 0.14.0, you don't need to set the module name manually any more, they will be auto-named by the sub-module keys)</p>
 <p>Note that all these definitions are done in the <code>model</code>’s <code>__init__()</code> part. Now we defined all the NN modules to be used in our model, but their relations, i.e., the network structure hasn’t been done. This part will be defined in model’s <code>forward()</code> and <code>predict()</code> functions later.</p>
 <p>If you’re familiar with Lasagne or Keras, you’d notice that for <code>LSTM</code> module, Dandelion requires both the input dimension via <code>input_dims</code> and output dimension via <code>hidden_dim</code> meanwhile Lasagne or Keras would only require the output dimension, leaving the input dimension determined automatically by the framework. This is the cost you’d pay for greater flexibility by using Dandelion. </p>
 <h2 id="model-definition-structures">Model Definition - Structures</h2>
@@ -412,6 +412,7 @@ After these 3 steps, now we can compile the training function by Theano simply b
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script src="../search/require.js"></script>
       <script src="../search/search.js"></script>
 

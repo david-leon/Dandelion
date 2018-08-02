@@ -492,21 +492,21 @@ The input of <code>Dense</code> can have any dimensions, and note that we do not
 <hr />
 <h2 id="center">Center</h2>
 <p>Estimate class centers by moving averaging.</p>
-<pre><code class="python">class Center(feature_dim, center_num, alpha=0.1, center=init.GlorotUniform(), name=None)
+<pre><code class="python">class Center(feature_dim, center_num, center=init.GlorotUniform(), name=None)
 </code></pre>
 
 <ul>
 <li><strong>feature_dim</strong>: feature dimension </li>
 <li><strong>center_num</strong>: class center number</li>
-<li><strong>alpha</strong>: moving averaging coefficient, the closer to one, the more it will depend on the last batches seen</li>
 <li><strong>center</strong>: initialization of class centers, should be in shape of <code>(center_num, feature_dim)</code></li>
 </ul>
-<pre><code class="python">.forward(features, labels)
+<pre><code class="python">.forward(features, labels, alpha=0.1)
 </code></pre>
 
 <ul>
 <li><strong>features</strong>: batch features, from which the class centers will be estimated</li>
 <li><strong>labels</strong>: <code>features</code>'s corresponding class labels</li>
+<li><strong>alpha</strong>: moving averaging coefficient, the closer to one, the more it will depend on the last batches seen: <span><span class="MathJax_Preview">C_{new} = \alpha*C_{batch} + (1-\alpha)*C_{old}</span><script type="math/tex">C_{new} = \alpha*C_{batch} + (1-\alpha)*C_{old}</script></span></li>
 <li><strong>return</strong>: centers estimated</li>
 </ul>
 <pre><code class="python">.predict()
@@ -626,6 +626,7 @@ The input of <code>Dense</code> can have any dimensions, and note that we do not
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script src="../search/require.js"></script>
       <script src="../search/search.js"></script>
 
