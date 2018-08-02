@@ -11,6 +11,7 @@ floatX = theano.config.floatX
 from theano import tensor
 from theano.tensor.signal import pool
 from .util import as_tuple
+from theano.tensor.nnet.neighbours import images2neibs
 
 def pool_1d(x, ws=2, ignore_border=True, stride=None, pad=0, mode='max', axis=-1):
     """
@@ -278,6 +279,28 @@ def upsample_2d_bilinear(x, ratio=None, frac_ratio=None, use_1D_kernel=True):
     """
     return tensor.nnet.abstract_conv.bilinear_upsampling(x, ratio=ratio, frac_ratio=frac_ratio, use_1D_kernel=use_1D_kernel)
 
+#todo: due to theano's images2neibs(), this tensor function does not support gradient computation [7-30-2018]
+#todo: this API won't be exposed until we find another way to implement `im2col` with gradient support
+#todo: if this API is deleted, test/test_im2col.py should be deleted as well
+def _im2col(x, nb_size=(3,3), border_mode='half', merge_channel=False):
+    """
+    Function im2col allows to apply a sliding window operation to a 4D tensor, based on theano's images2neibs() and corresponding to Caffe's im2col()
+    :todo: support any nb_step
+    :param x: must be 4D tensor with shape (B, C, H, W)
+    :param nb_size: neighbour size (h, w), i.e., the sliding window size, 2D vector. Only odd shapes are supported.
+    :param border_mode: 'half' | 'wrap_centered' : on image border, whether pad by 0 or wrap image
+    :param merge_channel: if False, return with shape (B, C, H, W, h*w), otherwise return with shape (B, H, W, C*h*w), corresponding to Caffe's im2col()
+    :return:
+    """
+    nb_step = (1, 1)
+    B, C, H, W = x.shape
+    x = images2neibs(x, neib_shape=nb_size, neib_step=nb_step, mode=border_mode) # (B*C*H*W, h*w)
+    x = tensor.reshape(x, (B, C, H, W, -1))  # (B, C, H, W, h*w)
+    if merge_channel:
+        x = x.dimshuffle(0, 2, 3, 1, 4)  # (B, H, W, C, h*w)
+        x = tensor.reshape(x, (B, H, W, -1))  # (B, H, W, C*h*w)
+    return x
+
 
 
 if __name__ == '__main__':
@@ -285,7 +308,6 @@ if __name__ == '__main__':
             'Author: David Leon\n',
             'All rights reserved\n']
     print(*INFO)
-
 
 
 

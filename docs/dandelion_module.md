@@ -281,18 +281,18 @@ _______________________________________________________________________
 Estimate class centers by moving averaging.
 
 ```python
-class Center(feature_dim, center_num, alpha=0.1, center=init.GlorotUniform(), name=None)
+class Center(feature_dim, center_num, center=init.GlorotUniform(), name=None)
 ```
 * **feature_dim**: feature dimension 
 * **center_num**: class center number
-* **alpha**: moving averaging coefficient, the closer to one, the more it will depend on the last batches seen
 * **center**: initialization of class centers, should be in shape of `(center_num, feature_dim)`
 
 ```python
-.forward(features, labels)
+.forward(features, labels, alpha=0.1)
 ```
 * **features**: batch features, from which the class centers will be estimated
 * **labels**: `features`'s corresponding class labels
+* **alpha**: moving averaging coefficient, the closer to one, the more it will depend on the last batches seen: $C_{new} = \alpha*C_{batch} + (1-\alpha)*C_{old}$
 * **return**: centers estimated
 ```python
 .predict()

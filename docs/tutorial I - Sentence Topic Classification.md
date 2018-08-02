@@ -53,7 +53,7 @@ Now we define all the network modules as our model’s attributes, such as
     self.dropout0 = Dropout(name='dropout0')
 ```
 
-You can drop the name here, it’s optional. However for possible parameter manipulation convenience later, we’d suggest giving a unique name for each network module here. (After version 0.14.0, you don't need to set the module name manually any more, they will be auto-named by the sub-module keys)
+You can drop the name here, it’s optional. <del>However for possible parameter manipulation convenience later, we’d suggest giving a unique name for each network module here.</del> (After version 0.14.0, you don't need to set the module name manually any more, they will be auto-named by the sub-module keys)
 
 Note that all these definitions are done in the `model`’s `__init__()` part. Now we defined all the NN modules to be used in our model, but their relations, i.e., the network structure hasn’t been done. This part will be defined in model’s `forward()` and `predict()` functions later.
 

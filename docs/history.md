@@ -1,5 +1,9 @@
 # History
 
+## version 0.17.7 [8-2-2018]
+From this version the documentaiton supports latex math officially.
+* **MODIFIED**: move arg `alpha` of `Module.Center` from class delcaration to its `.forward()` interface.
+
 ## version 0.17.6 [7-25-2018]
 * **MODIFIED**: change default value of `Module.set_weights_by_name()`'s arg `unmatched` from `ignore` to `raise`
 * **MODIFIED**: change default value of `model.vgg.model_VGG16()`'s arg `flip_filters` from `True` to `False`

@@ -2,6 +2,12 @@ site_name: Dandelion
 site_author: David Leon (Dawei Leng)
 docs_dir: docs
 
+markdown_extensions:
+    - pymdownx.arithmatex
+
+extra_javascript:
+    - https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+
 pages:
     - Home: index.md
     - Tutorials:

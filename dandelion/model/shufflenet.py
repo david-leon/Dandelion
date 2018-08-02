@@ -54,11 +54,13 @@ class DSConv2D(Module):
 class ShuffleUnit(Module):
     """
     Shuffle unit reference implementation (https://arxiv.org/abs/1610.02357)
+    Due to a bug in Theano's convolution, you'll need newer version of Theano
+    after this [commit](https://github.com/Theano/Theano/commit/727477b5c3cfb4352f18b07ea4e4cb6df95cc254)
+    to run this model.
     """
     def __init__(self, in_channels=256, inner_channels=None, out_channels=None, group_num=4, border_mode='same', batchnorm_mode=1, activation=relu,
                  stride=(1,1), dilation=(1,1), fusion_mode='add'):
         """
-
         :param in_channels: channel number of block input
         :param inner_channels: channel number inside the block
         :param out_channels: channel number of block output, only used when `fusion_mode` = 'concat', and must > `in_channels`
@@ -89,7 +91,7 @@ class ShuffleUnit(Module):
         if border_mode not in {'same'}:
             raise ValueError('Only "same" border mode is supported')
         self.fusion_mode    = fusion_mode
-        self.conv1 = Conv2D(in_channels=in_channels, out_channels=self.inner_channels, kernel_size=1, pad=border_mode, num_groups=group_num) #todo: [Theano BUG] the ShuffleSeg model won't train on GPU if self.conv1.num_groups>1
+        self.conv1 = Conv2D(in_channels=in_channels, out_channels=self.inner_channels, kernel_size=1, pad=border_mode, num_groups=group_num)
         self.conv2 = DSConv2D(in_channels=self.inner_channels, out_channels=self.inner_channels, kernel_size=3, pad=border_mode, stride=self.stride, dilation=self.dilation)
         self.conv3 = Conv2D(in_channels=self.inner_channels, out_channels=self.out_channels, kernel_size=1, pad=border_mode, num_groups=group_num)
         if batchnorm_mode == 0:   # no batch normalization

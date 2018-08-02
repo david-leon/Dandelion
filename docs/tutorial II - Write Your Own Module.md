@@ -21,19 +21,19 @@ Now assume that the last layer of the neural network is a `Dense` module followe
 Apparently the feature extracted by the plain model is not well centered, in other words, the feature distribution is not well-formed.
 
 Ideally, to reject or accept one sample as a certain class, we can set a probability threshold so that any sample whose feature satisfies
-𝑝(𝑓_𝑗│𝐶_𝑖)<𝑇_𝑖 will be rejected as an “outsider” for this class with certainty 1−𝑇_𝑖
+$𝑝(𝑓_𝑗│𝐶_𝑖)<𝑇_𝑖$ will be rejected as an “outsider” for this class with certainty $1−𝑇_𝑖$
 
-But before we can do this, the distribution 𝑝(𝑓│𝐶_𝑖) must be known. To get this conditional distribution, we can either traverse all the train samples and use any probability estimation / modelling method to approximate the true distribution, or we can resort to the DL method by directly requiring the neural network to produce features satisfying predefined distributions.
+But before we can do this, the distribution $𝑝(𝑓│𝐶_𝑖)$ must be known. To get this conditional distribution, we can either traverse all the train samples and use any probability estimation / modelling method to approximate the true distribution, or we can resort to the DL method by directly requiring the neural network to produce features satisfying predefined distributions.
 
 The reason we can do this is because a neural network can be trained to emulate any nonlinear functions, and we can always transform a compact distribution into Gaussian by a certain function. 
 
-To restrain the neural network to extract Gaussian distributed features, we assume each class has a mean feature vector (i.e., center) 𝑓_𝜇𝑖 and require the model to minimize the distance between extracted feature and its corresponding center vector, i.e., 
+To restrain the neural network to extract Gaussian distributed features, we assume each class has a mean feature vector (i.e., center) $𝑓_{𝜇_𝑖}$ and require the model to minimize the distance between extracted feature and its corresponding center vector, i.e., 
 
-min⁡‖𝑓_𝑗−𝑓_𝜇𝑖 ‖^2  𝑖𝑓 𝑠𝑎𝑚𝑝𝑙𝑒 𝑗 𝑏𝑒𝑙𝑜𝑛𝑔𝑠 𝑡𝑜 𝑐𝑙𝑎𝑠𝑠 𝑖
+$min⁡‖𝑓_𝑗−𝑓_{𝜇_𝑖} ‖^2$  𝑖𝑓 𝑠𝑎𝑚𝑝𝑙𝑒 $j$ 𝑏𝑒𝑙𝑜𝑛𝑔𝑠 𝑡𝑜 𝑐𝑙𝑎𝑠𝑠 $𝑖$
 
 We refer this objective as “center loss”, the details can be found in Ref. [A Discriminative Deep Feature Learning Approach for Face Recognition. Yandong Wen, Kaipeng Zhang, Zhifeng Li and Yu Qiao. European Conference on Computer Vision (ECCV) 2016]. The model is trained now with both the categorical cross entropy loss and the center loss as 
 
-min⁡ 𝐶𝑎𝑡𝑒𝑔𝑜𝑟𝑖𝑐𝑎𝑙𝐶𝑟𝑜𝑠𝑠𝐸𝑛𝑡𝑟𝑜𝑝𝑦+𝜆∗𝐶𝑒𝑛𝑡𝑒𝑟𝐿𝑜𝑠𝑠  
+$min$⁡ $𝐶𝑎𝑡𝑒𝑔𝑜𝑟𝑖𝑐𝑎𝑙𝐶𝑟𝑜𝑠𝑠𝐸𝑛𝑡𝑟𝑜𝑝𝑦+𝜆∗𝐶𝑒𝑛𝑡𝑒𝑟𝐿𝑜𝑠𝑠$  
 
 ![fig2](center_2.png)
 

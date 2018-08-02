@@ -31,6 +31,7 @@
                              2) modified: module's name convention changed to `class_name|instance_name@parent_module_name`
                              3) remove all specified names for `register_param()` and `register_self_updating_variable()`. Leave the variables to be named automatically by
                              their parent module.
+                8,  2, 2018  modified: `Center` module, move `alpha` arg from class declaration to .forward() interface.
 
   Note      :
     1) GRU & LSTM and their cell version have built-in activation (tanh), other modules have no built-in activations
@@ -1187,24 +1188,24 @@ class Center(Module):
     Compute the class centers during training
     Ref. to "Discriminative feature learning approach for deep face recognition (2016)"
     """
-    def __init__(self, feature_dim, center_num, alpha=0.1, center=init.GlorotUniform(), name=None):
+    def __init__(self, feature_dim, center_num, center=init.GlorotUniform(), name=None):
         """
         :param alpha: moving averaging coefficient
         :param center: initial value of center
         """
         super().__init__(name=name)
         self.center = self.register_self_updating_variable(center, shape=[center_num, feature_dim])
-        self.alpha = alpha
 
-    def forward(self, features, labels):
+    def forward(self, features, labels, alpha=0.1):
         """
 
         :param features: (B, D)
         :param labels: (B,)
+        :param alpha: float scalar, moving mean weight
         :return: categorical centers
         """
         center_batch = self.center[labels, :]
-        diff = self.alpha * (features - center_batch)
+        diff = alpha * (features - center_batch)
         center_updated = tensor.inc_subtensor(self.center[labels, :], diff)
         self.center.update = center_updated
         return self.center
