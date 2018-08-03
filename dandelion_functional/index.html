@@ -105,6 +105,9 @@
     <li class="toctree-l3"><a href="#upsample_2d_bilinear">upsample_2d_bilinear</a></li>
     
 
+    <li class="toctree-l3"><a href="#channel_shuffle">channel_shuffle</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -269,6 +272,16 @@
 <li><strong>use_1D_kernel</strong>: only for speed matter.</li>
 </ul>
 <p>Note: due to Theano's implementation, when the upsampling ratio is even, the last row and column is repeated one extra time compared to the first row and column which makes the upsampled tensor asymmetrical on both sides. This does not happen when the upsampling ratio is odd.</p>
+<hr />
+<h2 id="channel_shuffle">channel_shuffle</h2>
+<p>Pseudo shuffling channel by dimshuffle &amp; reshape, first introduced in <a href="https://arxiv.org/abs/1610.02357">ShuffleNet</a></p>
+<pre><code class="python">channel_shuffle(x, group_num)
+</code></pre>
+
+<ul>
+<li><strong>x</strong>: 4D tensor, with shape <code>(B, C, H, W)</code>, usually output of a 2D convolution.</li>
+<li><strong>group_num</strong>: int scalar, and <code>C</code> must be divisible by <code>group_num</code></li>
+</ul>
               
             </div>
           </div>

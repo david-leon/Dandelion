@@ -126,6 +126,8 @@
     
         <ul>
         
+            <li><a class="toctree-l3" href="#version-0178-8-3-2018">version 0.17.8 [8-3-2018]</a></li>
+        
             <li><a class="toctree-l3" href="#version-0177-8-2-2018">version 0.17.7 [8-2-2018]</a></li>
         
             <li><a class="toctree-l3" href="#version-0176-7-25-2018">version 0.17.6 [7-25-2018]</a></li>
@@ -207,6 +209,12 @@
             <div class="section">
               
                 <h1 id="history">History</h1>
+<h2 id="version-0178-8-3-2018">version 0.17.8 [8-3-2018]</h2>
+<ul>
+<li><strong>MODIFIED</strong>: disable the auto-broadcasting in <code>create_param()</code>. This auto-broadcasting would result in theano exception for parameter with shape = [1].</li>
+<li><strong>NEW</strong>: add <code>model.shufflenet.ShuffleUnit_v2_Stack</code> and <code>model.shufflenet.ShuffleNet_v2</code> for ShuffleNet_v2 reference implementation.</li>
+<li><strong>NEW</strong>: move <code>channel_shuffle()</code> from <code>model.shufflenet.py</code> into <code>functional.py</code></li>
+</ul>
 <h2 id="version-0177-8-2-2018">version 0.17.7 [8-2-2018]</h2>
 <p>From this version the documentaiton supports latex math officially.<br />
 * <strong>MODIFIED</strong>: move arg <code>alpha</code> of <code>Module.Center</code> from class delcaration to its <code>.forward()</code> interface.</p>
@@ -217,20 +225,20 @@
 </ul>
 <h2 id="version-0175-7-20-2018">version 0.17.5 [7-20-2018]</h2>
 <ul>
-<li><strong>FIXED</strong>: fixed typo in <code>objective::categorical_crossentropy()</code></li>
+<li><strong>FIXED</strong>: fixed typo in <code>objective.categorical_crossentropy()</code></li>
 </ul>
 <h2 id="version-0174-7-20-2018">version 0.17.4 [7-20-2018]</h2>
 <ul>
-<li><strong>NEW</strong>: add class weighting support for <code>objective::categorical_crossentropy()</code> and <code>objective::categorical_crossentropy_log()</code></li>
-<li><strong>NEW</strong>: add <code>util::theano_safe_run()</code> to help catch memory exceptions when running theano functions.</li>
+<li><strong>NEW</strong>: add class weighting support for <code>objective.categorical_crossentropy()</code> and <code>objective.categorical_crossentropy_log()</code></li>
+<li><strong>NEW</strong>: add <code>util.theano_safe_run()</code> to help catch memory exceptions when running theano functions.</li>
 </ul>
 <h2 id="version-0173-7-18-2018">version 0.17.3 [7-18-2018]</h2>
 <ul>
-<li><strong>FIXED</strong>: pooling mode in <code>model::shufflenet::ShuffleUnit</code> changed to <code>average_inc_pad</code> for correct gradient.</li>
+<li><strong>FIXED</strong>: pooling mode in <code>model.shufflenet.ShuffleUnit</code> changed to <code>average_inc_pad</code> for correct gradient.</li>
 </ul>
 <h2 id="version-0172-7-17-2018">version 0.17.2 [7-17-2018]</h2>
 <ul>
-<li><strong>NEW</strong>: add <code>model::shufflenet::model_ShuffleSeg</code> for Shuffle-Seg model reference implementation.</li>
+<li><strong>NEW</strong>: add <code>model.shufflenet.model_ShuffleSeg</code> for Shuffle-Seg model reference implementation.</li>
 </ul>
 <h2 id="version-0171-7-12-2018">version 0.17.1 [7-12-2018]</h2>
 <ul>
@@ -246,9 +254,9 @@ From this version, it's recommonded to let the framework auto-name the module pa
 <li><strong>MODIFIED</strong>: module's variable name convention changed to <code>variable_name@parent_module_name</code> to make sure unique name for each variable in a complex network</li>
 <li><strong>MODIFIED</strong>: module's name convention changed to <code>class_name|instance_name@parent_module_name</code> to make sure unique name for each module in a complex network</li>
 <li><strong>MODIFIED</strong>: remove all specified names for <code>register_param()</code> and <code>register_self_updating_variable()</code>. Leave the variables to be named automatically by their parent module.</li>
-<li><strong>MODIFIED</strong>: improve <code>model::shufflenet::ShuffleUnit</code>.</li>
+<li><strong>MODIFIED</strong>: improve <code>model.shufflenet.ShuffleUnit</code>.</li>
 <li><strong>NEW</strong>: add <code>Sequential</code> container in <code>dandelion.module</code> for usage convenience.</li>
-<li><strong>NEW</strong>: add <code>model::shufflenet::ShuffleUnit_Stack</code> and <code>model::shufflenet::ShuffleNet</code> for ShuffleNet reference implementation.</li>
+<li><strong>NEW</strong>: add <code>model.shufflenet.ShuffleUnit_Stack</code> and <code>model.shufflenet.ShuffleNet</code> for ShuffleNet reference implementation.</li>
 </ul>
 <h2 id="version-01610-7-10-2018">version 0.16.10 [7-10-2018]</h2>
 <ul>
@@ -261,34 +269,34 @@ From this version, it's recommonded to let the framework auto-name the module pa
 </ul>
 <h2 id="version-0168-7-9-2018">version 0.16.8 [7-9-2018]</h2>
 <ul>
-<li><strong>NEW</strong>: add <code>model::shufflenet::DSConv2D</code> for Depthwise Separable Convolution reference implementation.</li>
-<li><strong>NEW</strong>: add <code>model::shufflenet::ShuffleUnit</code> for ShuffleNet reference implementation</li>
-<li><strong>FIXED</strong>: <code>W_shape</code> of <code>module::Conv2D</code> should count for <code>num_groups</code></li>
+<li><strong>NEW</strong>: add <code>model.shufflenet.DSConv2D</code> for Depthwise Separable Convolution reference implementation.</li>
+<li><strong>NEW</strong>: add <code>model.shufflenet.ShuffleUnit</code> for ShuffleNet reference implementation</li>
+<li><strong>FIXED</strong>: <code>W_shape</code> of <code>module.Conv2D</code> should count for <code>num_groups</code></li>
 </ul>
 <h2 id="version-0167-7-6-2018">version 0.16.7 [7-6-2018]</h2>
 <ul>
-<li><strong>NEW</strong>: add <code>model::vgg::model_VGG16</code> for VGG-16 reference implementation.</li>
-<li><strong>NEW</strong>: add <code>model::resnet::ResNet_bottleneck</code> for ResNet reference implementation</li>
-<li><strong>NEW</strong>: add <code>model::feature_pyramid_net::model_FPN</code> for Feature Pyramid Network reference implementation</li>
+<li><strong>NEW</strong>: add <code>model.vgg.model_VGG16</code> for VGG-16 reference implementation.</li>
+<li><strong>NEW</strong>: add <code>model.resnet.ResNet_bottleneck</code> for ResNet reference implementation</li>
+<li><strong>NEW</strong>: add <code>model.feature_pyramid_net.model_FPN</code> for Feature Pyramid Network reference implementation</li>
 </ul>
 <h2 id="version-0166-7-5-2018">version 0.16.6 [7-5-2018]</h2>
 <ul>
-<li><strong>NEW</strong>: add <code>functional::upsample_2d()</code> for 2D upsampling</li>
-<li><strong>NEW</strong>: add <code>functional::upsample_2d_bilinear()</code>for bilinear 2D upsampling</li>
+<li><strong>NEW</strong>: add <code>functional.upsample_2d()</code> for 2D upsampling</li>
+<li><strong>NEW</strong>: add <code>functional.upsample_2d_bilinear()</code>for bilinear 2D upsampling</li>
 </ul>
 <h2 id="version-0165-7-5-2018">version 0.16.5 [7-5-2018]</h2>
 <ul>
-<li><strong>NEW</strong>: add <code>functional::spatial_pyramid_pooling()</code> for SPP-net implementation.</li>
+<li><strong>NEW</strong>: add <code>functional.spatial_pyramid_pooling()</code> for SPP-net implementation.</li>
 </ul>
 <h2 id="version-0164-7-4-2018">version 0.16.4 [7-4-2018]</h2>
 <ul>
-<li><strong>FIXED</strong>: wrong indexing when <code>targets</code> is int vector for <code>objective::categorical_crossentropy_log()</code>.</li>
+<li><strong>FIXED</strong>: wrong indexing when <code>targets</code> is int vector for <code>objective.categorical_crossentropy_log()</code>.</li>
 </ul>
 <h2 id="version-0163-7-3-2018">version 0.16.3 [7-3-2018]</h2>
 <ul>
-<li><strong>NEW</strong>: add <code>activation::log_softmax()</code> for more numerically stable softmax.</li>
-<li><strong>NEW</strong>: add <code>objective::categorical_crossentropy_log()</code> for more numerically stable categorical cross-entropy</li>
-<li><strong>MODIFIED</strong>: add <code>eps</code> argument to <code>objective::categorical_crossentropy()</code> for numerical stability purpose. Note 1e-7 is set as default value of <code>eps</code>. You can set it to 0 to get the old <code>categorical_crossentropy()</code> back.</li>
+<li><strong>NEW</strong>: add <code>activation.log_softmax()</code> for more numerically stable softmax.</li>
+<li><strong>NEW</strong>: add <code>objective.categorical_crossentropy_log()</code> for more numerically stable categorical cross-entropy</li>
+<li><strong>MODIFIED</strong>: add <code>eps</code> argument to <code>objective.categorical_crossentropy()</code> for numerical stability purpose. Note 1e-7 is set as default value of <code>eps</code>. You can set it to 0 to get the old <code>categorical_crossentropy()</code> back.</li>
 </ul>
 <h2 id="version-0160-6-13-2018">version 0.16.0 [6-13-2018]</h2>
 <ul>

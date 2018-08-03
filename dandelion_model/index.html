@@ -104,19 +104,16 @@
     <a class="current" href="./">dandelion.model</a>
     <ul class="subnav">
             
-    <li class="toctree-l3"><a href="#u-net-fcn">U-net FCN</a></li>
+    <li class="toctree-l3"><a href="#vgg-16-network">VGG-16 network</a></li>
     
 
-    <li class="toctree-l3"><a href="#vgg-16-network">VGG-16 network</a></li>
+    <li class="toctree-l3"><a href="#depthwise-separable-convolution">Depthwise Separable Convolution</a></li>
     
 
     <li class="toctree-l3"><a href="#resnet-bottleneck">ResNet bottleneck</a></li>
     
 
     <li class="toctree-l3"><a href="#feature-pyramid-network">Feature Pyramid Network</a></li>
-    
-
-    <li class="toctree-l3"><a href="#depthwise-separable-convolution">Depthwise Separable Convolution</a></li>
     
 
     <li class="toctree-l3"><a href="#shuffleunit">ShuffleUnit</a></li>
@@ -126,6 +123,21 @@
     
 
     <li class="toctree-l3"><a href="#shufflenet">ShuffleNet</a></li>
+    
+
+    <li class="toctree-l3"><a href="#shuffleunit_v2">ShuffleUnit_v2</a></li>
+    
+
+    <li class="toctree-l3"><a href="#shuffleunit_v2_stack">ShuffleUnit_v2_Stack</a></li>
+    
+
+    <li class="toctree-l3"><a href="#shufflenet_v2">ShuffleNet_v2</a></li>
+    
+
+    <li class="toctree-l3"><a href="#ctpn">CTPN</a></li>
+    
+
+    <li class="toctree-l3"><a href="#u-net-fcn">U-net FCN</a></li>
     
 
     <li class="toctree-l3"><a href="#shuffle-seg-network">Shuffle-Seg network</a></li>
@@ -188,20 +200,8 @@
           <div role="main">
             <div class="section">
               
-                <h2 id="u-net-fcn">U-net FCN</h2>
-<p>Reference implementation of <a href="https://arxiv.org/abs/1505.04597">U-net</a> FCN</p>
-<pre><code class="python">class model_Unet(channel=1, im_height=128, im_width=128, Nclass=2, kernel_size=3, 
-                 border_mode='same', base_n_filters=64, output_activation=softmax)
-</code></pre>
-
-<ul>
-<li><strong>channel</strong>: input channel number</li>
-<li><strong>Nclass</strong>: output channel number</li>
-</ul>
-<p>The model accepts input of shape in the order of (B, C, H, W), and outputs with shape in the order of (B, H, W, C).</p>
-<hr />
-<h2 id="vgg-16-network">VGG-16 network</h2>
-<p>Reference implementation of <a href="https://arxiv.org/abs/1409.1556">VGG-16</a> network</p>
+                <h2 id="vgg-16-network">VGG-16 network</h2>
+<p>Reference implementation of the classic <a href="https://arxiv.org/abs/1409.1556">VGG-16</a> network</p>
 <pre><code class="python">class model_VGG16(channel=3, im_height=224, im_width=224, Nclass=1000, 
                   kernel_size=3, border_mode=(1, 1), flip_filters=False)
 </code></pre>
@@ -211,6 +211,22 @@
 <li><strong>Nclass</strong>: output class number</li>
 </ul>
 <p>The model accepts input of shape in the order of (B, C, H, W), and outputs with shape (B, N).</p>
+<hr />
+<h2 id="depthwise-separable-convolution">Depthwise Separable Convolution</h2>
+<p>Reference implementation of <a href="https://arxiv.org/abs/1610.02357">Depthwise Separable Convolution</a></p>
+<pre><code class="python">class DSConv2D(in_channels, out_channels, kernel_size=(3,3), stride=(1,1), 
+               dilation=(1,1), pad='valid')
+</code></pre>
+
+<ul>
+<li><strong>input_channels</strong>: int. Input shape is (B, input_channels, H_in, W_in)</li>
+<li><strong>out_channels</strong>: int. Output shape is (B output_channels, H_out, W_out)</li>
+<li><strong>kernel_size</strong>: int scalar or tuple of int. Convolution kernel size</li>
+<li><strong>stride</strong>: Factor by which to subsample the output</li>
+<li><strong>pad</strong>: <code>same</code>/<code>valid</code>/<code>full</code> or 2-element tuple of int. Control image border padding.</li>
+<li><strong>dilation</strong>: factor by which to subsample (stride) the input.</li>
+</ul>
+<p>The model do the depthwise 2D convolution per-channel of input, then map the output to #out_channels number of channel by pointwise 1*1 convolution. No activation applied inside.</p>
 <hr />
 <h2 id="resnet-bottleneck">ResNet bottleneck</h2>
 <p>Reference implementation of bottleneck building block of <a href="https://arxiv.org/abs/1512.03385">ResNet</a> network</p>
@@ -235,22 +251,6 @@
 <li><strong>batchnorm_mode</strong>: same with <code>ResNet_bottleneck</code></li>
 <li><strong>return</strong> 4-element tuple <code>(p2, p3, p4, p5)</code>,  CNN pyramid features at different scales, each with #channel = 4 * <code>base_n_filters</code></li>
 </ul>
-<hr />
-<h2 id="depthwise-separable-convolution">Depthwise Separable Convolution</h2>
-<p>Reference implementation of <a href="https://arxiv.org/abs/1610.02357">Depthwise Separable Convolution</a></p>
-<pre><code class="python">class DSConv2D(in_channels, out_channels, kernel_size=(3,3), stride=(1,1), 
-               dilation=(1,1), pad='valid')
-</code></pre>
-
-<ul>
-<li><strong>input_channels</strong>: int. Input shape is (B, input_channels, H_in, W_in)</li>
-<li><strong>out_channels</strong>: int. Output shape is (B output_channels, H_out, W_out)</li>
-<li><strong>kernel_size</strong>: int scalar or tuple of int. Convolution kernel size</li>
-<li><strong>stride</strong>: Factor by which to subsample the output</li>
-<li><strong>pad</strong>: <code>same</code>/<code>valid</code>/<code>full</code> or 2-element tuple of int. Control image border padding.</li>
-<li><strong>dilation</strong>: factor by which to subsample (stride) the input.</li>
-</ul>
-<p>The model do the depthwise 2D convolution per-channel of input, then map the output to #out_channels number of channel by pointwise 1*1 convolution. No activation applied inside.</p>
 <hr />
 <h2 id="shuffleunit">ShuffleUnit</h2>
 <p>Reference implementation of <a href="https://arxiv.org/abs/1707.01083">shuffle-net</a> unit</p>
@@ -286,7 +286,7 @@
 <li><strong>stack_size</strong>: number of shuffle-unit in the stack</li>
 </ul>
 <h2 id="shufflenet">ShuffleNet</h2>
-<p>Reference implementation of <a href="https://arxiv.org/abs/1707.01083">shuffle-net</a>, without the final Dense layer.</p>
+<p>Reference implementation of <a href="https://arxiv.org/abs/1707.01083">shuffle-net</a>, without the final pooling &amp; Dense layer.</p>
 <pre><code class="python">class model_ShuffleNet(in_channels, group_num=4, stage_channels=(24, 272, 544, 1088), stack_size=(3, 7, 3), 
                        batchnorm_mode=1, activation=relu)
 </code></pre>
@@ -299,6 +299,78 @@
 <li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 </ul>
+<hr />
+<h2 id="shuffleunit_v2">ShuffleUnit_v2</h2>
+<p>Reference implementation of <a href="https://arxiv.org/abs/1807.11164">shufflenet_v2</a> unit</p>
+<pre><code class="python">class ShuffleUnit_v2(in_channels=256, out_channels=None, border_mode='same', batchnorm_mode=1, 
+                     activation=relu, stride=1, dilation=1)
+</code></pre>
+
+<ul>
+<li><strong>in_channels</strong>: channel number of unit input</li>
+<li><strong>out_channels</strong>: channel number of unit output, only used when <code>fusion_mode</code> = 'concat', and must &gt; <code>in_channels</code></li>
+<li><strong>border_mode</strong>: only <code>same</code> allowed</li>
+<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
+<li><strong>stride, dilation</strong>: only used for depthwise separable convolution module inside, must be integer scalars</li>
+</ul>
+<h2 id="shuffleunit_v2_stack">ShuffleUnit_v2_Stack</h2>
+<p>Reference implementation of shufflenet_v2 unit stack</p>
+<pre><code class="python">class ShuffleUnit_v2_Stack(in_channels, out_channels, batchnorm_mode=1, activation=relu, stack_size=3)
+</code></pre>
+
+<ul>
+<li><strong>in_channels</strong>: channel number of input</li>
+<li><strong>out_channels</strong>: channel number of stack output</li>
+<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
+<li><strong>stack_size</strong>: number of shuffle-unit in the stack</li>
+</ul>
+<h2 id="shufflenet_v2">ShuffleNet_v2</h2>
+<p>Reference implementation of <a href="https://arxiv.org/abs/1807.11164">shufflenet_v2</a>, without the final pooling &amp; Dense layer.</p>
+<pre><code class="python">class model_ShuffleNet_v2(in_channels, stage_channels=(24, 116, 232, 464, 1024), stack_size=(3, 7, 3), 
+                          batchnorm_mode=1, activation=relu)
+</code></pre>
+
+<ul>
+<li><strong>in_channels</strong>: channel number of input</li>
+<li><strong>stage_channels</strong>: channel number of each stage output.</li>
+<li><strong>stack_size</strong>: size of each stack.</li>
+<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
+</ul>
+<hr />
+<h2 id="ctpn">CTPN</h2>
+<p>Model reference implementation of <a href="https://arxiv.org/abs/1609.03605">CTPN</a></p>
+<pre><code class="python">class model_CTPN(k=10, do_side_refinement_regress=False,
+                 batchnorm_mode=1, channel=3, im_height=None, im_width=None,
+                 kernel_size=3, border_mode=(1, 1), VGG_flip_filters=False,
+                 im2col=None)
+</code></pre>
+
+<ul>
+<li><strong>k</strong>: anchor box number</li>
+<li><strong>do_side_refinement_regress</strong>: whether implement side refinement regression</li>
+<li><strong>batchnorm_mode</strong>: {1|0}, whether insert batch normalization into the end of each convolution stage of VGG-16 net, useful for cold start.</li>
+<li><strong>channel</strong>: input channel number</li>
+<li><strong>im_height, im_width</strong>: input image height/width, optional</li>
+<li><strong>kernel_size</strong>: convolution kernel size of VGG-16 net</li>
+<li><strong>border_mode</strong>: border mode of VGG-16 net</li>
+<li><strong>VGG_flip_filters</strong>: whether flip convolution kernels for VGG-16 net</li>
+<li><strong>im2col</strong>: function corresponding to Caffe's <code>im2col()</code>. If <code>None</code>, the CTPN implementation will not strictly follow the original paper.</li>
+</ul>
+<hr />
+<h2 id="u-net-fcn">U-net FCN</h2>
+<p>Reference implementation of <a href="https://arxiv.org/abs/1505.04597">U-net</a> FCN</p>
+<pre><code class="python">class model_Unet(channel=1, im_height=128, im_width=128, Nclass=2, kernel_size=3, 
+                 border_mode='same', base_n_filters=64, output_activation=softmax)
+</code></pre>
+
+<ul>
+<li><strong>channel</strong>: input channel number</li>
+<li><strong>Nclass</strong>: output channel number</li>
+</ul>
+<p>The model accepts input of shape in the order of (B, C, H, W), and outputs with shape in the order of (B, H, W, C).</p>
 <hr />
 <h2 id="shuffle-seg-network">Shuffle-Seg network</h2>
 <p>Model reference implementation of <a href="https://arxiv.org/abs/1803.03816">ShuffleSeg</a></p>
