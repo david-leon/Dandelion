@@ -29,20 +29,20 @@ class build_model_D(Module):
 
     def forward(self, x):
         x = self.dense.forward(x)
-        x = softmax(x)
+        x = relu(x)
         return x
 
 def build_model_L(in_dim=3, out_dim=3):
     input_var = tensor.fmatrix('x')
     input0 = InputLayer(shape=(None, in_dim), input_var=input_var, name='input0')
-    dense0 = DenseLayer(input0, num_units=out_dim, nonlinearity=LACT.softmax, name='dense0')
+    dense0 = DenseLayer(input0, num_units=out_dim, nonlinearity=LACT.rectify, name='dense0')
     return dense0
 
-def test_case_0():
+def test_case_0(in_dim=1, out_dim=1):
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
 
-    in_dim, out_dim = 500, 16
+
     model_D = build_model_D(in_dim=in_dim, out_dim=out_dim)
     model_L = build_model_L(in_dim=in_dim, out_dim=out_dim)
 
@@ -71,7 +71,7 @@ def test_case_0():
 
 if __name__ == '__main__':
 
-    test_case_0()
+    test_case_0(3, 2)
 
     print('Test passed')
 

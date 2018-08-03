@@ -80,3 +80,12 @@ upsample_2d_bilinear(x, ratio=None, frac_ratio=None, use_1D_kernel=True)
 * **use_1D_kernel**: only for speed matter.
 
 Note: due to Theano's implementation, when the upsampling ratio is even, the last row and column is repeated one extra time compared to the first row and column which makes the upsampled tensor asymmetrical on both sides. This does not happen when the upsampling ratio is odd.
+
+_______________________________________________________________________
+## channel_shuffle
+Pseudo shuffling channel by dimshuffle & reshape, first introduced in [ShuffleNet](https://arxiv.org/abs/1610.02357)
+```python
+channel_shuffle(x, group_num)
+```
+* **x**: 4D tensor, with shape `(B, C, H, W)`, usually output of a 2D convolution.
+* **group_num**: int scalar, and `C` must be divisible by `group_num`

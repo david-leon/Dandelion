@@ -46,7 +46,7 @@ def test_case_0():
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
 
-    in_channel = 3; out_channel = 3;kernel_size = (3, 3); stride = (1, 1); pad = 'valid';dilation = (1,1);num_groups = 1
+    in_channel = 1; out_channel = 3;kernel_size = (3, 3); stride = (1, 1); pad = 'valid';dilation = (1,1);num_groups = 1
     model_D = build_model_D(in_channel=in_channel, out_channel=out_channel, kernel_size=kernel_size, stride=stride,
                              pad=pad, dilation=dilation, num_groups=num_groups)
     model_L = build_model_L(in_channel=in_channel, out_channel=out_channel, kernel_size=kernel_size, stride=stride,

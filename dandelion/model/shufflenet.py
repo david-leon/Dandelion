@@ -1,6 +1,6 @@
 # coding:utf-8
 '''
-Reference implementation of [Shuffle-net](https://arxiv.org/abs/1707.01083)
+Reference implementation of [Shuffle-net](https://arxiv.org/abs/1707.01083) and other related models in paper.
 Created   :   7,  9, 2018
 Revised   :   7,  9, 2018
 All rights reserved
@@ -105,25 +105,6 @@ class ShuffleUnit(Module):
         else:
             raise ValueError('batchnorm_mode should be {0 | 1 | 2}')
 
-    @staticmethod
-    def channel_shuffle(x, group_num):
-        """
-        Pseudo shuffle channel by dimshuffle & reshape
-        :param x: (B, C, H, W)
-        :param group_num: int
-        :return:
-        """
-        if group_num == 1:
-            return x
-        x = x.dimshuffle((0, 2, 3, 1)) # (B, H, W, c*g)
-        B, H, W, C = x.shape
-        x = tensor.reshape(x, (B, H, W, C//group_num, group_num))
-        # x = tensor.reshape(x, (B, H, W, group_num, C//group_num))
-        x = x.dimshuffle((0, 1, 2, 4, 3))
-        x = x.flatten(ndim=4)
-        x = x.dimshuffle(0, 3, 1, 2)
-        return x
-
     def forward(self, x):
         """
         :param x: (B, C, H, W)
@@ -136,7 +117,7 @@ class ShuffleUnit(Module):
         if self.batchnorm_mode == 1:
             x = self.bn1.forward(x)
         x = self.activation(x)          # (B, c*g, H, W)
-        x = self.channel_shuffle(x, self.group_num)
+        x = channel_shuffle(x, self.group_num)
         x  = self.conv2.forward(x)
         if self.batchnorm_mode == 1:
             x = self.bn2.forward(x)
@@ -165,7 +146,7 @@ class ShuffleUnit(Module):
         if self.batchnorm_mode == 1:
             x = self.bn1.predict(x)
         x = self.activation(x)          # (B, c*g, H, W)
-        x = self.channel_shuffle(x, self.group_num)
+        x = channel_shuffle(x, self.group_num)
         x  = self.conv2.predict(x)
         if self.batchnorm_mode == 1:
             x = self.bn2.predict(x)
@@ -184,6 +165,149 @@ class ShuffleUnit(Module):
         else:
             raise ValueError('Only "add" or "concat" fusion mode supported')
 
+        return x
+
+class ShuffleUnit_v2(Module):
+    """
+    Shuffle unit v2 reference implementation (https://arxiv.org/abs/1807.11164)
+    """
+    def __init__(self, in_channels=256, out_channels=None, border_mode='same', batchnorm_mode=1, activation=relu,
+                 stride=1, dilation=1):
+        """
+        :param in_channels: channel number of block input
+        :param out_channels: channel number of block output, only used when `fusion_mode` = 'concat', and must > `in_channels`
+        :param border_mode: only `same` allowed
+        :param batchnorm_mode: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn;
+                               2 means batch normalization only applied to the last cnn
+        :param activation: default = relu. Note no activation applied to the last element-wise sum output.
+        :param stride, dilation: only used for depthwise separable convolution inside, must be integer scalars
+        :return y with #channel = `in_channels` when `fusion_mode`='add', #channel = `out_channels` when `fusion_mode`='concat'
+        """
+        super().__init__()
+        self.activation     = activation
+        self.batchnorm_mode = batchnorm_mode
+        self.stride         = as_tuple(stride, 2)
+        self.dilation       = as_tuple(dilation, 2)
+        self.border_mode    = border_mode
+        channels = out_channels//2
+        assert 2*channels == out_channels, "out_channels must be even"
+        assert isinstance(stride, int),    "stride must be integer scalar"
+        assert isinstance(dilation, int),  "dilation must be integer scalar"
+        if out_channels is None:
+            out_channels = in_channels
+        if stride == 1:
+            assert in_channels == out_channels, 'when stride=1, out_channels must be equal to in_channels'
+            self.conv1 = Conv2D(in_channels=channels, out_channels=channels, kernel_size=1, pad=border_mode)
+            self.conv2 = DSConv2D(in_channels=channels, out_channels=channels, kernel_size=3, pad=border_mode, dilation=self.dilation)
+            self.conv3 = Conv2D(in_channels=channels, out_channels=channels, kernel_size=1, pad=border_mode)
+        else:
+            self.conv1 = Conv2D(in_channels=in_channels, out_channels=channels, kernel_size=1, pad=border_mode)
+            self.conv2 = DSConv2D(in_channels=channels, out_channels=channels, kernel_size=3, pad=border_mode, stride=self.stride, dilation=self.dilation)
+            self.conv3 = Conv2D(in_channels=channels, out_channels=channels, kernel_size=1, pad=border_mode)
+            self.conv4 = DSConv2D(in_channels=in_channels, out_channels=in_channels, kernel_size=3, pad=border_mode, stride=self.stride, dilation=self.dilation)
+            self.conv5 = Conv2D(in_channels=in_channels, out_channels=channels, kernel_size=1, pad=border_mode)
+
+        if batchnorm_mode == 0:  # no batch normalization
+            pass
+        elif batchnorm_mode == 1:  # batch normalization per convolution
+            self.bn1 = BatchNorm(input_shape=(None, channels, None, None))
+            self.bn2 = BatchNorm(input_shape=(None, channels, None, None))
+            self.bn3 = BatchNorm(input_shape=(None, channels, None, None))
+            if stride > 1:
+                self.bn4 = BatchNorm(input_shape=(None, in_channels, None, None))
+                self.bn5 = BatchNorm(input_shape=(None, channels, None, None))
+        elif batchnorm_mode == 2:  # only one batch normalization at the end
+            self.bn3 = BatchNorm(input_shape=(None, channels, None, None))
+            self.bn5 = BatchNorm(input_shape=(None, channels, None, None))
+        else:
+            raise ValueError('batchnorm_mode should be {0 | 1 | 2}')
+
+    def forward(self, x):
+        """
+        :param x: (B, C, H, W)
+        :return:
+        """
+        self.work_mode = 'train'
+
+        if self.stride[0] == 1:
+            x1 = x[:, x.shape[1]//2:, :, :]   # the first half channels
+            x2 = x[:, :x.shape[1]//2, :, :]   # the last half channels
+            x1 = self.conv1.forward(x1)
+            if self.batchnorm_mode == 1:
+                x1 = self.bn1.forward(x1)
+            x1 = self.activation(x1)
+            x1 = self.conv2.forward(x1)
+            if self.batchnorm_mode == 1:
+                x1 = self.bn2.forward(x1)
+            x1 = self.conv3.forward(x1)
+            if self.batchnorm_mode in {1, 2}:
+                x1 = self.bn3.forward(x1)
+            x1 = self.activation(x1)
+        else:
+            x1 = self.conv1.forward(x)
+            if self.batchnorm_mode == 1:
+                x1 = self.bn1.forward(x1)
+            x1 = self.activation(x1)
+            x1 = self.conv2.forward(x1)
+            if self.batchnorm_mode == 1:
+                x1 = self.bn2.forward(x1)
+            x1 = self.conv3.forward(x1)
+            if self.batchnorm_mode in {1, 2}:
+                x1 = self.bn3.forward(x1)
+            x1 = self.activation(x1)
+
+            x2 = self.conv4.forward(x)
+            if self.batchnorm_mode == 1:
+                x2 = self.bn4.forward(x2)
+            x2 = self.conv5.forward(x2)
+            if self.batchnorm_mode in {1, 2}:
+                x2 = self.bn5.forward(x2)
+            x2 = self.activation(x2)
+
+        x = tensor.concatenate([x1, x2], axis=1)
+        x = channel_shuffle(x, 2)
+        return x
+
+    def predict(self, x):
+        self.work_mode = 'inference'
+
+        if self.stride[0] == 1:
+            x1 = x[:, x.shape[1]//2:, :, :]   # the first half channels
+            x2 = x[:, :x.shape[1]//2, :, :]   # the last half channels
+            x1 = self.conv1.predict(x1)
+            if self.batchnorm_mode == 1:
+                x1 = self.bn1.predict(x1)
+            x1 = self.activation(x1)
+            x1 = self.conv2.predict(x1)
+            if self.batchnorm_mode == 1:
+                x1 = self.bn2.predict(x1)
+            x1 = self.conv3.predict(x1)
+            if self.batchnorm_mode in {1, 2}:
+                x1 = self.bn3.predict(x1)
+            x1 = self.activation(x1)
+        else:
+            x1 = self.conv1.predict(x)
+            if self.batchnorm_mode == 1:
+                x1 = self.bn1.predict(x1)
+            x1 = self.activation(x1)
+            x1 = self.conv2.predict(x1)
+            if self.batchnorm_mode == 1:
+                x1 = self.bn2.predict(x1)
+            x1 = self.conv3.predict(x1)
+            if self.batchnorm_mode in {1, 2}:
+                x1 = self.bn3.predict(x1)
+            x1 = self.activation(x1)
+
+            x2 = self.conv4.predict(x)
+            if self.batchnorm_mode == 1:
+                x2 = self.bn4.predict(x2)
+            x2 = self.conv5.predict(x2)
+            if self.batchnorm_mode in {1, 2}:
+                x2 = self.bn5.predict(x2)
+            x2 = self.activation(x2)
+
+        x = tensor.concatenate([x1, x2], axis=1)
+        x = channel_shuffle(x, 2)
         return x
 
 class ShuffleUnit_Stack(Module):
@@ -224,9 +348,45 @@ class ShuffleUnit_Stack(Module):
             x = relu(module.predict(x))
         return x
 
+class ShuffleUnit_v2_Stack(Module):
+    """
+    Stack of shuffle_v2 unit
+    """
+    def __init__(self, in_channels, out_channels, batchnorm_mode=1, activation=relu, stack_size=3):
+        """
+        :param in_channels: channel number of stack input
+        :param out_channels: channel number of stack output
+        :param batchnorm_mode:
+        :param activation:
+        :param stack_size:
+        """
+        super().__init__()
+        self.shuffleunit0 = ShuffleUnit_v2(in_channels=in_channels, out_channels=out_channels, batchnorm_mode=batchnorm_mode,
+                                           activation=activation, stride=2)
+        self.shuffleunit_stack = [self.shuffleunit0]
+        for i in range(stack_size):
+            shuffleunit = ShuffleUnit_v2(in_channels=out_channels, out_channels=out_channels, batchnorm_mode=batchnorm_mode,
+                                         activation=activation, stride=1)
+            setattr(self, 'shuffleunit%d'%(i+1), shuffleunit)
+
+            self.shuffleunit_stack.append(shuffleunit)
+
+    def forward(self, x):
+        self.work_mode = 'train'
+        for module in self.shuffleunit_stack:
+            x = module.forward(x)
+        return x
+
+    def predict(self, x):
+        self.work_mode = 'inference'
+        for module in self.shuffleunit_stack:
+            x = module.predict(x)
+        return x
+
 class model_ShuffleNet(Module):
     """
-    Model reference implementation of [ShuffleNet](https://arxiv.org/abs/1610.02357) without the final Dense layer.
+    Model reference implementation of [ShuffleNet](https://arxiv.org/abs/1610.02357) without the final pooling & Dense layer.
+    Note no activation applied to the last output
     """
     def __init__(self, in_channels, group_num=4, stage_channels=(24, 272, 544, 1088), stack_size=(3, 7, 3), batchnorm_mode=1, activation=relu):
         super().__init__()
@@ -251,9 +411,8 @@ class model_ShuffleNet(Module):
         x = pool_2d(x, ws=(3,3), stride=(2,2), mode='max')
         x = relu(self.stage2.forward(x))
         x = relu(self.stage3.forward(x))
-        x = relu(self.stage4.forward(x))
+        x = self.stage4.forward(x)
         return x
-
 
     def predict(self, x):
         """
@@ -267,10 +426,57 @@ class model_ShuffleNet(Module):
         x = pool_2d(x, ws=(3, 3), stride=(2, 2), mode='max')
         x = relu(self.stage2.predict(x))
         x = relu(self.stage3.predict(x))
-        x = relu(self.stage4.predict(x))
+        x = self.stage4.predict(x)
         return x
 
+class model_ShuffleNet_v2(Module):
+    """
+    Model reference implementation of [ShuffleNet v2](https://arxiv.org/abs/1807.11164) without the final pooling & Dense layer.
+    Note no activation applied to the last output
+    """
 
+    def __init__(self, in_channels, stage_channels=(24, 116, 232, 464, 1024), stack_size=(3, 7, 3), batchnorm_mode=1, activation=relu):
+        super().__init__()
+        self.conv1 = Conv2D(in_channels=in_channels, out_channels=stage_channels[0], kernel_size=(3, 3), stride=(2, 2), pad='same')
+        self.bn1   = BatchNorm(input_shape=(None, stage_channels[0], None, None))
+        self.stage2 = ShuffleUnit_v2_Stack(in_channels=stage_channels[0], out_channels=stage_channels[1], stack_size=stack_size[0], activation=activation, batchnorm_mode=batchnorm_mode)
+        self.stage3 = ShuffleUnit_v2_Stack(in_channels=stage_channels[1], out_channels=stage_channels[2], stack_size=stack_size[1], activation=activation, batchnorm_mode=batchnorm_mode)
+        self.stage4 = ShuffleUnit_v2_Stack(in_channels=stage_channels[2], out_channels=stage_channels[3], stack_size=stack_size[2], activation=activation, batchnorm_mode=batchnorm_mode)
+        self.conv5  = Conv2D(in_channels=stage_channels[3], out_channels=stage_channels[4], kernel_size=(1,1), pad='same')
+        self.bn5    = BatchNorm(input_shape=(None, stage_channels[4], None, None))
+    def forward(self, x):
+        """
+        :param x: (B, C, H, W)
+        :return:
+        """
+        self.work_mode = 'train'
+
+        x = self.conv1.forward(x)
+        x = relu(self.bn1.forward(x))
+        x = pool_2d(x, ws=(3, 3), stride=(2, 2), mode='max')
+        x = self.stage2.forward(x)
+        x = self.stage3.forward(x)
+        x = self.stage4.forward(x)
+        x = self.conv5.forward(x)
+        x = self.bn5.forward(x)
+        return x
+
+    def predict(self, x):
+        """
+        :param x: (B, C, H, W)
+        :return:
+        """
+        self.work_mode = 'inference'
+
+        x = self.conv1.predict(x)
+        x = relu(self.bn1.predict(x))
+        x = pool_2d(x, ws=(3, 3), stride=(2, 2), mode='max')
+        x = self.stage2.predict(x)
+        x = self.stage3.predict(x)
+        x = self.stage4.predict(x)
+        x = self.conv5.predict(x)
+        x = self.bn5.predict(x)
+        return x
 
 class model_ShuffleSeg(Module):
     """

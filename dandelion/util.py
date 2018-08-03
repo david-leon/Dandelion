@@ -1,7 +1,7 @@
 
 import numpy as np
 import theano
-import theano.tensor as T
+import theano.tensor as tensor
 import gzip, pickle
 
 def floatX(arr):
@@ -127,9 +127,9 @@ def one_hot(x, m=None):
 
     """
     if m is None:
-        m = T.cast(T.max(x) + 1, 'int32')
+        m = tensor.cast(tensor.max(x) + 1, 'int32')
 
-    return T.eye(m)[T.cast(x, 'int32')]
+    return tensor.eye(m)[tensor.cast(x, 'int32')]
 
 def batch_gather(x, index):
     """
@@ -139,8 +139,8 @@ def batch_gather(x, index):
     :return:
     """
     B, N = x.shape
-    flat_index = T.arange(0, B) * N + T.flatten(index)
-    x = T.flatten(x)
+    flat_index = tensor.arange(0, B) * N + tensor.flatten(index)
+    x = tensor.flatten(x)
     return x[flat_index]
 
 def unique(l):
@@ -299,9 +299,9 @@ def compute_norms(array, norm_axes=None):
     if isinstance(array, theano.Variable):
         # Apply theano version if it is a theano variable
         if len(sum_over) == 0:
-            norms = T.abs_(array)   # abs if we have nothing to sum over
+            norms = tensor.abs_(array)   # abs if we have nothing to sum over
         else:
-            norms = T.sqrt(T.sum(array**2, axis=sum_over))
+            norms = tensor.sqrt(tensor.sum(array**2, axis=sum_over))
     elif isinstance(array, np.ndarray):
         # Apply the numpy version if ndarray
         if len(sum_over) == 0:
@@ -311,7 +311,7 @@ def compute_norms(array, norm_axes=None):
 
     return norms
 
-def create_param(spec, shape=None, name=None):
+def create_param(spec, shape=None, name=None, dim_broadcast=None):
     """
     Helper method to create Theano shared variables for layer parameters
     and to initialize them. Modified from Lasagne.utils.py
@@ -332,11 +332,13 @@ def create_param(spec, shape=None, name=None):
         a tuple or other iterable of integers representing the desired
         shape of the parameter array.
 
+    dim_broadcast: tuple or list of boolean, indicating each dimension is broadcastable or not.
+                   if None, then no dimension is explicitly set as broadcastable.
+
     name : string (optional)
         The name to give to the parameter variable. Ignored if `spec`
         is or returns a Theano expression or shared variable that
         already has a name.
-
 
     Returns
     -------
@@ -346,14 +348,6 @@ def create_param(spec, shape=None, name=None):
         initialized to contain this array. If a shared variable or expression
         was provided, it is simply returned. If a callable was provided, it is
         called, and its output is used to initialize a shared variable.
-
-    Notes
-    -----
-    This function is called by :meth:`Layer.add_param()` in the constructor
-    of most :class:`Layer` subclasses. This enables those layers to
-    support initialization with scalars, numpy arrays, existing Theano shared
-    variables or expressions, and callables for generating initial parameter
-    values, Theano expressions, or shared variables.
     """
     import numbers  # to check if argument is a number
     if shape is not None:
@@ -378,14 +372,15 @@ def create_param(spec, shape=None, name=None):
         if shape is not None and spec.shape != shape:
             raise ValueError("%s has shape %s, should be %s" %
                              (err_prefix % "numpy array", spec.shape, shape))
-        # We assume parameter variables do not change shape after creation.
-        # We can thus fix their broadcast pattern, to allow Theano to infer
-        # broadcastable dimensions of expressions involving these parameters.
-        if shape is None:
-            spec = theano.shared(spec)
-        else:
-            bcast = tuple(s == 1 for s in shape)
-            spec = theano.shared(spec, broadcastable=bcast)
+        spec = theano.shared(spec)
+        # if shape is None:
+            # spec = theano.shared(spec)
+        # else:
+            # bcast = tuple(s == 1 for s in shape)
+            # spec = theano.shared(spec, broadcastable=bcast)
+
+    if dim_broadcast is not None:
+        spec = tensor.patternbroadcast(spec, dim_broadcast)
 
     if isinstance(spec, theano.Variable):
         # We cannot check the shape here, Theano expressions (even shared
@@ -463,7 +458,7 @@ def unroll_scan(fn, sequences, outputs_info, non_sequences, n_steps,
             out_ = fn(*step_input)
             # The returned values from step can be either a TensorVariable,
             # a list, or a tuple.  Below, we force it to always be a list.
-            if isinstance(out_, T.TensorVariable):
+            if isinstance(out_, tensor.TensorVariable):
                 out_ = [out_]
             if isinstance(out_, tuple):
                 out_ = list(out_)
@@ -477,7 +472,7 @@ def unroll_scan(fn, sequences, outputs_info, non_sequences, n_steps,
         output_scan = []
         for i in range(len(output[0])):
             l = map(lambda x: x[i], output)
-            output_scan.append(T.stack(*l))
+            output_scan.append(tensor.stack(*l))
 
         return output_scan
 

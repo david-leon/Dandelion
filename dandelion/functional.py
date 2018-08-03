@@ -3,6 +3,7 @@
 Dandelion functional pool
 Created   :   2, 27, 2018
 Revised   :   5, 24, 2018  add `align_crop` which is the same with Lasagne's autocrop()
+              8,  3, 2018  move `channel_shuffle()` from `model.shufflenet.py` into `functional.py`
 All rights reserved
 '''
 __author__ = 'dawei.leng'
@@ -278,6 +279,21 @@ def upsample_2d_bilinear(x, ratio=None, frac_ratio=None, use_1D_kernel=True):
     :return:
     """
     return tensor.nnet.abstract_conv.bilinear_upsampling(x, ratio=ratio, frac_ratio=frac_ratio, use_1D_kernel=use_1D_kernel)
+
+def channel_shuffle(x, group_num):
+    """
+    Pseudo shuffle channel by dimshuffle & reshape, first introduced in [ShuffleNet](https://arxiv.org/abs/1610.02357)
+    :param x: (B, C, H, W)
+    :param group_num: int scalar, C must be divisible by group_num
+    :return:
+    """
+    if group_num == 1:
+        return x
+    B, C, H, W = x.shape
+    x = tensor.reshape(x, (B, group_num, C//group_num, H, W))
+    x = x.dimshuffle(0, 2, 1, 3, 4)
+    x = tensor.reshape(x, (B, -1, H, W))
+    return x
 
 #todo: due to theano's images2neibs(), this tensor function does not support gradient computation [7-30-2018]
 #todo: this API won't be exposed until we find another way to implement `im2col` with gradient support

@@ -12,6 +12,8 @@ import theano
 from theano import tensor
 from dandelion.module import *
 from dandelion.activation import *
+from dandelion.objective import *
+from dandelion.update import *
 from lasagne.layers import InputLayer, BatchNormLayer_DV, get_output, get_all_updates
 import lasagne.nonlinearities as LACT
 import dandelion
@@ -87,9 +89,31 @@ def test_case_0():
             print(y_D)
             print(y_L)
             raise ValueError('diff is too big')
+    print('test_case_0 passed')
+
+def test_case_1():
+    B, C, H, W = 4, 1, 256, 256
+    x = tensor.ftensor4('x')
+    z = tensor.ftensor4('gt')
+    bn   = BatchNorm(input_shape=(B, C, H, W))
+    conv = Conv2D(in_channels=C, out_channels=C, kernel_size=(3,3), pad='same')
+    model = Sequential([bn, conv], activation=relu)
+    y = model.forward(x)
+    loss = aggregate(squared_error(y, z))
+    updates = adadelta(loss, model.collect_params())
+    updates.update(model.collect_self_updates())
+    # f = theano.function([x], y, no_default_updates=False, updates=fix_update_bcasts(bn.collect_self_updates()))
+    f = theano.function([x, z], [y, loss], no_default_updates=False, updates=updates)
+    x = np.random.rand(B, C, H, W).astype('float32')
+    z = np.random.rand(B, C, H, W).astype('float32')
+    y, loss = f(x, z)
+    assert y.shape ==(B, C, H, W)
+    print('test_case_1 passed')
 
 if __name__ == '__main__':
 
     test_case_0()
+
+    test_case_1()
 
     print('Test passed')
