@@ -23,8 +23,9 @@ theano_safe_run(fn, input_list)
 * **return**: errcode and funtion excution result
 
 `theano_safe_run()` catches the following 4 memory exceptions (range from theano 0.x to 1.x):
-* MemoryError. errcode=1
-* CudaNdarray_ZEROS: allocation failed. errcode=2
-* gpudata_alloc: cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=3
-* cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=4
+
+ * MemoryError. errcode=1
+ * CudaNdarray_ZEROS: allocation failed. errcode=2
+ * gpudata_alloc: cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=3
+ * cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=4
 
