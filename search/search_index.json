@@ -307,7 +307,7 @@
         },
         {
             "location": "/dandelion_util/",
-            "text": "gpickle\n\n\nPickle with gzip enabled.\n\n\n.dump(data, filename, compresslevel=9)\n\n\n\n\n\n\ndata\n: data to be dumped to file\n\n\nfilename\n: file path\n\n\ncompresslevel\n: gzip compression level, default = 9.\n\n\n\n\n.load(filename)\n\n\n\n\n\n\nfilename\n: file to be loaded\n\n\n\n\n\n\ntheano_safe_run\n\n\nHelp catch theano memory exceptions during running theano function\n\n\ntheano_safe_run(fn, input_list)\n\n\n\n\n\n\nfn\n: theano function to run\n\n\ninput_list\n: list of input arguments\n\n\nreturn\n: errcode and funtion excution result\n\n\n\n\ntheano_safe_run()\n catches the following 4 memory exceptions (range from theano 0.x to 1.x):\n * MemoryError. errcode=1\n * CudaNdarray_ZEROS: allocation failed. errcode=2\n * gpudata_alloc: cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=3\n * cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=4",
+            "text": "gpickle\n\n\nPickle with gzip enabled.\n\n\n.dump(data, filename, compresslevel=9)\n\n\n\n\n\n\ndata\n: data to be dumped to file\n\n\nfilename\n: file path\n\n\ncompresslevel\n: gzip compression level, default = 9.\n\n\n\n\n.load(filename)\n\n\n\n\n\n\nfilename\n: file to be loaded\n\n\n\n\n\n\ntheano_safe_run\n\n\nHelp catch theano memory exceptions during running theano function\n\n\ntheano_safe_run(fn, input_list)\n\n\n\n\n\n\nfn\n: theano function to run\n\n\ninput_list\n: list of input arguments\n\n\nreturn\n: errcode and funtion excution result\n\n\n\n\ntheano_safe_run()\n catches the following 4 memory exceptions (range from theano 0.x to 1.x):\n\n\n\n\nMemoryError. errcode=1\n\n\nCudaNdarray_ZEROS: allocation failed. errcode=2\n\n\ngpudata_alloc: cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=3\n\n\ncuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=4",
             "title": "dandelion.util"
         },
         {
@@ -317,7 +317,7 @@
         },
         {
             "location": "/dandelion_util/#theano_safe_run",
-            "text": "Help catch theano memory exceptions during running theano function  theano_safe_run(fn, input_list)   fn : theano function to run  input_list : list of input arguments  return : errcode and funtion excution result   theano_safe_run()  catches the following 4 memory exceptions (range from theano 0.x to 1.x):\n * MemoryError. errcode=1\n * CudaNdarray_ZEROS: allocation failed. errcode=2\n * gpudata_alloc: cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=3\n * cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=4",
+            "text": "Help catch theano memory exceptions during running theano function  theano_safe_run(fn, input_list)   fn : theano function to run  input_list : list of input arguments  return : errcode and funtion excution result   theano_safe_run()  catches the following 4 memory exceptions (range from theano 0.x to 1.x):   MemoryError. errcode=1  CudaNdarray_ZEROS: allocation failed. errcode=2  gpudata_alloc: cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=3  cuMemAlloc: CUDA_ERROR_OUT_OF_MEMORY: out of memory. errcode=4",
             "title": "theano_safe_run"
         },
         {
