@@ -22,6 +22,7 @@ pages:
       - dandelion.activation: dandelion_activation.md
       - dandelion.update: dandelion_update.md
       - dandelion.initialization: dandelion_initialization.md
+      - dandelion.util: dandelion_util.md
       - dandelion.model: dandelion_model.md
     - Extensions:
       - dandelion.ext.CV: dandelion_ext_CV.md

@@ -1,5 +1,9 @@
 # History
 
+## version 0.17.9 [8-7-2018]
+* **NEW**: add `theano_safe_run, Finite_Memory_Array, pad_sequence_into_array, get_local_ip, get_time_stamp` into `dandelion.util`
+* **NEW**: add documentation of `dandelion.util`, unfinished.
+
 ## version 0.17.8 [8-3-2018]
 * **MODIFIED**: disable the auto-broadcasting in `create_param()`. This auto-broadcasting would result in theano exception for parameter with shape = [1].
 * **NEW**: add `model.shufflenet.ShuffleUnit_v2_Stack` and `model.shufflenet.ShuffleNet_v2` for ShuffleNet_v2 reference implementation.
