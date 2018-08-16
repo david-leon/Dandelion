@@ -88,7 +88,7 @@ class model_CTPN(Module):
     def forward(self, x):
         """
         :param x: (B, C, H, W)
-        :return:
+        :return: cls_score, bbox  # (B, H, W, k, 2), (B, H, W, n*k) n = 2 or 3
         """
         self.work_mode = 'train'
 
@@ -144,8 +144,9 @@ class model_CTPN(Module):
         cls_score = cls_score.reshape((B, 2, self.k, H, W)) # (B, 2, k, H, W)
         cls_score = softmax(cls_score.dimshuffle((0, 3, 4, 2, 1)))  # (B, H, W, k, 2)
         bbox = self.conv_bbox_pred.forward(x) # (B, 3*k, H, W), no activation applied
+        bbox = bbox.dimshuffle((0, 2, 3, 1))  # (B, H, W, 3*k)
 
-        return cls_score, bbox
+        return cls_score, bbox  # (B, H, W, k, 2), (B, H, W, n*k) n = 2 or 3
 
     def predict(self, x):
         self.work_mode = 'inference'
@@ -202,5 +203,6 @@ class model_CTPN(Module):
         cls_score = cls_score.reshape((B, 2, self.k, H, W)) # (B, 2, k, H, W)
         cls_score = softmax(cls_score.dimshuffle((0, 3, 4, 2, 1)))  # (B, H, W, k, 2)
         bbox = self.conv_bbox_pred.predict(x) # (B, 3*k, H, W), no activation applied
+        bbox = bbox.dimshuffle((0, 2, 3, 1))  # (B, H, W, 3*k)
 
-        return cls_score, bbox
+        return cls_score, bbox # (B, H, W, k, 2), (B, H, W, n*k) n = 2 or 3
