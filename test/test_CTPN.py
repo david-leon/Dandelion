@@ -43,7 +43,7 @@ def test_case_0():
     input = np.random.rand(4, 3, 256, 256).astype(np.float32)
     class_score, bboxs = fn(input)
     assert class_score.shape == (4, 16, 16, 10, 2), 'class_score shape not correct'
-    assert bboxs.shape == (4, 20, 16, 16), 'bboxs shape not correct'
+    assert bboxs.shape == (4, 16, 16, 20), 'bboxs shape not correct'
 
     # print(class_score.shape)
     # print(bboxs.shape)

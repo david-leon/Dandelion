@@ -1,5 +1,9 @@
 # History
 
+## version 0.17.10 [8-16-2018]
+* **MODIFIED**: add `border_mode` arg to `dandelion.ext.CV.imrotate()`, the `interpolation` arg type is changed to string.
+* **MODIFIED**: returned `bbox`'s shape is changed to (B, H, W, n*k) for `model_CTPN`
+
 ## version 0.17.9 [8-7-2018]
 * **NEW**: add `theano_safe_run, Finite_Memory_Array, pad_sequence_into_array, get_local_ip, get_time_stamp` into `dandelion.util`
 * **NEW**: add documentation of `dandelion.util`, unfinished.
