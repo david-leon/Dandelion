@@ -392,7 +392,7 @@
         },
         {
             "location": "/dandelion_ext_CV/",
-            "text": "imread\n\n\nRead image file and return as numpy \nndarray\n, using PILLOW as backend. Support for EXIF rotation specification.\n\n\nimread(f, flatten=False, dtype='float32')\n\n\n\n\n\n\nf\n: str or file object. The file name or file object to be read from.\n\n\nflatten\n: bool. If \nTrue\n, flattens the color channels into a single gray-scale channel.\n\n\ndtype\n: returned data type\n\n\n\n\n\n\nimsave\n\n\nSave an image \nndarray\n into file, using PILLOW as backend \n\n\nimsave(f, I, **params)\n\n\n\n\n\n\nf\n: str or file object. The file name or file object to be written into.\n\n\nI\n: Image \nndarray\n. Note for \njpeg\n format, \nI\n should be of \nuint8\n type.\n\n\nparams\n: other parameters passed directly to PILLOW's \nimage.save()",
+            "text": "imread\n\n\nRead image file and return as numpy \nndarray\n, using PILLOW as backend. Support for EXIF rotation specification.\n\n\nimread(f, flatten=False, dtype='float32')\n\n\n\n\n\n\nf\n: str or file object. The file name or file object to be read from.\n\n\nflatten\n: bool. If \nTrue\n, flattens the color channels into a single gray-scale channel.\n\n\ndtype\n: returned data type\n\n\n\n\n\n\nimsave\n\n\nSave an image \nndarray\n into file, using PILLOW as backend \n\n\nimsave(f, I, **params)\n\n\n\n\n\n\nf\n: str or file object. The file name or file object to be written into.\n\n\nI\n: Image \nndarray\n. Note for \njpeg\n format, \nI\n should be of \nuint8\n type.\n\n\nparams\n: other parameters passed directly to PILLOW's \nimage.save()\n\n\n\n\n\n\nimresize\n\n\nResize image, using scipy as backend \n\n\nimresize(I, size, interp='bilinear', mode=None)\n\n\n\n\n\n\nI\n: Image \nndarray\n\n\nsize\n: target size\n\n\ninterp\n: Interpolation to use for resizing, {'nearest', 'lanczos', 'bilinear', 'bicubic' or 'cubic'}.\n\n\nmode\n: . The PIL image mode ('P', 'L', etc.) to convert \nI\n before resizing, optional.\n\n\n\n\n\n\nimrotate\n\n\nRotate image, using opencv as backend \n\n\nimrotate(I, angle, padvalue=0.0, interpolation='linear', target_size=None, border_mode='reflect_101')\n\n\n\n\n\n\nI\n: Image \nndarray\n\n\nangle\n: in degree, positive for counter-clockwise\n\n\ninterpolation\n: image interpolation method, {'linear'|'nearest'|'cubic'|'LANCZOS4'|'area'}, refer to opencv:INTER_* constants for details\n\n\nborder_mode\n: image boundary handling method, {'reflect_101'|'reflect'|'wrap'|'constant'|'replicate'}, refer to opencv:BORDER_* constants for details\n\n\npadvalue\n: used when \nborder_mode\n = 'constant'\n\n\ntarget_size\n: target size of output image, optional.",
             "title": "dandelion.ext.CV"
         },
         {
@@ -404,6 +404,16 @@
             "location": "/dandelion_ext_CV/#imsave",
             "text": "Save an image  ndarray  into file, using PILLOW as backend   imsave(f, I, **params)   f : str or file object. The file name or file object to be written into.  I : Image  ndarray . Note for  jpeg  format,  I  should be of  uint8  type.  params : other parameters passed directly to PILLOW's  image.save()",
             "title": "imsave"
+        },
+        {
+            "location": "/dandelion_ext_CV/#imresize",
+            "text": "Resize image, using scipy as backend   imresize(I, size, interp='bilinear', mode=None)   I : Image  ndarray  size : target size  interp : Interpolation to use for resizing, {'nearest', 'lanczos', 'bilinear', 'bicubic' or 'cubic'}.  mode : . The PIL image mode ('P', 'L', etc.) to convert  I  before resizing, optional.",
+            "title": "imresize"
+        },
+        {
+            "location": "/dandelion_ext_CV/#imrotate",
+            "text": "Rotate image, using opencv as backend   imrotate(I, angle, padvalue=0.0, interpolation='linear', target_size=None, border_mode='reflect_101')   I : Image  ndarray  angle : in degree, positive for counter-clockwise  interpolation : image interpolation method, {'linear'|'nearest'|'cubic'|'LANCZOS4'|'area'}, refer to opencv:INTER_* constants for details  border_mode : image boundary handling method, {'reflect_101'|'reflect'|'wrap'|'constant'|'replicate'}, refer to opencv:BORDER_* constants for details  padvalue : used when  border_mode  = 'constant'  target_size : target size of output image, optional.",
+            "title": "imrotate"
         },
         {
             "location": "/history/",

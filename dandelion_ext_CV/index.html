@@ -125,6 +125,12 @@
     <li class="toctree-l3"><a href="#imsave">imsave</a></li>
     
 
+    <li class="toctree-l3"><a href="#imresize">imresize</a></li>
+    
+
+    <li class="toctree-l3"><a href="#imrotate">imrotate</a></li>
+    
+
     </ul>
                 </li>
     </ul>
@@ -191,6 +197,32 @@
 <li><strong>f</strong>: str or file object. The file name or file object to be written into.</li>
 <li><strong>I</strong>: Image <code>ndarray</code>. Note for <code>jpeg</code> format, <code>I</code> should be of <code>uint8</code> type.</li>
 <li><strong>params</strong>: other parameters passed directly to PILLOW's <code>image.save()</code></li>
+</ul>
+<hr />
+<h2 id="imresize">imresize</h2>
+<p>Resize image, using scipy as backend </p>
+<pre><code class="python">imresize(I, size, interp='bilinear', mode=None)
+</code></pre>
+
+<ul>
+<li><strong>I</strong>: Image <code>ndarray</code></li>
+<li><strong>size</strong>: target size</li>
+<li><strong>interp</strong>: Interpolation to use for resizing, {'nearest', 'lanczos', 'bilinear', 'bicubic' or 'cubic'}.</li>
+<li><strong>mode</strong>: . The PIL image mode ('P', 'L', etc.) to convert <code>I</code> before resizing, optional.</li>
+</ul>
+<hr />
+<h2 id="imrotate">imrotate</h2>
+<p>Rotate image, using opencv as backend </p>
+<pre><code class="python">imrotate(I, angle, padvalue=0.0, interpolation='linear', target_size=None, border_mode='reflect_101')
+</code></pre>
+
+<ul>
+<li><strong>I</strong>: Image <code>ndarray</code></li>
+<li><strong>angle</strong>: in degree, positive for counter-clockwise</li>
+<li><strong>interpolation</strong>: image interpolation method, {'linear'|'nearest'|'cubic'|'LANCZOS4'|'area'}, refer to opencv:INTER_* constants for details</li>
+<li><strong>border_mode</strong>: image boundary handling method, {'reflect_101'|'reflect'|'wrap'|'constant'|'replicate'}, refer to opencv:BORDER_* constants for details</li>
+<li><strong>padvalue</strong>: used when <code>border_mode</code> = 'constant'</li>
+<li><strong>target_size</strong>: target size of output image, optional.</li>
 </ul>
               
             </div>
