@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.11 [8-16-2018]
+* **MODIFIED**: returned `bbox`'s shape is changed to (B, H, W, k, n) for `model_CTPN`
+
 ## version 0.17.10 [8-16-2018]
 * **MODIFIED**: add `border_mode` arg to `dandelion.ext.CV.imrotate()`, the `interpolation` arg type is changed to string.
 * **MODIFIED**: returned `bbox`'s shape is changed to (B, H, W, n*k) for `model_CTPN`

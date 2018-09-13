@@ -3,6 +3,7 @@
 Reference implementation of [CTPN](https://arxiv.org/abs/1609.03605) for text line detection
 Created   :   7, 26, 2018
 Revised   :   8,  2, 2018  add alternative implementation to bypass the absense of `im2col` in Theano.
+              9,  3, 2018  modified: change output bbox's shape to (B, H, W, k, n) (from (B, H, W, k*n)).
 All rights reserved
 '''
 # ------------------------------------------------------------------------------------------------
@@ -144,9 +145,10 @@ class model_CTPN(Module):
         cls_score = cls_score.reshape((B, 2, self.k, H, W)) # (B, 2, k, H, W)
         cls_score = softmax(cls_score.dimshuffle((0, 3, 4, 2, 1)))  # (B, H, W, k, 2)
         bbox = self.conv_bbox_pred.forward(x) # (B, 3*k, H, W), no activation applied
-        bbox = bbox.dimshuffle((0, 2, 3, 1))  # (B, H, W, 3*k)
+        bbox = bbox.dimshuffle((0, 2, 3, 1, 'x'))  # (B, H, W, 3*k, 1)
+        bbox = bbox.reshape((B, H, W, self.k, -1)) # (B, H, W, k, n)
 
-        return cls_score, bbox  # (B, H, W, k, 2), (B, H, W, n*k) n = 2 or 3
+        return cls_score, bbox  # (B, H, W, k, 2), (B, H, W, k, n) n = 2 or 3
 
     def predict(self, x):
         self.work_mode = 'inference'
@@ -203,6 +205,7 @@ class model_CTPN(Module):
         cls_score = cls_score.reshape((B, 2, self.k, H, W)) # (B, 2, k, H, W)
         cls_score = softmax(cls_score.dimshuffle((0, 3, 4, 2, 1)))  # (B, H, W, k, 2)
         bbox = self.conv_bbox_pred.predict(x) # (B, 3*k, H, W), no activation applied
-        bbox = bbox.dimshuffle((0, 2, 3, 1))  # (B, H, W, 3*k)
+        bbox = bbox.dimshuffle((0, 2, 3, 1, 'x'))  # (B, H, W, 3*k, 1)
+        bbox = bbox.reshape((B, H, W, self.k, -1)) # (B, H, W, k, n)
 
-        return cls_score, bbox # (B, H, W, k, 2), (B, H, W, n*k) n = 2 or 3
+        return cls_score, bbox  # (B, H, W, k, 2), (B, H, W, k, n) n = 2 or 3
