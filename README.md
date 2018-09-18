@@ -22,10 +22,15 @@ Researchers who need flexibility as well as convenience to experiment all kinds 
 Documentation is available online: [https://david-leon.github.io/Dandelion/](https://david-leon.github.io/Dandelion/)
 
 ## Install
-Use pip channel
+Use pip channel for stable release
 ```
 pip install dandelion --upgrade
 ```
+or install from source to get the up-to-date version:
+```
+pip install git+https://github.com/david-leon/Dandelion.git
+```
+
 Dependency
 * Theano >=1.0
 * Scipy (required by `dandelion.ext.CV`)
