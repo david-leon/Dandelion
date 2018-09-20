@@ -15,7 +15,7 @@ class Module(name=None, work_mode='inference')
 .work_mode               = work_mode
 ```
 * **params**: contains all the parameters which should be updated by optimizer (submodule excluded)
-* **self_updating_variables**: contains all the parameters which are updated by user specified expression (submoduluded)
+* **self_updating_variables**: contains all the parameters which are updated by user specified expression (submodule excluded)
 * **sub_modules**: contains all the sub-modules
 
 ```python
