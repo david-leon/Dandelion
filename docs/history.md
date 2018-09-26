@@ -1,6 +1,6 @@
 # History
 
-## version 0.17.11 [8-16-2018]
+## version 0.17.11 [9-3-2018]
 * **MODIFIED**: returned `bbox`'s shape is changed to (B, H, W, k, n) for `model_CTPN`
 
 ## version 0.17.10 [8-16-2018]
