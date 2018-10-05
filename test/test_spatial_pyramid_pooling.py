@@ -6,7 +6,7 @@
 #------------------------------------------------------------------------------------------------
 __author__ = 'dawei.leng'
 import os, sys
-os.environ['THEANO_FLAGS'] = "floatX=float32, mode=FAST_RUN, warn_float64='raise'"
+os.environ['THEANO_FLAGS'] = "floatX=float32, mode=FAST_RUN, warn_float64='ignore'"
 
 import theano
 from theano import tensor
@@ -29,14 +29,15 @@ class build_model_D(Module):
         :param x: (B, C, H, W)
         :return:
         """
-        x = spatial_pyramid_pooling(x, pyramid_dims=self.pyramid_dims)
+        # x = spatial_pyramid_pooling(x, pyramid_dims=self.pyramid_dims, implementation='fast')
+        x = spatial_pyramid_pooling(x, pyramid_dims=self.pyramid_dims, implementation='stretch')
         # x = relu(x)
         return x
 
 def build_model_L(pyramid_dims=[6, 4, 2, 1]):
     input_var = tensor.ftensor4('x')  # (B, C, H, W)
     input0 = InputLayer(shape=(None, None, None, None), input_var=input_var, name='input0')
-    x  = SpatialPyramidPoolingLayer(input0, pool_dims=pyramid_dims)
+    x  = SpatialPyramidPoolingLayer(input0, pool_dims=pyramid_dims, implementation='kaiming')
     return x
 
 def test_case_0():

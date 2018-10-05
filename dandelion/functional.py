@@ -4,6 +4,7 @@ Dandelion functional pool
 Created   :   2, 27, 2018
 Revised   :   5, 24, 2018  add `align_crop` which is the same with Lasagne's autocrop()
               8,  3, 2018  move `channel_shuffle()` from `model.shufflenet.py` into `functional.py`
+              10, 4, 2018  feature improvement in `spatial_pyramid_pooling` (quanqiu.nick@foxmail.com)
 All rights reserved
 '''
 __author__ = 'dawei.leng'
@@ -214,7 +215,20 @@ def align_crop(tensor_list, cropping):
         return [input[slices] for input, slices in
                 zip(tensor_list, slices_by_input)]
 
-def spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max'):
+
+def spp_pad_zero(section, pyramid_dim, axis=2, dtype='float32'):
+    """
+    For spatial_pyramid_pooling method.
+    """
+    delta = pyramid_dim - section.shape[axis]
+    if 2 == axis:
+        p = tensor.zeros(shape=(section.shape[0], section.shape[1], delta, section.shape[3]), dtype=dtype)
+    elif 3 == axis:
+        p = tensor.zeros(shape=(section.shape[0], section.shape[1], section.shape[2], delta), dtype=dtype)
+    return tensor.concatenate([section, p], axis=axis)
+
+
+def spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max', implementation='fast'):
     """
     Spatial pyramid pooling. Refer to: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks
     for Visual Recognition. http://arxiv.org/pdf/1406.4729.pdf and Lasagne's SpatialPyramidPoolingLayer implementation.
@@ -223,22 +237,63 @@ def spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max'):
     :param x: 4D tensor, (B, C, H, W)
     :param pyramid_dims: list of pyramid dims,
     :param mode:
+    :param implementation : string
+        Either 'fast' or 'stretch'.
+        The 'fast' version is fast and pad zero when input size is too small.
+        The 'stretch' mode is slower. The mode will get same feature at some position when input size is too small.
+        All modes work with any input size.
     :return:
     """
+    from theano.ifelse import ifelse
     input_size = x.shape[2:]
     section_list = []
-    for pyramid_dim in pyramid_dims:
-        win_size = tuple((i + pyramid_dim - 1) // pyramid_dim for i in input_size)
-        str_size = tuple(i // pyramid_dim for i in input_size)
-        section = pool.pool_2d(x,
-                       ws=win_size,
-                       stride=str_size,
-                       mode=mode,
-                       pad=None,
-                       ignore_border=True)
-        section = section.flatten(3)
-        section_list.append(section)
+
+    if 'fast' == implementation:
+        for pyramid_dim in pyramid_dims:
+            win_size = tuple((i + pyramid_dim - 1) // pyramid_dim for i in input_size)
+            str_size = tuple((i + pyramid_dim - 1) // pyramid_dim for i in input_size)
+            section = pool.pool_2d(x,
+                           ws=win_size,
+                           stride=str_size,
+                           mode=mode,
+                           pad=None,
+                           ignore_border=False)
+
+            section = ifelse(tensor.lt(section.shape[2], pyramid_dim),
+                             spp_pad_zero(section, pyramid_dim, axis=2, dtype=x.dtype), section)
+            section = ifelse(tensor.lt(section.shape[3], pyramid_dim),
+                             spp_pad_zero(section, pyramid_dim, axis=3, dtype=x.dtype), section)
+
+            section = section.flatten(3)
+            section_list.append(section)
+
+    elif 'stretch' == implementation:
+        for pyramid_dim in pyramid_dims:
+            h, w = input_size
+
+            n = float(pyramid_dim)
+            for row in range(pyramid_dim):
+                for col in range(pyramid_dim):
+                    start_h = tensor.floor(row / n * h).astype('int32')
+                    end_h = tensor.ceil((row + 1) / n * h).astype('int32')
+                    start_w = tensor.floor(col / n * w).astype('int32')
+                    end_w = tensor.ceil((col + 1) / n * w).astype('int32')
+
+                    pooling_region = x[:, :, start_h:end_h, start_w:end_w]
+
+                    win_size = (end_h-start_h, end_w-start_w)
+                    str_size = (end_h-start_h, end_w-start_w)
+                    section = pool.pool_2d(pooling_region,
+                                           ws=win_size,
+                                           stride=str_size,
+                                           mode=mode,
+                                           pad=None,
+                                           ignore_border=False)
+                    section = section.flatten(3)
+                    section_list.append(section)
+
     return tensor.concatenate(section_list, axis=2)
+
 
 def upsample_2d(x, ratio, mode='repeat'):
     """
