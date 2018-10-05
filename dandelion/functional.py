@@ -240,6 +240,7 @@ def spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max', implementa
     :param implementation : string
         Either 'fast' or 'stretch'.
         The 'fast' version is fast and pad zero when input size is too small.
+        The 'fast_ls' is same as Lasagne fast version. We should be very careful because the output is not stable.
         The 'stretch' mode is slower. The mode will get same feature at some position when input size is too small.
         All modes work with any input size.
     :return:
@@ -267,10 +268,24 @@ def spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max', implementa
             section = section.flatten(3)
             section_list.append(section)
 
+    elif 'fast_ls' == implementation:
+        for pyramid_dim in pyramid_dims:
+            win_size = tuple((i + pyramid_dim - 1) // pyramid_dim for i in input_size)
+            str_size = tuple(i // pyramid_dim for i in input_size)
+            section = pool.pool_2d(x,
+                           ws=win_size,
+                           stride=str_size,
+                           mode=mode,
+                           pad=None,
+                           ignore_border=True)
+            section = section.flatten(3)
+            section_list.append(section)
+
     elif 'stretch' == implementation:
         for pyramid_dim in pyramid_dims:
             h, w = input_size
-
+            # h = h.astype('float32')
+            # w = w.astype('float32')
             n = float(pyramid_dim)
             for row in range(pyramid_dim):
                 for col in range(pyramid_dim):

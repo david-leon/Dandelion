@@ -6,7 +6,7 @@
 #------------------------------------------------------------------------------------------------
 __author__ = 'dawei.leng'
 import os, sys
-os.environ['THEANO_FLAGS'] = "floatX=float32, mode=FAST_RUN, warn_float64='ignore'"
+os.environ['THEANO_FLAGS'] = "floatX=float32, mode=FAST_RUN, warn_float64='warn'"
 
 import theano
 from theano import tensor
@@ -29,20 +29,22 @@ class build_model_D(Module):
         :param x: (B, C, H, W)
         :return:
         """
-        # x = spatial_pyramid_pooling(x, pyramid_dims=self.pyramid_dims, implementation='fast')
-        x = spatial_pyramid_pooling(x, pyramid_dims=self.pyramid_dims, implementation='stretch')
+        x = spatial_pyramid_pooling(x, pyramid_dims=self.pyramid_dims, implementation='fast_ls')
+        # x = spatial_pyramid_pooling(x, pyramid_dims=self.pyramid_dims, implementation='stretch')
         # x = relu(x)
         return x
 
 def build_model_L(pyramid_dims=[6, 4, 2, 1]):
     input_var = tensor.ftensor4('x')  # (B, C, H, W)
     input0 = InputLayer(shape=(None, None, None, None), input_var=input_var, name='input0')
-    x  = SpatialPyramidPoolingLayer(input0, pool_dims=pyramid_dims, implementation='kaiming')
+    x = SpatialPyramidPoolingLayer(input0, pool_dims=pyramid_dims, implementation='fast')
+    # x  = SpatialPyramidPoolingLayer(input0, pool_dims=pyramid_dims, implementation='kaiming')
     return x
 
 def test_case_0():
     import numpy as np
     from lasagne_ext.utils import get_layer_by_name
+    np.random.seed(0)
 
     pyramid_dims = [3, 2, 1]
 
@@ -69,6 +71,9 @@ def test_case_0():
         diff = np.max(np.abs(y_D - y_L))
         print('i=%d, diff=%0.6f' % (i, diff))
         if diff>1e-4:
+            print(y_D.shape)
+            print(y_L.shape)
+            print('B=%d, C=%d, H=%d, W=%d\n' % (B, C, H, W))
             print('y_D=\n', y_D)
             print('y_L=\n', y_L)
             raise ValueError('diff is too big')
