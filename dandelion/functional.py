@@ -238,11 +238,12 @@ def spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max', implementa
     :param pyramid_dims: list of pyramid dims,
     :param mode:
     :param implementation : string
-        Either 'fast' or 'stretch'.
-        The 'fast' version is fast and pad zero when input size is too small.
-        The 'fast_ls' is same as Lasagne fast version. We should be very careful because the output is not stable.
-        The 'stretch' mode is slower. The mode will get same feature at some position when input size is too small.
-        All modes work with any input size.
+        'fast' | 'fast_ls' | 'stretch'.
+        The 'fast' implementation is fast and pad zero when input size is too small.
+        The 'fast_ls' implementation is same as Lasagne fast implementation. The size of the input map MUST be larger
+            than the output map size.
+        The 'stretch' implementation is slower. The implementation will get same feature at some position just like
+            nearest neighbor interpolation when the input size is less than the output size.
     :return:
     """
     from theano.ifelse import ifelse

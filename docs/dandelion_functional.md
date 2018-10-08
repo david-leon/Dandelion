@@ -51,11 +51,16 @@ _______________________________________________________________________
 ## spatial_pyramid_pooling
 Spatial pyramid pooling. This function will use different scale pooling pyramid to generate spatially fix-sized output no matter the spatial size of input, useful when CNN+FC used for image classification or detection with variable-sized samples.
 ```python
-spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max')
+spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max', implementation='fast')
 ```
 * **x**: 4D tensor with shape (B, C, H, W)
 * **pyramid_dims**: list or tuple of integers. Refer to Ref[1] for details.
 * **mode**: {`max`, `sum`, `average_inc_pad`, `average_exc_pad`}. Operation executed on each window. `max` and `sum` always exclude the padding in the computation. `average` gives you the choice to include or exclude it.
+* **implementation**: {`fast`, `fast_ls`, `stretch`}.
+  * `fast`: The 'fast' implementation is fast and pad zero when input size is too small.
+  * `fast_ls`: The 'fast_ls' implementation is same as Lasagne fast implementation. The size of the input map MUST be larger than the output map size.
+  * `stretch`: The 'stretch' implementation is slower. The implementation will get same feature at some position just like nearest neighbor interpolation when the input size is less than the output size.
+
 
 <sub>Ref [1]: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition. [http://arxiv.org/pdf/1406.4729.pdf](http://arxiv.org/pdf/1406.4729.pdf)</sub>
 
