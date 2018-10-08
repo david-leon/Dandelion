@@ -284,15 +284,17 @@ def spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max', implementa
     elif 'stretch' == implementation:
         for pyramid_dim in pyramid_dims:
             h, w = input_size
-            # h = h.astype('float32')
-            # w = w.astype('float32')
+            h = h.astype('float32')
+            w = w.astype('float32')
             n = float(pyramid_dim)
             for row in range(pyramid_dim):
                 for col in range(pyramid_dim):
+                    row = float(row)
+                    col = float(col)
                     start_h = tensor.floor(row / n * h).astype('int32')
-                    end_h = tensor.ceil((row + 1) / n * h).astype('int32')
+                    end_h = tensor.ceil((row + 1.0) / n * h).astype('int32')
                     start_w = tensor.floor(col / n * w).astype('int32')
-                    end_w = tensor.ceil((col + 1) / n * w).astype('int32')
+                    end_w = tensor.ceil((col + 1.0) / n * w).astype('int32')
 
                     pooling_region = x[:, :, start_h:end_h, start_w:end_w]
 
