@@ -245,13 +245,17 @@
 <hr />
 <h2 id="spatial_pyramid_pooling">spatial_pyramid_pooling</h2>
 <p>Spatial pyramid pooling. This function will use different scale pooling pyramid to generate spatially fix-sized output no matter the spatial size of input, useful when CNN+FC used for image classification or detection with variable-sized samples.</p>
-<pre><code class="python">spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max')
+<pre><code class="python">spatial_pyramid_pooling(x, pyramid_dims=(6, 4, 2, 1), mode='max', implementation='fast')
 </code></pre>
 
 <ul>
 <li><strong>x</strong>: 4D tensor with shape (B, C, H, W)</li>
 <li><strong>pyramid_dims</strong>: list or tuple of integers. Refer to Ref[1] for details.</li>
 <li><strong>mode</strong>: {<code>max</code>, <code>sum</code>, <code>average_inc_pad</code>, <code>average_exc_pad</code>}. Operation executed on each window. <code>max</code> and <code>sum</code> always exclude the padding in the computation. <code>average</code> gives you the choice to include or exclude it.</li>
+<li><strong>implementation</strong>: {<code>fast</code>, <code>fast_ls</code>, <code>stretch</code>}.</li>
+<li><code>fast</code>: The 'fast' implementation is fast and pad zero when input size is too small.</li>
+<li><code>fast_ls</code>: The 'fast_ls' implementation is same as Lasagne fast implementation. The size of the input map MUST be larger than the output map size.</li>
+<li><code>stretch</code>: The 'stretch' implementation is slower. The implementation will get same feature at some position just like nearest neighbor interpolation when the input size is less than the output size.</li>
 </ul>
 <p><sub>Ref [1]: He, Kaiming et al (2015), Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition. <a href="http://arxiv.org/pdf/1406.4729.pdf">http://arxiv.org/pdf/1406.4729.pdf</a></sub></p>
 <hr />
