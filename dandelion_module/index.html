@@ -343,18 +343,18 @@
 The recurrent computation is implemented according to <a href="https://arxiv.org/abs/1308.0850">Graves' “Generating sequences with recurrent neural networks.”</a>:</p>
 <div>
 <div class="MathJax_Preview">
-i_t &amp;= \sigma_i(x_t W_{xi} + h_{t-1} W_{hi} + w_{ci} \odot c_{t-1} + b_i)\\
-f_t &amp;= \sigma_f(x_t W_{xf} + h_{t-1} W_{hf} + w_{cf} \odot c_{t-1} + b_f)\\
-c_t &amp;= f_t \odot c_{t - 1} + i_t \odot \sigma_c(x_t W_{xc} + h_{t-1} W_{hc} + b_c)\\
-o_t &amp;= \sigma_o(x_t W_{xo} + h_{t-1} W_{ho} + w_{co} \odot c_t + b_o)\\
-h_t &amp;= o_t \odot \sigma_h(c_t)
+i_t = \sigma_i(x_t W_{xi} + h_{t-1} W_{hi} + w_{ci} \odot c_{t-1} + b_i) \\
+f_t = \sigma_f(x_t W_{xf} + h_{t-1} W_{hf} + w_{cf} \odot c_{t-1} + b_f) \\
+c_t = f_t \odot c_{t - 1} + i_t \odot \sigma_c(x_t W_{xc} + h_{t-1} W_{hc} + b_c) \\
+o_t = \sigma_o(x_t W_{xo} + h_{t-1} W_{ho} + w_{co} \odot c_t + b_o) \\
+h_t = o_t \odot \sigma_h(c_t)
 </div>
 <script type="math/tex; mode=display">
-i_t &= \sigma_i(x_t W_{xi} + h_{t-1} W_{hi} + w_{ci} \odot c_{t-1} + b_i)\\
-f_t &= \sigma_f(x_t W_{xf} + h_{t-1} W_{hf} + w_{cf} \odot c_{t-1} + b_f)\\
-c_t &= f_t \odot c_{t - 1} + i_t \odot \sigma_c(x_t W_{xc} + h_{t-1} W_{hc} + b_c)\\
-o_t &= \sigma_o(x_t W_{xo} + h_{t-1} W_{ho} + w_{co} \odot c_t + b_o)\\
-h_t &= o_t \odot \sigma_h(c_t)
+i_t = \sigma_i(x_t W_{xi} + h_{t-1} W_{hi} + w_{ci} \odot c_{t-1} + b_i) \\
+f_t = \sigma_f(x_t W_{xf} + h_{t-1} W_{hf} + w_{cf} \odot c_{t-1} + b_f) \\
+c_t = f_t \odot c_{t - 1} + i_t \odot \sigma_c(x_t W_{xc} + h_{t-1} W_{hc} + b_c) \\
+o_t = \sigma_o(x_t W_{xo} + h_{t-1} W_{ho} + w_{co} \odot c_t + b_o) \\
+h_t = o_t \odot \sigma_h(c_t)
 </script>
 </div>
 <pre><code class="python">class LSTM( input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1), grad_clipping=0, 
