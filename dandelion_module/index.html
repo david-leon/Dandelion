@@ -361,6 +361,7 @@ h_t &= o_t \odot \sigma_h(c_t)
 \end{align}  
 </script>
 </div>
+<p>in which <span><span class="MathJax_Preview">w_{ci}, w_{cf}, w_{co}</span><script type="math/tex">w_{ci}, w_{cf}, w_{co}</script></span> are <em>peephole</em> connections.</p>
 <pre><code class="python">class LSTM( input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1), grad_clipping=0, 
             hidden_activation=tanh, learn_ini=False, truncate_gradient=-1, name=None)
 </code></pre>
