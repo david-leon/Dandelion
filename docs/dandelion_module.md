@@ -129,8 +129,20 @@ class GRU(input_dims, hidden_dim, initializer=init.Normal(0.1), grad_clipping=0,
 
 _______________________________________________________________________
 ## LSTM
-Long Short-Term Memory RNN
+Long Short-Term Memory RNN.  
+The recurrent computation is implemented according to [Graves' “Generating sequences with recurrent neural networks.”](https://arxiv.org/abs/1308.0850):
 
+$$
+\begin{align}  
+i_t &= \sigma_i(x_t W_{xi} + h_{t-1} W_{hi} + w_{ci} \odot c_{t-1} + b_i) \\
+f_t &= \sigma_f(x_t W_{xf} + h_{t-1} W_{hf} + w_{cf} \odot c_{t-1} + b_f) \\
+c_t &= f_t \odot c_{t - 1} + i_t \odot \sigma_c(x_t W_{xc} + h_{t-1} W_{hc} + b_c) \\
+o_t &= \sigma_o(x_t W_{xo} + h_{t-1} W_{ho} + w_{co} \odot c_t + b_o) \\
+h_t &= o_t \odot \sigma_h(c_t)
+\end{align}  
+$$
+
+in which $w_{ci}, w_{cf}, w_{co}$ are *peephole* connections.
 ```python
 class LSTM( input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1), grad_clipping=0, 
             hidden_activation=tanh, learn_ini=False, truncate_gradient=-1, name=None)
