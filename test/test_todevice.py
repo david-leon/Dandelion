@@ -77,9 +77,13 @@ class build_model_on_multiple_device(Module):
 def test_case_0(batch=256, in_dim=1024, out_dim=512):
     import numpy as np
     import time
-    model_on_single_device   = build_model_on_single_device(in_dim=in_dim, out_dim=out_dim, device_context='dev0')
-    # model_on_multiple_device   = build_model_on_single_device(in_dim=in_dim, out_dim=out_dim, device_context='dev0')
-    model_on_multiple_device = build_model_on_multiple_device(in_dim=in_dim, out_dim=out_dim, device_context=['dev0', 'dev1'])
+    try:
+        model_on_single_device   = build_model_on_single_device(in_dim=in_dim, out_dim=out_dim, device_context='dev0')
+        model_on_multiple_device = build_model_on_multiple_device(in_dim=in_dim, out_dim=out_dim, device_context=['dev0', 'dev1'])
+    except ValueError as e:
+        if str(e).startswith("Can't transfer to target"):
+            print('GPU not present, test skipped')
+            return
 
     model_on_multiple_device.dense1.W.set_value(model_on_single_device.dense1.W.get_value())
     model_on_multiple_device.dense1.b.set_value(model_on_single_device.dense1.b.get_value())
