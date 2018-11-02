@@ -130,7 +130,7 @@ class GRU(input_dims, hidden_dim, initializer=init.Normal(0.1), grad_clipping=0,
 _______________________________________________________________________
 ## LSTM
 Long Short-Term Memory RNN.  
-The recurrent computation is implemented according to [Graves' “Generating sequences with recurrent neural networks.”](https://arxiv.org/abs/1308.0850):
+The recurrent computation is implemented according to [Graves' *Generating sequences with recurrent neural networks*](https://arxiv.org/abs/1308.0850), also the same with Lasagne:
 
 $$
 \begin{align}  

@@ -475,6 +475,22 @@ class Module(object):
                 elif unmatched == 'raise':
                     raise ValueError('variable %s has no matching weight' % variable.name)
 
+    def todevice(self, device_context):
+        """
+        Transfer module to a specified device, useful for large model which can not fit in one single GPU
+        :param device_context: as required by theano, you'd need to define a device context mapping between 'contexts' and actual device names beforehand,
+                               for example, set `THEANO_FLAGS` in os.environ before importing theano, as
+                               `os.environ['THEANO_FLAGS'] = "floatX=float32,mode=FAST_RUN,warn_float64='raise',contexts=dev0->cpu;dev1->cuda0;dev2->cuda1"`
+                               then set `devicce_context` to `dev0/dev1/dev2` here
+        :return:
+        """
+        for i, param in enumerate(self.params):
+            self.params[i] = param.transfer(device_context)
+        for i, variable in enumerate(self.self_updating_variables):
+            self.self_updating_variables[i]  = variable.transfer(device_context)
+        for _, sub_module in self.sub_modules:
+            sub_module.todevice(device_context)
+
 class Dropout(Module):
     """
     Note: Theano uses `self_update` mechanism to implement pseudo randomness, so to use `Dropout` class, the followings are
