@@ -1,6 +1,7 @@
 # coding:utf-8
 '''
 Test Module's `.todevice` interface
+According to [Issue](https://github.com/Theano/Theano/issues/6655), this feature of Theano is never finished.
 Created   :  11,  2, 2018
 Revised   :  11,  2, 2018
 All rights reserved

@@ -32,6 +32,8 @@
                              3) remove all specified names for `register_param()` and `register_self_updating_variable()`. Leave the variables to be named automatically by
                              their parent module.
                 8,  2, 2018  modified: `Center` module, move `alpha` arg from class declaration to .forward() interface.
+                11, 2, 2018  add `.todevice()` interface to `Module` class
+                11, 5, 2018  add user warning that multi-GPU support of Theano is never finished, and `.todevice()` should NOT BE USED
 
   Note      :
     1) GRU & LSTM and their cell version have built-in activation (tanh), other modules have no built-in activations
@@ -478,12 +480,14 @@ class Module(object):
     def todevice(self, device_context):
         """
         Transfer module to a specified device, useful for large model which can not fit in one single GPU
+        According to [issue](https://github.com/Theano/Theano/issues/6655), this feature of Theano is never finished, so, do not use this interface
         :param device_context: as required by theano, you'd need to define a device context mapping between 'contexts' and actual device names beforehand,
                                for example, set `THEANO_FLAGS` in os.environ before importing theano, as
                                `os.environ['THEANO_FLAGS'] = "floatX=float32,mode=FAST_RUN,warn_float64='raise',contexts=dev0->cpu;dev1->cuda0;dev2->cuda1"`
                                then set `devicce_context` to `dev0/dev1/dev2` here
         :return:
         """
+        warnings.warn('According to "https://github.com/Theano/Theano/issues/6655", multi-GPU support of Theano is never finished, so DO NOT use this interface', UserWarning)
         for i, param in enumerate(self.params):
             self.params[i] = param.transfer(device_context)
         for i, variable in enumerate(self.self_updating_variables):
