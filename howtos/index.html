@@ -78,6 +78,8 @@
         
             <li><a class="toctree-l4" href="#2-how-to-add-random-noise-to-a-tensor">2) How to add random noise to a tensor?</a></li>
         
+            <li><a class="toctree-l4" href="#3-how-to-do-model-parallel-training">3) How to do model-parallel training?</a></li>
+        
         </ul>
     
 
@@ -207,6 +209,9 @@ y = x + srng.normal(x.shape, avg=0.0, std=0.1)   # add Gaussian noise to x
 </code></pre>
 
 <p>What you'd keep in mind is that if you used Theano's <code>MRG_RandomStreams</code> module, remember to set <code>no_default_updates=False</code> when compiling functions.</p>
+<h3 id="3-how-to-do-model-parallel-training">3) How to do model-parallel training?</h3>
+<p>According to <a href="https://github.com/Theano/Theano/issues/6655">issue 6655</a>, model-parallel multi-GPU support of Theano will never be finished, so it won't be possible to do model-parallel training with Theano, and of course, Dandelion.<br />
+For data-parallel training, refer to <a href="https://github.com/mila-udem/platoon">platoon</a> for possible solution. We may implement our multi-GPU data-parallel training scheme later, stay tuned.</p>
               
             </div>
           </div>
