@@ -30,3 +30,7 @@ srng = RandomStreams(np.random.randint(1, 2147462579))
 y = x + srng.normal(x.shape, avg=0.0, std=0.1)   # add Gaussian noise to x
 ```
 What you'd keep in mind is that if you used Theano's `MRG_RandomStreams` module, remember to set `no_default_updates=False` when compiling functions.
+
+### 3) How to do model-parallel training?
+According to [issue 6655](https://github.com/Theano/Theano/issues/6655), model-parallel multi-GPU support of Theano will never be finished, so it won't be possible to do model-parallel training with Theano, and of course, Dandelion.  
+For data-parallel training, refer to [platoon](https://github.com/mila-udem/platoon) for possible solution. We may implement our multi-GPU data-parallel training scheme later, stay tuned.
