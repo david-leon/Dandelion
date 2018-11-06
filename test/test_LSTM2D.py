@@ -8,15 +8,19 @@ All rights reserved
 # ------------------------------------------------------------------------------------------------
 __author__ = 'dawei.leng'
 
+import os
+os.environ['THEANO_FLAGS'] = "floatX=float32, mode=FAST_RUN, warn_float64='raise'"
+
 import theano
-theano.config.floatX = 'float32'
-floatX = theano.config.floatX
 import theano.tensor as tensor
 from dandelion.module import LSTM2D
 from dandelion.objective import *
 from dandelion.update import *
 import numpy as np, time
 
+import dandelion
+dandelion_path = os.path.split(dandelion.__file__)[0]
+print('dandelion path = %s\n' % dandelion_path)
 
 def test_case_0():
     # input_dim, hidden_dim, B, H, W = 5, 4, 2, 5, 7

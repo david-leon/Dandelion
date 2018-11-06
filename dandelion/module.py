@@ -1468,7 +1468,8 @@ class LSTM2D(Module):
     .step() can be used as LSTM2DCell by setting `process_input=True`
     h_ini will be learned during training.
     Note:
-        for current implementation, empirical tests show that 1) LSTM2D use much more memories than LSTM, exponentially with H*W; 2) LSTM2D speed much slower than LSTM
+        for current implementation, empirical tests show that 1) LSTM2D use much more memories than LSTM (5G vs 0.2G), exponentially with H*W;
+                                                              2) LSTM2D speed much slower than LSTM (24s vs 6s)
     """
 
     def __init__(self, input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1), grad_clipping=0, hidden_activation=tanh,
@@ -1575,7 +1576,7 @@ class LSTM2D(Module):
         h_buffer = tensor.set_subtensor(h_buffer[x_pos, :, :], h)
         c_buffer = tensor.set_subtensor(c_buffer[x_pos, :, :], c)
         x_pos = x_pos + 1
-        x_pos = tensor.mod(x_pos, width)
+        x_pos = tensor.switch(x_pos >= width, 0, x_pos)
         return h, c, x_pos, h_buffer, c_buffer
 
     def forward(self, seq_input, h_ini=None, c_ini=None, seq_mask=None, backward=False, only_return_final=False, return_final_state=False):
