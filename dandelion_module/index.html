@@ -532,7 +532,7 @@ h_t &= o_t \odot \sigma_h(c_t)
 <p>All the parameters have the same meanings with <code>Conv2D</code> module. In fact, the transposed convolution is equal to upsampling the input then doing conventional convolution. However, for efficiency purpose, here the transposed convolution is implemented via Theano’s <code>AbstractConv2d_gradInputs</code> as what is done in Lasagne.</p>
 <hr />
 <h2 id="dense">Dense</h2>
-<p>Fully connected network, also known as affine transform. Apply affine transform <code>Wx+b</code> to the last dimension of input.<br />
+<p>Fully connected network, also known as affine transform. Apply affine transform <span><span class="MathJax_Preview">Wx+b</span><script type="math/tex">Wx+b</script></span> to the last dimension of input.<br />
 The input of <code>Dense</code> can have any dimensions, and note that we do not apply any activation to its output by default</p>
 <pre><code class="python">class Dense(input_dims, output_dim, W=init.GlorotUniform(), b=init.Constant(0.), name=None)
 </code></pre>
