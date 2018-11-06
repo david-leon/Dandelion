@@ -293,7 +293,7 @@ All the parameters have the same meanings with `Conv2D` module. In fact, the tra
 
 _______________________________________________________________________
 ## Dense
-Fully connected network, also known as affine transform. Apply affine transform `Wx+b` to the last dimension of input.  
+Fully connected network, also known as affine transform. Apply affine transform $Wx+b$ to the last dimension of input.  
 The input of `Dense` can have any dimensions, and note that we do not apply any activation to its output by default
 ```python
 class Dense(input_dims, output_dim, W=init.GlorotUniform(), b=init.Constant(0.), name=None)
