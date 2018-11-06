@@ -93,6 +93,9 @@
     <li class="toctree-l3"><a href="#lstm">LSTM</a></li>
     
 
+    <li class="toctree-l3"><a href="#lstm2d">LSTM2D</a></li>
+    
+
     <li class="toctree-l3"><a href="#grucell">GRUCell</a></li>
     
 
@@ -131,11 +134,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../dandelion_objective/">dandelion.objective</a>
+    <a class="" href="../dandelion_activation/">dandelion.activation</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../dandelion_activation/">dandelion.activation</a>
+    <a class="" href="../dandelion_objective/">dandelion.objective</a>
                 </li>
                 <li class="">
                     
@@ -391,6 +394,59 @@ h_t &= o_t \odot \sigma_h(c_t)
 </code></pre>
 
 <hr />
+<h2 id="lstm2d">LSTM2D</h2>
+<p>2D LSTM. Input shape now should be <code>(H, W, B, C)</code>, in which <code>C</code> usually comes from CNN channels.
+Note for current implementation, <code>LSTM2D</code> usually costs much more memories and runs slower than <code>LSTM</code>. It's recommended to apply <code>LSTM2D</code> only for small-sized feature maps.</p>
+<div>
+<div class="MathJax_Preview">
+\begin{align}  
+i_t &amp;= \sigma_i(x_t W_{xi} + h_{left} W_{h_{left}i} + h_{up} W_{h_{up}i} + w_{c_{left}i} \odot c_{left} + w_{c_{up}i} \odot c_{up} + b_i) \\
+f_t &amp;= \sigma_f(x_t W_{xf} + h_{left} W_{h_{left}f} + h_{up} W_{h_{up}f} + w_{c_{left}f} \odot c_{left} + w_{c_{up}f} \odot c_{up} + b_f) \\
+c_t &amp;= f_t \odot (c_{left} + c_{up}) * 0.5 + i_t \odot \sigma_c(x_t W_{xc} + h_{left} W_{h_{left}c} + h_{up} W_{h_{up}c} + b_c) \\
+o_t &amp;= \sigma_o(x_t W_{xo} + h_{left} W_{h_{left}o} + h_{up} W_{h_{up}o} + w_{co} \odot c_t + b_o) \\
+h_t &amp;= o_t \odot \sigma_h(c_t)
+\end{align}  
+</div>
+<script type="math/tex; mode=display">
+\begin{align}  
+i_t &= \sigma_i(x_t W_{xi} + h_{left} W_{h_{left}i} + h_{up} W_{h_{up}i} + w_{c_{left}i} \odot c_{left} + w_{c_{up}i} \odot c_{up} + b_i) \\
+f_t &= \sigma_f(x_t W_{xf} + h_{left} W_{h_{left}f} + h_{up} W_{h_{up}f} + w_{c_{left}f} \odot c_{left} + w_{c_{up}f} \odot c_{up} + b_f) \\
+c_t &= f_t \odot (c_{left} + c_{up}) * 0.5 + i_t \odot \sigma_c(x_t W_{xc} + h_{left} W_{h_{left}c} + h_{up} W_{h_{up}c} + b_c) \\
+o_t &= \sigma_o(x_t W_{xo} + h_{left} W_{h_{left}o} + h_{up} W_{h_{up}o} + w_{co} \odot c_t + b_o) \\
+h_t &= o_t \odot \sigma_h(c_t)
+\end{align}  
+</script>
+</div>
+<p>Note here <span><span class="MathJax_Preview">t</span><script type="math/tex">t</script></span> means the <code>(H, W, ...)</code> shaped input will be scanned with the first 2 dimenions flattened.</p>
+<pre><code class="python">class LSTM2D(input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1), grad_clipping=0, 
+             hidden_activation=tanh, learn_ini=False, truncate_gradient=-1, name=None)
+</code></pre>
+
+<ul>
+<li><strong>input_dims</strong>: integer or list of integers. If scalar, input dimension = <code>input_dims</code>; if list of integers, input dimension = sum(<code>input_dims</code>), and LSTM’s parameter <code>W_in</code> will be initialized unevenly by integers specified in input_dims</li>
+<li><strong>hidden_dim</strong>: dimension of hidden units, also the output dimension</li>
+<li><strong>peephole</strong>: bool. Whether add peephole connection.</li>
+<li><strong>grad_clipping</strong>: float. Hard clip the gradients at each time step. Only the gradient values above this threshold are clipped to the threshold. This is done during backprop. Some works report that using grad_normalization is better than grad_clipping</li>
+<li><strong>hidden_activation</strong>: nonlinearity applied to hidden variable, i.e., h = hidden_activation(cell). It's recommended to use <code>tanh</code> as default.</li>
+<li><strong>learn_ini</strong>: whether learn initial state</li>
+<li><strong>truncate_gradient</strong>: if not -1, BPTT will be used, gradient back-propagation will be performed at most <code>truncate_gradient</code> steps</li>
+</ul>
+<pre><code class="python">.forward(seq_input, h_ini=None, c_ini=None, seq_mask=None, backward=False, only_return_final=False, return_final_state=False)
+</code></pre>
+
+<ul>
+<li><strong>seq_input</strong>: tensor with shape <code>(H, W, B, C)</code> in which <code>C</code> is the input dimension</li>
+<li><strong>h_ini</strong>: initialization of hidden state, <code>(B, hidden_dim)</code></li>
+<li><strong>c_ini</strong>: initialization of cell state, <code>(B, hidden_dim)</code></li>
+<li><strong>seq_mask</strong>: mask for <code>seq_input</code></li>
+<li><strong>backward</strong>: bool. Whether scan in backward direction (i.e., right-&gt;left, bottom-&gt;top)</li>
+<li><strong>only_return_final</strong>: bool. If <code>True</code>, only return the ﬁnal sequential output (e.g. for tasks where a single target value for the entire sequence is desired). In this case, Theano makes an optimization which saves memory.</li>
+<li><strong>return_final_state</strong>: If <code>True</code>, the final state of <code>hidden</code> and <code>cell</code> will be returned, both <code>(B, hidden_dim)</code></li>
+</ul>
+<pre><code class="python">.predict = .forward
+</code></pre>
+
+<hr />
 <h2 id="grucell">GRUCell</h2>
 <p>Gated Recurrent Unit RNN Cell</p>
 <pre><code class="python">class GRUCell(input_dims, hidden_dim, initializer=init.Normal(0.1), grad_clipping=0, 
@@ -582,7 +638,7 @@ The input of <code>Dense</code> can have any dimensions, and note that we do not
 
 <ul>
 <li><strong>module_list</strong>: list of network sub-modules, these modules <strong>MUST NOT</strong> be sub-modules of any other parent module.</li>
-<li><strong>activation</strong>: activation applied to output of each sub-module.</li>
+<li><strong>activation</strong>: activation applied to output of each sub-module. Single function or list of functions. If <code>activation</code> is a list, it must be the same length with <code>module_list</code>.</li>
 </ul>
 <pre><code class="python">.forward(x)
 </code></pre>
