@@ -8,7 +8,7 @@ markdown_extensions:
 extra_javascript:
     - https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
 
-pages:
+nav:
     - Home: index.md
     - Tutorials:
       - I - Sentence Topic Classification: tutorial I - Sentence Topic Classification.md
@@ -18,8 +18,8 @@ pages:
     - Framework Interface:
       - dandelion.module: dandelion_module.md
       - dandelion.functional: dandelion_functional.md
-      - dandelion.objective: dandelion_objective.md
       - dandelion.activation: dandelion_activation.md
+      - dandelion.objective: dandelion_objective.md
       - dandelion.update: dandelion_update.md
       - dandelion.initialization: dandelion_initialization.md
       - dandelion.util: dandelion_util.md

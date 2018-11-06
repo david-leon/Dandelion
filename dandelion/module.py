@@ -34,6 +34,8 @@
                 8,  2, 2018  modified: `Center` module, move `alpha` arg from class declaration to .forward() interface.
                 11, 2, 2018  add `.todevice()` interface to `Module` class
                 11, 5, 2018  add user warning that multi-GPU support of Theano is never finished, and `.todevice()` should NOT BE USED
+                11, 6, 2018  1) add 2D lstm implementation `LSTM2D`
+                             2) `Sequential` now support list input for `activation` param
 
   Note      :
     1) GRU & LSTM and their cell version have built-in activation (tanh), other modules have no built-in activations
@@ -483,7 +485,7 @@ class Module(object):
         According to [issue](https://github.com/Theano/Theano/issues/6655), this feature of Theano is never finished, so, do not use this interface
         :param device_context: as required by theano, you'd need to define a device context mapping between 'contexts' and actual device names beforehand,
                                for example, set `THEANO_FLAGS` in os.environ before importing theano, as
-                               `os.environ['THEANO_FLAGS'] = "floatX=float32,mode=FAST_RUN,warn_float64='raise',contexts=dev0->cpu;dev1->cuda0;dev2->cuda1"`
+                               `os.environ['THEANO_FLAGS'] = "floatX=float32,mode=FAST_RUN,warn_float64='raise',contexts=dev0->cuda0;dev1->cuda1"`
                                then set `devicce_context` to `dev0/dev1/dev2` here
         :return:
         """
@@ -1433,7 +1435,7 @@ class Sequential(Module):
     def __init__(self, module_list, activation=linear, name=None):
         """
         :param module_list: list of network modules, these modules MUST NOT be sum-modules of any other parent module.
-        :param activation: default linear
+        :param activation: activation function (default linear) or list of activation functions
         """
         super().__init__()
         self.submodule_num = len(module_list)
@@ -1445,17 +1447,198 @@ class Sequential(Module):
     def forward(self, x):
         for i in range(self.submodule_num):
             submodule = getattr(self, 'submodule_%d'%i)
-            x = self.activation(submodule.forward(x))
+            if isinstance(self.activation, list):
+                x = self.activation[i](submodule.forward(x))
+            else:
+                x = self.activation(submodule.forward(x))
         return x
 
     def predict(self, x):
         for i in range(self.submodule_num):
             submodule = getattr(self, 'submodule_%d' % i)
-            x = self.activation(submodule.predict(x))
+            if isinstance(self.activation, list):
+                x = self.activation[i](submodule.predict(x))
+            else:
+                x = self.activation(submodule.predict(x))
         return x
 
+class LSTM2D(Module):
+    """
+    2D-LSTM layer, input shape is (H, W, B, C)
+    .step() can be used as LSTM2DCell by setting `process_input=True`
+    h_ini will be learned during training.
+    Note:
+        for current implementation, empirical tests show that 1) LSTM2D use much more memories than LSTM, exponentially with H*W; 2) LSTM2D speed much slower than LSTM
+    """
 
+    def __init__(self, input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1), grad_clipping=0, hidden_activation=tanh,
+                 learn_ini=False, truncate_gradient=-1, name=None):
+        """
+        :param input_dims: integer or list of integers, dimension of the input for different part, allows to have different
+                            initializations for different parts of the input.
+        :param hidden_dim:
+        :param initializer:
+        :param peephole: whether add peephole connection
+        :param grad_clipping: float. Hard clip the gradients at each time step. Only the gradient values
+                              above this threshold are clipped to the threshold. This is done during backprop.
+        :param hidden_activation: nonlinearity applied to hidden variable, i.e., h = out_gate * hidden_activation(cell). It's recommended to use `tanh` as default.
+        :param learn_ini: If True, initial hidden values will be learned.
+        :param truncate_gradient: if not -1, BPTT will be used, gradient back-propagation will be performed at most `truncate_gradient` steps
+        """
+        super().__init__(name=name)
+        if not isinstance(input_dims, (tuple, list)):
+            input_dims = [input_dims]
 
+        self.input_dims    = input_dims
+        self.input_dim     = sum(input_dims)
+        self.hidden_dim    = hidden_dim
+        self.output_dim    = self.hidden_dim     # same with `self.hidden_dim`, for API unification.
+        self.grad_clipping = grad_clipping
+        self.peephole      = peephole
+        self.learn_ini     = learn_ini
+        self.hidden_activation = hidden_activation
+        self.truncate_gradient = truncate_gradient
+
+        W_in        = create_uneven_weight(input_dims, 4 * hidden_dim, initializer)
+        b_in        = np.zeros(4*self.hidden_dim, floatX)
+        W_h_left    = initializer.sample((hidden_dim, 4 * hidden_dim))
+        W_h_up      = initializer.sample((hidden_dim, 4 * hidden_dim))
+
+        self.W_in   = self.register_param(W_in)  # (input_dim, 4*hidden_dim)
+        self.b_in   = self.register_param(b_in)  # (4*hidden_dim)
+        self.W_h_left = self.register_param(W_h_left)  # (hidden_dim, 4*hidden_dim)
+        self.W_h_up   = self.register_param(W_h_up)    # (hidden_dim, 4*hidden_dim)
+        if self.learn_ini:
+            self.h_ini  = self.register_param(np.zeros(self.hidden_dim, floatX))  # (hidden_dim,)  hidden initial state
+            self.c_ini  = self.register_param(np.zeros(self.hidden_dim, floatX))  # (hidden_dim,)  cell initial state
+
+        if self.peephole:
+            self.w_cell_to_igate_left = self.register_param(np.squeeze(initializer.sample((hidden_dim, 1)))) # (hidden_dim,) peephole weights
+            self.w_cell_to_igate_up   = self.register_param(np.squeeze(initializer.sample((hidden_dim, 1)))) # (hidden_dim,) peephole weights
+            self.w_cell_to_fgate_left = self.register_param(np.squeeze(initializer.sample((hidden_dim, 1)))) # (hidden_dim,) peephole weights
+            self.w_cell_to_fgate_up   = self.register_param(np.squeeze(initializer.sample((hidden_dim, 1)))) # (hidden_dim,) peephole weights
+            self.w_cell_to_ogate = self.register_param(np.squeeze(initializer.sample((hidden_dim, 1)))) # (hidden_dim,) peephole weights
+
+        self.predict = self.forward                 # predict() is the same with forward() for this layer
+
+    def _precompute_input(self, input):
+        return tensor.dot(input, self.W_in) + self.b_in   # (H, W, B, C) -> (H, W, B, 4*hidden_dim)
+
+    def step(self, input, h_left, c_left, x_pos, h_buffer, c_buffer, width, mask=None, process_input=False):
+        """
+        One time step. This function can be used as LSTMCell by setting `process_input=True`.
+        :param input:   (B, input_dim)
+        :param h_left:  (B, hidden_dim)
+        :param c_left:  (B, hidden_dim)
+        :param x_pos:   int64 scalar, width dimension
+        :param h_buffer: (W, B, hidden_dim)
+        :param c_buffer: (W, B, hidden_dim)
+        :param width:   width for x_pos rounding
+        :param mask:    (B,)
+        :param process_input: If possible, it is better to process the whole input sequence beforehand.
+                              But sometimes this is not suitable, for example at prediction time.
+        :return: h, c, both (B, hidden_dim)
+        """
+        if process_input:
+            input = self._precompute_input(input)    # (B, 4*hidden_dim)
+
+        h_up   = h_buffer[x_pos, :, :]  # (B, hidden_dim)
+        c_up   = c_buffer[x_pos, :, :]  # (B, hidden_dim)
+
+        gates   = input + tensor.dot(h_left, self.W_h_left) + tensor.dot(h_up, self.W_h_up)   # (B, 4*hidden_dim)
+        if self.grad_clipping > 0:
+            gates = grad_clip(gates, -self.grad_clipping, self.grad_clipping)
+
+        i_gate  = gates[:, :self.hidden_dim]                     # input gate, (B, hidden_dim)
+        f_gate  = gates[:, self.hidden_dim:2*self.hidden_dim]    # forget gate, (B, hidden_dim)
+        c_input = gates[:, 2*self.hidden_dim:3*self.hidden_dim]  # cell input, (B, hidden_dim)
+        o_gate  = gates[:, 3*self.hidden_dim:]                   # output gate, (B, hidden_dim)
+
+        if self.peephole:
+            i_gate += (c_left * self.w_cell_to_igate_left + c_up * self.w_cell_to_igate_up)
+            f_gate += (c_left * self.w_cell_to_fgate_left + c_up * self.w_cell_to_fgate_up)
+
+        i_gate  = sigmoid(i_gate)
+        f_gate  = sigmoid(f_gate)
+        c_input = tanh(c_input)
+        c       = f_gate * (c_up + c_left) * 0.5 + i_gate * c_input  # add 0.5 coefficient for numerical stability
+
+        if self.peephole:
+            o_gate += c * self.w_cell_to_ogate
+        o_gate  = sigmoid(o_gate)
+        h       = o_gate * self.hidden_activation(c)
+
+        if mask:
+            h = tensor.switch(mask[:, None], h, h_left)
+            c = tensor.switch(mask[:, None], c, c_left)
+
+        h_buffer = tensor.set_subtensor(h_buffer[x_pos, :, :], h)
+        c_buffer = tensor.set_subtensor(c_buffer[x_pos, :, :], c)
+        x_pos = x_pos + 1
+        x_pos = tensor.mod(x_pos, width)
+        return h, c, x_pos, h_buffer, c_buffer
+
+    def forward(self, seq_input, h_ini=None, c_ini=None, seq_mask=None, backward=False, only_return_final=False, return_final_state=False):
+        """
+        Forward for train
+        :param seq_input:    (H, W, B, input_dim)
+        :param h_ini:        (B, hidden_dim) or None, if None, then learned self.h_ini will be used
+        :param c_ini:        (B, hidden_dim) or None, if None, then learned self.c_ini will be used
+        :param seq_mask:     (H, W, B)
+        :param backward:
+        :param only_return_final:  If True, only return the final sequential output
+        :param return_final_state: If True, the final state of `hidden` and `cell` will be returned, both (B, hidden_dim)
+        :return: seq_h: (H, W, B, hidden_dim)
+        """
+        seq_input = self._precompute_input(seq_input)
+        height, width, B, D = seq_input.shape
+        if h_ini is None:
+            if self.learn_ini:
+                h_ini = tensor.ones((B, 1)) * self.h_ini
+            else:
+                h_ini = tensor.zeros((B, self.hidden_dim))
+        if c_ini is None:
+            if self.learn_ini:
+                c_ini = tensor.ones((B, 1)) * self.c_ini
+            else:
+                c_ini = tensor.zeros((B, self.hidden_dim))
+
+        def LSTM_step_no_mask(input, h_pre, c_pre, x_pos, h_buffer, c_buffer, width):
+            return self.step(input, h_pre, c_pre, x_pos, h_buffer, c_buffer, width, mask=None, process_input=False)
+
+        def LSTM_step_mask(input, mask, h_pre, c_pre, x_pos, h_buffer, c_buffer, width):
+            return self.step(input, h_pre, c_pre, x_pos, h_buffer, c_buffer, width, mask=mask, process_input=False)
+
+        seq_input = seq_input.reshape((-1, B, D))
+        if seq_mask is not None:
+            LSTM_step = LSTM_step_mask
+            sequences = [seq_input, seq_mask.reshape(-1, B)]  # (H, W, B, C) -> (H*W, B, C)
+        else:
+            LSTM_step = LSTM_step_no_mask
+            sequences = [seq_input]
+
+        h_buffer, c_buffer = tensor.zeros(shape=(width, B, self.hidden_dim)), tensor.zeros(shape=(width, B, self.hidden_dim))
+        seq_h, seq_c, x_poss, h_buffers, c_buffers = theano.scan(
+            fn=LSTM_step,
+            sequences=sequences,
+            outputs_info=[h_ini, c_ini, tensor.constant(0, dtype='int64'), h_buffer, c_buffer],
+            non_sequences=[width],
+            go_backwards=backward,
+            truncate_gradient=self.truncate_gradient)[0]
+
+        final_state = (seq_h[-1], seq_c[-1]) # both (B, hidden_dim)
+
+        if only_return_final:
+            seq_h = seq_h[-1]    # (B, hidden_dim)
+        else:
+            if backward:
+                seq_h = seq_h[::-1, :]  # if backward, result should be reverted by time
+            seq_h = seq_h.reshape((height, width, B, self.hidden_dim))
+
+        if return_final_state:
+            return (seq_h, *final_state)
+        else:
+            return seq_h  # (H, W, B, hidden_dim) or (B, hidden_dim)
 
 
 if __name__ == '__main__':

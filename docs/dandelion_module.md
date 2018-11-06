@@ -170,6 +170,49 @@ class LSTM( input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1),
 ```
 
 _______________________________________________________________________
+## LSTM2D
+2D LSTM. Input shape now should be `(H, W, B, C)`, in which `C` usually comes from CNN channels.
+Note for current implementation, `LSTM2D` usually costs much more memories and runs slower than `LSTM`. It's recommended to apply `LSTM2D` only for small-sized feature maps.
+
+$$
+\begin{align}  
+i_t &= \sigma_i(x_t W_{xi} + h_{left} W_{h_{left}i} + h_{up} W_{h_{up}i} + w_{c_{left}i} \odot c_{left} + w_{c_{up}i} \odot c_{up} + b_i) \\
+f_t &= \sigma_f(x_t W_{xf} + h_{left} W_{h_{left}f} + h_{up} W_{h_{up}f} + w_{c_{left}f} \odot c_{left} + w_{c_{up}f} \odot c_{up} + b_f) \\
+c_t &= f_t \odot (c_{left} + c_{up}) * 0.5 + i_t \odot \sigma_c(x_t W_{xc} + h_{left} W_{h_{left}c} + h_{up} W_{h_{up}c} + b_c) \\
+o_t &= \sigma_o(x_t W_{xo} + h_{left} W_{h_{left}o} + h_{up} W_{h_{up}o} + w_{co} \odot c_t + b_o) \\
+h_t &= o_t \odot \sigma_h(c_t)
+\end{align}  
+$$
+
+Note here $t$ means the `(H, W, ...)` shaped input will be scanned with the first 2 dimenions flattened.
+```python
+class LSTM2D(input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1), grad_clipping=0, 
+             hidden_activation=tanh, learn_ini=False, truncate_gradient=-1, name=None)
+```
+* **input_dims**: integer or list of integers. If scalar, input dimension = `input_dims`; if list of integers, input dimension = sum(`input_dims`), and LSTM’s parameter `W_in` will be initialized unevenly by integers specified in input_dims
+* **hidden_dim**: dimension of hidden units, also the output dimension
+* **peephole**: bool. Whether add peephole connection.
+* **grad_clipping**: float. Hard clip the gradients at each time step. Only the gradient values above this threshold are clipped to the threshold. This is done during backprop. Some works report that using grad_normalization is better than grad_clipping
+* **hidden_activation**: nonlinearity applied to hidden variable, i.e., h = hidden_activation(cell). It's recommended to use `tanh` as default.
+* **learn_ini**: whether learn initial state
+* **truncate_gradient**: if not -1, BPTT will be used, gradient back-propagation will be performed at most `truncate_gradient` steps
+
+```python
+.forward(seq_input, h_ini=None, c_ini=None, seq_mask=None, backward=False, only_return_final=False, return_final_state=False)
+```
+* **seq_input**: tensor with shape `(H, W, B, C)` in which `C` is the input dimension
+* **h_ini**: initialization of hidden state, `(B, hidden_dim)`
+* **c_ini**: initialization of cell state, `(B, hidden_dim)`
+* **seq_mask**: mask for `seq_input`
+* **backward**: bool. Whether scan in backward direction (i.e., right->left, bottom->top)
+* **only_return_final**: bool. If `True`, only return the ﬁnal sequential output (e.g. for tasks where a single target value for the entire sequence is desired). In this case, Theano makes an optimization which saves memory.
+* **return_final_state**: If `True`, the final state of `hidden` and `cell` will be returned, both `(B, hidden_dim)`
+```python
+.predict = .forward
+```
+
+
+_______________________________________________________________________
 ## GRUCell
 Gated Recurrent Unit RNN Cell
 
@@ -350,7 +393,7 @@ Sequential container for a list of modules, just for convenience.
 class Sequential(module_list, activation=linear, name=None)
 ```
 * **module_list**: list of network sub-modules, these modules **MUST NOT** be sub-modules of any other parent module.
-* **activation**: activation applied to output of each sub-module.
+* **activation**: activation applied to output of each sub-module. Single function or list of functions. If `activation` is a list, it must be the same length with `module_list`.
 
 ```python
 .forward(x)

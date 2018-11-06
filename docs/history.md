@@ -1,5 +1,11 @@
 # History
 
+## version 0.17.12 [11-6-2018]
+* **NEW**: add `LSTM2D` module for 2D LSTM implementation
+* **NEW**: add `.todevice()` interface to `Module` class for possible support of model-parallel multi-GPU training. However due to [Theano issue 6655](https://github.com/Theano/Theano/issues/6655), this feature won't be finished, so use it at your own risk.
+* **MODIFIED**: `activation` param of `Sequential` class now supports list input.
+* **MODIFIED**:  merge pull request [#1](https://github.com/david-leon/Dandelion/pull/1), [#2](https://github.com/david-leon/Dandelion/pull/2), now `functional.spatial_pyramid_pooling()` supports 3 different implementations.
+
 ## version 0.17.11 [9-3-2018]
 * **MODIFIED**: returned `bbox`'s shape is changed to (B, H, W, k, n) for `model_CTPN`
 
