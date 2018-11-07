@@ -100,8 +100,19 @@ Note: Theano uses `self_update` mechanism to implement pseudo randomness, so to 
 
 _______________________________________________________________________
 ## GRU
-Gated Recurrent Unit RNN.
+Gated Recurrent Unit RNN.  
+The recurrent computation is implemented according to [Ref](https://arxiv.org/abs/1409.1259), also the same with Lasagne
 
+$$
+\begin{align}  
+r_t &= \sigma_r(x_t W_{xr} + h_{t - 1} W_{hr} + b_r) \\
+u_t &= \sigma_u(x_t W_{xu} + h_{t - 1} W_{hu} + b_u) \\
+c_t &= \sigma_c(x_t W_{xc} + r_t \odot (h_{t - 1} W_{hc}) + b_c) \\
+h_t &= (1 - u_t) \odot h_{t - 1} + u_t \odot c_t
+\end{align}  
+$$
+
+in which $\odot$ stands for element-wise multiplication.
 ```python
 class GRU(input_dims, hidden_dim, initializer=init.Normal(0.1), grad_clipping=0, 
           hidden_activation=tanh, learn_ini=False, truncate_gradient=-1, name=None)
