@@ -313,7 +313,27 @@
 </ul>
 <hr />
 <h2 id="gru">GRU</h2>
-<p>Gated Recurrent Unit RNN.</p>
+<p>Gated Recurrent Unit RNN.<br />
+The recurrent computation is implemented according to <a href="https://arxiv.org/abs/1409.1259">Ref</a>, also the same with Lasagne</p>
+<div>
+<div class="MathJax_Preview">
+\begin{align}  
+r_t &amp;= \sigma_r(x_t W_{xr} + h_{t - 1} W_{hr} + b_r) \\
+u_t &amp;= \sigma_u(x_t W_{xu} + h_{t - 1} W_{hu} + b_u) \\
+c_t &amp;= \sigma_c(x_t W_{xc} + r_t \odot (h_{t - 1} W_{hc}) + b_c) \\
+h_t &amp;= (1 - u_t) \odot h_{t - 1} + u_t \odot c_t
+\end{align}  
+</div>
+<script type="math/tex; mode=display">
+\begin{align}  
+r_t &= \sigma_r(x_t W_{xr} + h_{t - 1} W_{hr} + b_r) \\
+u_t &= \sigma_u(x_t W_{xu} + h_{t - 1} W_{hu} + b_u) \\
+c_t &= \sigma_c(x_t W_{xc} + r_t \odot (h_{t - 1} W_{hc}) + b_c) \\
+h_t &= (1 - u_t) \odot h_{t - 1} + u_t \odot c_t
+\end{align}  
+</script>
+</div>
+<p>in which <span><span class="MathJax_Preview">\odot</span><script type="math/tex">\odot</script></span> stands for element-wise multiplication.</p>
 <pre><code class="python">class GRU(input_dims, hidden_dim, initializer=init.Normal(0.1), grad_clipping=0, 
           hidden_activation=tanh, learn_ini=False, truncate_gradient=-1, name=None)
 </code></pre>
