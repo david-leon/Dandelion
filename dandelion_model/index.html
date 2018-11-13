@@ -148,6 +148,9 @@
     <li class="toctree-l3"><a href="#shuffle-seg-network">Shuffle-Seg network</a></li>
     
 
+    <li class="toctree-l3"><a href="#alternate-2d-lstm">Alternate 2D LSTM</a></li>
+    
+
     </ul>
                 </li>
     </ul>
@@ -242,7 +245,7 @@
 <ul>
 <li><strong>outer_channel</strong>: channel number of block input</li>
 <li><strong>inner_channel</strong>: channel number inside the block</li>
-<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last element-wise sum output.</strong></li>
 </ul>
 <p>The model accepts input of shape in the order of (B, C, H, W), and outputs with the same shape.</p>
@@ -269,7 +272,7 @@
 <li><strong>out_channels</strong>: channel number of unit output, only used when <code>fusion_mode</code> = 'concat', and must &gt; <code>in_channels</code></li>
 <li><strong>group_num</strong>: number of convolution groups</li>
 <li><strong>border_mode</strong>: only <code>same</code> allowed</li>
-<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 <li><strong>stride, dilation</strong>: only used for depthwise separable convolution module inside</li>
 <li><strong>fusion_mode</strong>: {'add' | 'concat'}.</li>
@@ -286,7 +289,7 @@
 <li><strong>inner_channel</strong>: optional, channel number inside the shuffle-unit, default = <code>in_channels//4</code></li>
 <li><strong>out_channels</strong>: channel number of stack output, must &gt; <code>in_channels</code></li>
 <li><strong>group_num</strong>: number of convolution groups</li>
-<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 <li><strong>stack_size</strong>: number of shuffle-unit in the stack</li>
 </ul>
@@ -301,7 +304,7 @@
 <li><strong>group_num</strong>: number of convolution groups</li>
 <li><strong>stage_channels</strong>: channel number of each stage output.</li>
 <li><strong>stack_size</strong>: size of each stack.</li>
-<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 </ul>
 <hr />
@@ -315,7 +318,7 @@
 <li><strong>in_channels</strong>: channel number of unit input</li>
 <li><strong>out_channels</strong>: channel number of unit output, only used when <code>fusion_mode</code> = 'concat', and must &gt; <code>in_channels</code></li>
 <li><strong>border_mode</strong>: only <code>same</code> allowed</li>
-<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 <li><strong>stride, dilation</strong>: only used for depthwise separable convolution module inside, must be integer scalars</li>
 </ul>
@@ -327,7 +330,7 @@
 <ul>
 <li><strong>in_channels</strong>: channel number of input</li>
 <li><strong>out_channels</strong>: channel number of stack output</li>
-<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 <li><strong>stack_size</strong>: number of shuffle-unit in the stack</li>
 </ul>
@@ -341,7 +344,7 @@
 <li><strong>in_channels</strong>: channel number of input</li>
 <li><strong>stage_channels</strong>: channel number of each stage output.</li>
 <li><strong>stack_size</strong>: size of each stack.</li>
-<li><strong>batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
+<li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 </ul>
 <hr />
@@ -356,7 +359,7 @@
 <ul>
 <li><strong>k</strong>: anchor box number</li>
 <li><strong>do_side_refinement_regress</strong>: whether implement side refinement regression</li>
-<li><strong>batchnorm_mode</strong>: {1|0}, whether insert batch normalization into the end of each convolution stage of VGG-16 net, useful for cold start.</li>
+<li><strong>batchnorm_mode</strong>: {0|<em>1</em>}, whether insert batch normalization into the end of each convolution stage of VGG-16 net, useful for cold start.</li>
 <li><strong>channel</strong>: input channel number</li>
 <li><strong>im_height, im_width</strong>: input image height/width, optional</li>
 <li><strong>kernel_size</strong>: convolution kernel size of VGG-16 net</li>
@@ -389,9 +392,32 @@
 <li><strong>SF_group_num</strong>: number of convolution groups for inside ShuffleNet encoder.</li>
 <li><strong>SF_stage_channels</strong>: channel number of each stage output for inside ShuffleNet encoder.</li>
 <li><strong>SF_stack_size</strong>: size of each stack for inside ShuffleNet encoder.</li>
-<li><strong>SF_batchnorm_mode</strong>: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn. For inside ShuffleNet encoder</li>
+<li><strong>SF_batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn. For inside ShuffleNet encoder</li>
 <li><strong>SF_activation</strong>: default = relu. For inside ShuffleNet encoder.</li>
 </ul>
+<hr />
+<h2 id="alternate-2d-lstm">Alternate 2D LSTM</h2>
+<p>LSTM2D implementation by alternating LSTM along different dimensions.<br />
+Input shape = <code>(H, W, B, C)</code></p>
+<pre><code class="python">class Alternate_2D_LSTM( input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1), grad_clipping=0, 
+                         hidden_activation=tanh, learn_ini=False, truncate_gradient=-1, mode=2)
+</code></pre>
+
+<p>All the arguments are the same with <code>LSTM</code> module, except for <code>mode</code>.</p>
+<ul>
+<li><strong>mode</strong>: {0 | 1 | <em>2</em>}. <br />
+0: concat mode, 1D LSTM results from horizontal and vertical dimensions are concatenated along the <code>C</code> dimension, i.e.,<br />
+<span><span class="MathJax_Preview">result = concat(horizontal\_LSTM(input), vertical\_LSTM(input))</span><script type="math/tex">result = concat(horizontal\_LSTM(input), vertical\_LSTM(input))</script></span>; <br />
+1: sequential mode, horizontal and vertical dimensions are processed sequentially, i.e., <span><span class="MathJax_Preview">result = horizontal\_LSTM(vertical\_LSTM(input))</span><script type="math/tex">result = horizontal\_LSTM(vertical\_LSTM(input))</script></span>; <br />
+2: mixed mode, i.e.,<br />
+<span><span class="MathJax_Preview">result = horizontal\_LSTM(concat(input, vertical\_LSTM(input)))</span><script type="math/tex">result = horizontal\_LSTM(concat(input, vertical\_LSTM(input)))</script></span></li>
+</ul>
+<pre><code class="python">.forward(seq_input, h_ini=(None, None), c_ini=(None, None), seq_mask=None, backward=(False, False), return_final_state=False)
+</code></pre>
+
+<p>All the arguments are the same with <code>LSTM</code> module</p>
+<pre><code class="python">.predict = .forward
+</code></pre>
               
             </div>
           </div>
