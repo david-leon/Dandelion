@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.13 [11-13-2018]
+* **NEW**: add `model.Alternate_2D_LSTM` module for 2D LSTM implementaton by alternating 1D LSTM along different input dimensions.
+
 ## version 0.17.12 [11-6-2018]
 * **NEW**: add `LSTM2D` module for 2D LSTM implementation
 * **NEW**: add `.todevice()` interface to `Module` class for possible support of model-parallel multi-GPU training. However due to [Theano issue 6655](https://github.com/Theano/Theano/issues/6655), this feature won't be finished, so use it at your own risk.

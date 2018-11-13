@@ -37,7 +37,7 @@ class ResNet_bottleneck(outer_channel=256, inner_channel=64, border_mode='same',
 ```
 * **outer_channel**: channel number of block input
 * **inner_channel**: channel number inside the block
-* **batchnorm_mode**: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
+* **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last element-wise sum output.**
 
 The model accepts input of shape in the order of (B, C, H, W), and outputs with the same shape.
@@ -65,7 +65,7 @@ class ShuffleUnit(in_channels=256, inner_channels=None, out_channels=None, group
 * **out_channels**: channel number of unit output, only used when `fusion_mode` = 'concat', and must > `in_channels`
 * **group_num**: number of convolution groups
 * **border_mode**: only `same` allowed
-* **batchnorm_mode**: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
+* **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
 * **stride, dilation**: only used for depthwise separable convolution module inside
 * **fusion_mode**: {'add' | 'concat'}.
@@ -82,7 +82,7 @@ class ShuffleUnit_Stack(in_channels, inner_channels=None, out_channels=None, gro
 * **inner_channel**: optional, channel number inside the shuffle-unit, default = `in_channels//4`
 * **out_channels**: channel number of stack output, must > `in_channels`
 * **group_num**: number of convolution groups
-* **batchnorm_mode**: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
+* **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
 * **stack_size**: number of shuffle-unit in the stack
 
@@ -97,7 +97,7 @@ class model_ShuffleNet(in_channels, group_num=4, stage_channels=(24, 272, 544, 1
 * **group_num**: number of convolution groups
 * **stage_channels**: channel number of each stage output.
 * **stack_size**: size of each stack.
-* **batchnorm_mode**: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
+* **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
 
 _______________________________________________________________________
@@ -111,7 +111,7 @@ class ShuffleUnit_v2(in_channels=256, out_channels=None, border_mode='same', bat
 * **in_channels**: channel number of unit input
 * **out_channels**: channel number of unit output, only used when `fusion_mode` = 'concat', and must > `in_channels`
 * **border_mode**: only `same` allowed
-* **batchnorm_mode**: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
+* **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
 * **stride, dilation**: only used for depthwise separable convolution module inside, must be integer scalars
 
@@ -123,7 +123,7 @@ class ShuffleUnit_v2_Stack(in_channels, out_channels, batchnorm_mode=1, activati
 ```
 * **in_channels**: channel number of input
 * **out_channels**: channel number of stack output
-* **batchnorm_mode**: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
+* **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
 * **stack_size**: number of shuffle-unit in the stack
 
@@ -137,7 +137,7 @@ class model_ShuffleNet_v2(in_channels, stage_channels=(24, 116, 232, 464, 1024),
 * **in_channels**: channel number of input
 * **stage_channels**: channel number of each stage output.
 * **stack_size**: size of each stack.
-* **batchnorm_mode**: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
+* **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
 
 _______________________________________________________________________
@@ -152,7 +152,7 @@ class model_CTPN(k=10, do_side_refinement_regress=False,
 ```
 * **k**: anchor box number
 * **do_side_refinement_regress**: whether implement side refinement regression
-* **batchnorm_mode**: {1|0}, whether insert batch normalization into the end of each convolution stage of VGG-16 net, useful for cold start.
+* **batchnorm_mode**: {0|*1*}, whether insert batch normalization into the end of each convolution stage of VGG-16 net, useful for cold start.
 * **channel**: input channel number
 * **im_height, im_width**: input image height/width, optional
 * **kernel_size**: convolution kernel size of VGG-16 net
@@ -186,6 +186,33 @@ class model_ShuffleSeg(in_channels=1, Nclass=6, SF_group_num=4, SF_stage_channel
 * **SF_group_num**: number of convolution groups for inside ShuffleNet encoder.
 * **SF_stage_channels**: channel number of each stage output for inside ShuffleNet encoder.
 * **SF_stack_size**: size of each stack for inside ShuffleNet encoder.
-* **SF_batchnorm_mode**: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn. For inside ShuffleNet encoder
+* **SF_batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn. For inside ShuffleNet encoder
 * **SF_activation**: default = relu. For inside ShuffleNet encoder.
 
+_______________________________________________________________________
+## Alternate 2D LSTM
+LSTM2D implementation by alternating LSTM along different dimensions.  
+Input shape = `(H, W, B, C)`
+
+```python
+class Alternate_2D_LSTM( input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1), grad_clipping=0, 
+                         hidden_activation=tanh, learn_ini=False, truncate_gradient=-1, mode=2)
+```
+All the arguments are the same with `LSTM` module, except for `mode`.
+
+* **mode**: {0 | 1 | *2*}.   
+0: concat mode, 1D LSTM results from horizontal and vertical dimensions are concatenated along the `C` dimension, i.e.,  
+$result = concat(horizontal\_LSTM(input), vertical\_LSTM(input))$;   
+1: sequential mode, horizontal and vertical dimensions are processed sequentially, i.e., $result = horizontal\_LSTM(vertical\_LSTM(input))$;   
+2: mixed mode, i.e.,  
+$result = horizontal\_LSTM(concat(input, vertical\_LSTM(input)))$
+
+```python
+.forward(seq_input, h_ini=(None, None), c_ini=(None, None), seq_mask=None, backward=(False, False), return_final_state=False)
+```
+All the arguments are the same with `LSTM` module
+
+
+```python
+.predict = .forward
+```
