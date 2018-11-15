@@ -218,7 +218,8 @@ class ShuffleUnit_v2(Module):
                 self.bn5 = BatchNorm(input_shape=(None, channels, None, None))
         elif batchnorm_mode == 2:  # only one batch normalization at the end
             self.bn3 = BatchNorm(input_shape=(None, channels, None, None))
-            self.bn5 = BatchNorm(input_shape=(None, channels, None, None))
+            if stride > 1:
+                self.bn5 = BatchNorm(input_shape=(None, channels, None, None))
         else:
             raise ValueError('batchnorm_mode should be {0 | 1 | 2}')
 
@@ -313,6 +314,7 @@ class ShuffleUnit_v2(Module):
 class ShuffleUnit_Stack(Module):
     """
     Stack of shuffle-unit
+    downscale factor = (2,2)
     """
 
     def __init__(self, in_channels, out_channels, inner_channels=None, group_num=4, batchnorm_mode=1, activation=relu, stack_size=3):
@@ -351,6 +353,7 @@ class ShuffleUnit_Stack(Module):
 class ShuffleUnit_v2_Stack(Module):
     """
     Stack of shuffle_v2 unit
+    downscale factor = (2,2)
     """
     def __init__(self, in_channels, out_channels, batchnorm_mode=1, activation=relu, stack_size=3):
         """
@@ -387,6 +390,7 @@ class model_ShuffleNet(Module):
     """
     Model reference implementation of [ShuffleNet](https://arxiv.org/abs/1610.02357) without the final pooling & Dense layer.
     Note no activation applied to the last output
+    downscale factor = (32, 32)
     """
     def __init__(self, in_channels, group_num=4, stage_channels=(24, 272, 544, 1088), stack_size=(3, 7, 3), batchnorm_mode=1, activation=relu):
         super().__init__()

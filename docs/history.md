@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.14 [11-15-2018]
+* **FIXED**: remove redundant `bn5` layer of `ShuffleUnit_v2` when `stride` = 1 and `batchnorm_mode` = 2.
+
 ## version 0.17.13 [11-13-2018]
 * **NEW**: add `model.Alternate_2D_LSTM` module for 2D LSTM implementaton by alternating 1D LSTM along different input dimensions.
 

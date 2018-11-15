@@ -9,11 +9,14 @@ import os
 os.environ['THEANO_FLAGS'] = "floatX=float32, mode=FAST_RUN, warn_float64='raise'"
 # os.environ['THEANO_FLAGS'] = "floatX=float32, mode=DEBUG_MODE, warn_float64='raise', exception_verbosity=high"
 
-import theano
+import theano, sys
+sys.setrecursionlimit(40000)
 from theano import tensor
 from dandelion.module import *
 from dandelion.activation import *
 from dandelion.model.shufflenet import *
+from dandelion.objective import *
+from dandelion.update import *
 
 import dandelion
 dandelion_path = os.path.split(dandelion.__file__)[0]
@@ -44,7 +47,6 @@ def test_case_1():
     input = np.random.rand(4, 16, 256, 256).astype(np.float32)
     output = fn(input)
     assert output.shape == (4, 32, 128, 128), 'incorrect output shape = %s' % str(output.shape)
-
 
 def test_case_2():
     print('test_case_2: model_ShuffleNet')
@@ -77,7 +79,6 @@ def test_case_3():
     assert output[0].shape == (4, 6, 7, 7), 'incorrect output[0] shape = %s' % str(output[0].shape)
     assert output[1].shape == (4, 544, 14, 14), 'incorrect output[1] shape = %s' % str(output[1].shape)
     assert output[2].shape == (4, 272, 28, 28), 'incorrect output[2] shape = %s' % str(output[2].shape)
-
 
 def test_case_4():
     print('test_case_4: model_ShuffleSeg')
@@ -157,6 +158,37 @@ def test_case_7():
         # print(output.shape)
         assert output.shape == shape_gt[i], 'incorrect output shape = %s' % str(output.shape)
 
+def test_case_8():
+    print('test_case_8: grad of model_ShuffleNet_v2')
+    args = [ [3, (24, 116, 232, 464, 1024), (3, 7, 3), 1, relu],
+             [1, (24, 48, 96, 192, 1088), (2, 5, 2), 2, relu],
+           ]
+    shape_gt = [ (4, 1024, 7, 7),
+                 (4, 1088, 7, 7),
+                ]
+    for i, arg in enumerate(args):
+        in_channels, stage_channels, stack_size, batchnorm_mode, activation = arg
+
+        model = model_ShuffleNet_v2(in_channels=in_channels, stage_channels=stage_channels, stack_size=stack_size, batchnorm_mode=batchnorm_mode, activation=activation)
+        x  = tensor.ftensor4('x')
+        gt = tensor.ftensor4('gt')
+        y  = model.forward(x)
+        loss = aggregate(squared_error(gt, y))
+        params = model.collect_params()
+        updates = sgd(loss, params, 1e-4)
+        updates.update(model.collect_self_updates())
+        print('compiling fn...')
+        fn = theano.function([x, gt], [y, loss], updates=updates, no_default_updates=False)
+        print('run fn...')
+        input = np.random.rand(4, in_channels, 224, 224).astype(np.float32)
+        gt    = np.random.rand(4, stage_channels[4], 7, 7).astype(np.float32)
+        y, loss = fn(input, gt)
+        # print(output.shape)
+        print('loss = ', loss)
+        assert y.shape == shape_gt[i], 'incorrect output shape = %s' % str(y.shape)
+
+
+
 if __name__ == '__main__':
 
     # test_case_0()
@@ -166,7 +198,8 @@ if __name__ == '__main__':
     # test_case_4()
     # test_case_5()
     # test_case_6()
-    test_case_7()
+    # test_case_7()
+    test_case_8()
 
     print('Test passed')
 
