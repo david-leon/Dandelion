@@ -39,8 +39,8 @@ def get_model_summary(model, size_unit='M'):
             size_unit = 1
     model_summary = OrderedDict()
     model_summary['name'] = model.name
-    model_size = get_model_size(model)
-    model_summary['size'] = model_size / size_unit
+    model_size = get_model_size(model) / size_unit
+    model_summary['size'] = model_size
     if len(model.params) > 0:
         model_summary['params'] = []
         for param in model.params:
