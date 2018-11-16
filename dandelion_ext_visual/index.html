@@ -8,7 +8,7 @@
   
   <meta name="author" content="David Leon (Dawei Leng)">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>dandelion.activation - Dandelion</title>
+  <title>dandelion.ext.visual - Dandelion</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,8 +17,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "dandelion.activation";
-    var mkdocs_page_input_path = "dandelion_activation.md";
+    var mkdocs_page_name = "dandelion.ext.visual";
+    var mkdocs_page_input_path = "dandelion_ext_visual.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -84,18 +84,9 @@
                     
     <a class="" href="../dandelion_functional/">dandelion.functional</a>
                 </li>
-                <li class=" current">
+                <li class="">
                     
-    <a class="current" href="./">dandelion.activation</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#softmax">softmax</a></li>
-    
-
-    <li class="toctree-l3"><a href="#log_softmax">log_softmax</a></li>
-    
-
-    </ul>
+    <a class="" href="../dandelion_activation/">dandelion.activation</a>
                 </li>
                 <li class="">
                     
@@ -128,9 +119,18 @@
                     
     <a class="" href="../dandelion_ext_CV/">dandelion.ext.CV</a>
                 </li>
-                <li class="">
+                <li class=" current">
                     
-    <a class="" href="../dandelion_ext_visual/">dandelion.ext.visual</a>
+    <a class="current" href="./">dandelion.ext.visual</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#get_model_size">get_model_size</a></li>
+    
+
+    <li class="toctree-l3"><a href="#get_model_summary">get_model_summary</a></li>
+    
+
+    </ul>
                 </li>
     </ul>
 	    </li>
@@ -162,11 +162,11 @@
     
       
         
-          <li>Framework Interface &raquo;</li>
+          <li>Extensions &raquo;</li>
         
       
     
-    <li>dandelion.activation</li>
+    <li>dandelion.ext.visual</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -176,40 +176,35 @@
           <div role="main">
             <div class="section">
               
-                <p>Dandelion's <code>activation</code> module is mostly inherited from <a href="https://github.com/Lasagne/Lasagne">Lasagne</a> except for the <code>softmax()</code> and <code>log_softmax()</code> activations. </p>
-<p>You're recommended to refer to <a href="http://lasagne.readthedocs.io/en/latest/modules/nonlinearities.html"><code>Lasagne.nonlinearities</code> document</a> for the following activations:</p>
-<ul>
-<li>sigmoid</li>
-<li>tanh</li>
-<li>relu</li>
-<li>softplus</li>
-<li>ultra_fast_sigmoid</li>
-<li>ScaledTanH</li>
-<li>leaky_rectify</li>
-<li>very_leaky_rectify</li>
-<li>elu</li>
-<li>SELU</li>
-<li>linear</li>
-<li>identity</li>
-</ul>
+                <p><strong>Model Summary and Visualization Toolkits</strong></p>
 <hr />
-<h2 id="softmax">softmax</h2>
-<p>Apply softmax to the last dimension of input <code>x</code></p>
-<pre><code class="python">softmax(x)
+<h2 id="get_model_size">get_model_size</h2>
+<p>Calculate model parameter size, return result in bytes.</p>
+<pre><code class="python">get_model_size(model)
 </code></pre>
 
 <ul>
-<li><strong>x</strong>: theano tensor of any shape</li>
+<li><strong>model</strong>: model defined by Dandelion</li>
 </ul>
 <hr />
-<h2 id="log_softmax">log_softmax</h2>
-<p>Apply softmax to the last dimension of input <code>x</code>, in log domain</p>
-<pre><code class="python">log_softmax(x)
+<h2 id="get_model_summary">get_model_summary</h2>
+<p>Produce model parameter summary.</p>
+<pre><code class="python">get_model_summary(model, size_unit='M')
 </code></pre>
 
 <ul>
-<li><strong>x</strong>: theano tensor of any shape</li>
+<li><strong>model</strong>: model defined by Dandelion</li>
+<li><strong>size_unit</strong>: {<em>'M'</em>|'K'|'B'|int}, unit for calculating parameter size.</li>
+<li><strong>return</strong>: <code>OrderedDict</code> instance. You can use <code>json.dumps()</code> to get a formatted json report file. For example:</li>
 </ul>
+<pre><code class="python">    import json
+    from dandelion.model import Alternate_2D_LSTM
+    input_dim, hidden_dim, B, H, W = 8, 8, 2, 32, 32
+    model = Alternate_2D_LSTM(input_dims=[input_dim],hidden_dim=hidden_dim, peephole=True, mode=2)
+    model_summary = get_model_summary(model, size_unit=1)
+    rpt = json.dumps(model_summary, ensure_ascii=False, indent=2)
+    print(rpt)
+</code></pre>
               
             </div>
           </div>
@@ -217,10 +212,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../dandelion_objective/" class="btn btn-neutral float-right" title="dandelion.objective">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../history/" class="btn btn-neutral float-right" title="History">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../dandelion_functional/" class="btn btn-neutral" title="dandelion.functional"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../dandelion_ext_CV/" class="btn btn-neutral" title="dandelion.ext.CV"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -246,10 +241,10 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../dandelion_functional/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../dandelion_ext_CV/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../dandelion_objective/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../history/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
