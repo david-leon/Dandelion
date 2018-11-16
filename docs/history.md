@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.15 [11-16-2018]
+* **NEW**: add `ext.visual` sub-module, containing model summarization & visualization toolkits.
+
 ## version 0.17.14 [11-15-2018]
 * **FIXED**: remove redundant `bn5` layer of `ShuffleUnit_v2` when `stride` = 1 and `batchnorm_mode` = 2.
 

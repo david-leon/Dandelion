@@ -26,6 +26,7 @@ nav:
       - dandelion.model: dandelion_model.md
     - Extensions:
       - dandelion.ext.CV: dandelion_ext_CV.md
+      - dandelion.ext.visual: dandelion_ext_visual.md
     - History: history.md
 
 
