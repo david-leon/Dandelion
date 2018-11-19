@@ -1,5 +1,9 @@
 # History
 
+## version 0.17.16 [11-19-2018]
+* **FIXED**: wrong scale of `model_size` for `ext.visual.get_model_summary()`
+* **MODIFIED**: add `stride` arg for `ShuffleUnit_Stack` and `ShuffleUnit_v2_Stack`; add `fusion_mode` arg for `ShuffleUnit_Stack`; improve their documentation.
+
 ## version 0.17.15 [11-16-2018]
 * **NEW**: add `ext.visual` sub-module, containing model summarization & visualization toolkits.
 

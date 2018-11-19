@@ -68,7 +68,7 @@ class ShuffleUnit(in_channels=256, inner_channels=None, out_channels=None, group
 * **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
 * **stride, dilation**: only used for depthwise separable convolution module inside
-* **fusion_mode**: {'add' | 'concat'}.
+* **fusion_mode**: {'add' | 'concat'}. When 'concat', `out_channels` must > `in_channels`.
 * **return**: convolution result with #channel = `in_channels` when `fusion_mode`='add', #channel = `out_channels` when `fusion_mode`='concat'
 
 ## ShuffleUnit_Stack
@@ -76,7 +76,7 @@ Reference implementation of shuffle-net unit stack
 
 ```python
 class ShuffleUnit_Stack(in_channels, inner_channels=None, out_channels=None, group_num=4, batchnorm_mode=1, 
-                        activation=relu, stack_size=3)
+                        activation=relu, stack_size=3, stride=2, fusion_mode='concat')
 ```
 * **in_channels**: channel number of input
 * **inner_channel**: optional, channel number inside the shuffle-unit, default = `in_channels//4`
@@ -85,6 +85,8 @@ class ShuffleUnit_Stack(in_channels, inner_channels=None, out_channels=None, gro
 * **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
 * **stack_size**: number of shuffle-unit in the stack
+* **stride**: int or tuple of int, convolution stride for the first unit, default=2
+* **fusion_mode**: fusion_mode for the first unit.
 
 ## ShuffleNet
 Reference implementation of [shuffle-net](https://arxiv.org/abs/1707.01083), without the final pooling & Dense layer.
@@ -109,23 +111,25 @@ class ShuffleUnit_v2(in_channels=256, out_channels=None, border_mode='same', bat
                      activation=relu, stride=1, dilation=1)
 ```
 * **in_channels**: channel number of unit input
-* **out_channels**: channel number of unit output, only used when `fusion_mode` = 'concat', and must > `in_channels`
+* **out_channels**: channel number of unit output, only used when `stride`>1; when `stride1`=1, `out_channels` is fixed to `in_channels`.
 * **border_mode**: only `same` allowed
 * **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
-* **stride, dilation**: only used for depthwise separable convolution module inside, must be integer scalars
+* **stride, dilation**: only used for depthwise separable convolution module inside, must be integer scalars or tuple of integers.
 
 ## ShuffleUnit_v2_Stack
 Reference implementation of shufflenet_v2 unit stack
 
 ```python
-class ShuffleUnit_v2_Stack(in_channels, out_channels, batchnorm_mode=1, activation=relu, stack_size=3)
+class ShuffleUnit_v2_Stack(in_channels, out_channels, batchnorm_mode=1, activation=relu, stack_size=3, stride=2)
 ```
 * **in_channels**: channel number of input
 * **out_channels**: channel number of stack output
 * **batchnorm_mode**: {0 | *1* | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn
 * **activation**: default = relu. **Note no activation applied to the last output.**
 * **stack_size**: number of shuffle-unit in the stack
+* **stride**: int or tuple of int, convolution stride for the first unit, default=2
+
 
 ## ShuffleNet_v2
 Reference implementation of [shufflenet_v2](https://arxiv.org/abs/1807.11164), without the final pooling & Dense layer.

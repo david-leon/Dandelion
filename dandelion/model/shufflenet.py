@@ -175,7 +175,7 @@ class ShuffleUnit_v2(Module):
                  stride=1, dilation=1):
         """
         :param in_channels: channel number of block input
-        :param out_channels: channel number of block output, only used when `fusion_mode` = 'concat', and must > `in_channels`
+        :param out_channels: channel number of block output, only used when `stride` > 1.
         :param border_mode: only `same` allowed
         :param batchnorm_mode: {0 | 1 | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn;
                                2 means batch normalization only applied to the last cnn
@@ -191,8 +191,6 @@ class ShuffleUnit_v2(Module):
         self.border_mode    = border_mode
         channels = out_channels//2
         assert 2*channels == out_channels, "out_channels must be even"
-        assert isinstance(stride, int),    "stride must be integer scalar"
-        assert isinstance(dilation, int),  "dilation must be integer scalar"
         if out_channels is None:
             out_channels = in_channels
         if stride == 1:
@@ -317,7 +315,7 @@ class ShuffleUnit_Stack(Module):
     downscale factor = (2,2)
     """
 
-    def __init__(self, in_channels, out_channels, inner_channels=None, group_num=4, batchnorm_mode=1, activation=relu, stack_size=3):
+    def __init__(self, in_channels, out_channels, inner_channels=None, group_num=4, batchnorm_mode=1, activation=relu, stack_size=3, stride=2, fusion_mode='concat'):
         """
         :param in_channels: channel number of stack input
         :param inner_channels: channel number inside the shuffle-units
@@ -326,10 +324,12 @@ class ShuffleUnit_Stack(Module):
         :param batchnorm_mode:
         :param activation:
         :param stack_size:
+        :param stride: int or tuple of int, convolution stride for the first unit, default=2
+        :param fusion_mode: fusion_mode for the first unit.
         """
         super().__init__()
         self.shuffleunit0 = ShuffleUnit(in_channels=in_channels, inner_channels=inner_channels, out_channels=out_channels, group_num=group_num,
-                                        batchnorm_mode=batchnorm_mode, activation=activation, stride=(2,2), fusion_mode='concat')
+                                        batchnorm_mode=batchnorm_mode, activation=activation, stride=as_tuple(stride, 2), fusion_mode=fusion_mode)
         self.shuffleunit_stack = [self.shuffleunit0]
         for i in range(stack_size):
             shuffleunit = ShuffleUnit(in_channels=out_channels, inner_channels=inner_channels, group_num=group_num,
@@ -355,17 +355,18 @@ class ShuffleUnit_v2_Stack(Module):
     Stack of shuffle_v2 unit
     downscale factor = (2,2)
     """
-    def __init__(self, in_channels, out_channels, batchnorm_mode=1, activation=relu, stack_size=3):
+    def __init__(self, in_channels, out_channels, batchnorm_mode=1, activation=relu, stack_size=3, stride=2):
         """
         :param in_channels: channel number of stack input
         :param out_channels: channel number of stack output
         :param batchnorm_mode:
         :param activation:
         :param stack_size:
+        :param stride: int or tuple of int, convolution stride for the first stack, default=2
         """
         super().__init__()
         self.shuffleunit0 = ShuffleUnit_v2(in_channels=in_channels, out_channels=out_channels, batchnorm_mode=batchnorm_mode,
-                                           activation=activation, stride=2)
+                                           activation=activation, stride=stride)
         self.shuffleunit_stack = [self.shuffleunit0]
         for i in range(stack_size):
             shuffleunit = ShuffleUnit_v2(in_channels=out_channels, out_channels=out_channels, batchnorm_mode=batchnorm_mode,
