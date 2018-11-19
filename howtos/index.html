@@ -74,11 +74,13 @@
     
         <ul>
         
-            <li><a class="toctree-l4" href="#1-how-to-freeze-a-module-during-training-like-in-keraslasagne">1) How to freeze a module during training like in Keras/Lasagne?</a></li>
+            <li><a class="toctree-l4" href="#1-how-to-freeze-a-module-during-training">1) How to freeze a module during training?</a></li>
         
-            <li><a class="toctree-l4" href="#2-how-to-add-random-noise-to-a-tensor">2) How to add random noise to a tensor?</a></li>
+            <li><a class="toctree-l4" href="#2-how-to-initialize-a-partially-modified-model-with-previouslly-trained-weights">2) How to initialize a partially modified model with previouslly trained weights?</a></li>
         
-            <li><a class="toctree-l4" href="#3-how-to-do-model-parallel-training">3) How to do model-parallel training?</a></li>
+            <li><a class="toctree-l4" href="#3-how-to-add-random-noise-to-a-tensor">3) How to add random noise to a tensor?</a></li>
+        
+            <li><a class="toctree-l4" href="#4-how-to-do-model-parallel-training">4) How to do model-parallel training?</a></li>
         
         </ul>
     
@@ -184,7 +186,7 @@
             <div class="section">
               
                 <h1 id="tutorial-iii-howtos">Tutorial III: Howtos</h1>
-<h3 id="1-how-to-freeze-a-module-during-training-like-in-keraslasagne">1) How to freeze a module during training like in Keras/Lasagne?</h3>
+<h3 id="1-how-to-freeze-a-module-during-training">1) How to freeze a module during training?</h3>
 <p>To <em>freeze</em> a module during training, use the <code>include</code> and <code>exclude</code> arguments of module's <code>.collect_params()</code> and <code>.collect_self_updates()</code> functions.</p>
 <h4 id="example">Example</h4>
 <pre><code class="python">class FOO(Module):
@@ -203,9 +205,19 @@ updates.update(model.colect_self_updates(exclude=['cnn0', 'cnn1']))
 train_fn = theano.function([...], [...], updates=updates, no_default_updates=False)
 </code></pre>
 
-<h3 id="2-how-to-add-random-noise-to-a-tensor">2) How to add random noise to a tensor?</h3>
-<p>Just use Theano's <code>MRG_RandomStreams</code> module.</p>
+<h3 id="2-how-to-initialize-a-partially-modified-model-with-previouslly-trained-weights">2) How to initialize a partially modified model with previouslly trained weights?</h3>
+<p>A frequently encountered scenario in research is that we want to re-use trained weights from a previous model to initialize a new model, usually partially modified. The most convenient way is to use <code>Module</code>'s <code>set_weights_by_name()</code> method with the <code>unmatched</code> argument set to <code>warn</code> or <code>ignore</code>. To use this method, it's assumed that you didn't change the variable's name to be initialized; otherwise, you can use the <code>name_map</code> argument to input the corresponding <em>weight-&gt;variable</em> mapping, or the most primitive way, use tensor's <code>get_value()</code> and <code>set_value()</code> methods explicitly.</p>
 <h4 id="example_1">Example</h4>
+<pre><code class="python">from dandelion.util import gpickle
+old_model_file = ...
+old_module_weights, old_userdata = gpickle.load(old_model_file)
+new_model = ...
+new_model.set_weights_by_name(old_module_weights, unmatched='warn')
+</code></pre>
+
+<h3 id="3-how-to-add-random-noise-to-a-tensor">3) How to add random noise to a tensor?</h3>
+<p>Just use Theano's <code>MRG_RandomStreams</code> module.</p>
+<h4 id="example_2">Example</h4>
 <pre><code class="python">from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 srng = RandomStreams(np.random.randint(1, 2147462579))
 ....
@@ -213,7 +225,7 @@ y = x + srng.normal(x.shape, avg=0.0, std=0.1)   # add Gaussian noise to x
 </code></pre>
 
 <p>What you'd keep in mind is that if you used Theano's <code>MRG_RandomStreams</code> module, remember to set <code>no_default_updates=False</code> when compiling functions.</p>
-<h3 id="3-how-to-do-model-parallel-training">3) How to do model-parallel training?</h3>
+<h3 id="4-how-to-do-model-parallel-training">4) How to do model-parallel training?</h3>
 <p>According to <a href="https://github.com/Theano/Theano/issues/6655">issue 6655</a>, model-parallel multi-GPU support of Theano will never be finished, so it won't be possible to do model-parallel training with Theano, and of course, Dandelion.<br />
 For data-parallel training, refer to <a href="https://github.com/mila-udem/platoon">platoon</a> for possible solution. We may implement our multi-GPU data-parallel training scheme later, stay tuned.</p>
               
