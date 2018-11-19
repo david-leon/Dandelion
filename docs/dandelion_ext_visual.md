@@ -28,3 +28,11 @@ get_model_summary(model, size_unit='M')
     rpt = json.dumps(model_summary, ensure_ascii=False, indent=2)
     print(rpt)
 ```
+The following is a snapshot of a complex model's summary, in which :
+
+* the `size` attribute is in `MB` unit.
+* the `percent` attribute is level-wise, and already in [0 ~ 100] range.
+
+For example in the snapshot, it says *model_6* (weights) is 21.36MB in total, and the first convolution layer *stage1* accounts for 0.011% of all the weights.
+
+![model_summary](model_summary.png)
