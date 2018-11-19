@@ -205,6 +205,14 @@
     rpt = json.dumps(model_summary, ensure_ascii=False, indent=2)
     print(rpt)
 </code></pre>
+
+<p>The following is a snapshot of a complex model's summary, in which :</p>
+<ul>
+<li>the <code>size</code> attribute is in <code>MB</code> unit.</li>
+<li>the <code>percent</code> attribute is level-wise, and already in [0 ~ 100] range.</li>
+</ul>
+<p>For example in the snapshot, it says <em>model_6</em> (weights) is 21.36MB in total, and the first convolution layer <em>stage1</em> accounts for 0.011% of all the weights.</p>
+<p><img alt="model_summary" src="../model_summary.png" /></p>
               
             </div>
           </div>

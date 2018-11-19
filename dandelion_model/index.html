@@ -279,13 +279,13 @@
 <li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 <li><strong>stride, dilation</strong>: only used for depthwise separable convolution module inside</li>
-<li><strong>fusion_mode</strong>: {'add' | 'concat'}.</li>
+<li><strong>fusion_mode</strong>: {'add' | 'concat'}. When 'concat', <code>out_channels</code> must &gt; <code>in_channels</code>.</li>
 <li><strong>return</strong>: convolution result with #channel = <code>in_channels</code> when <code>fusion_mode</code>='add', #channel = <code>out_channels</code> when <code>fusion_mode</code>='concat'</li>
 </ul>
 <h2 id="shuffleunit_stack">ShuffleUnit_Stack</h2>
 <p>Reference implementation of shuffle-net unit stack</p>
 <pre><code class="python">class ShuffleUnit_Stack(in_channels, inner_channels=None, out_channels=None, group_num=4, batchnorm_mode=1, 
-                        activation=relu, stack_size=3)
+                        activation=relu, stack_size=3, stride=2, fusion_mode='concat')
 </code></pre>
 
 <ul>
@@ -296,6 +296,8 @@
 <li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 <li><strong>stack_size</strong>: number of shuffle-unit in the stack</li>
+<li><strong>stride</strong>: int or tuple of int, convolution stride for the first unit, default=2</li>
+<li><strong>fusion_mode</strong>: fusion_mode for the first unit.</li>
 </ul>
 <h2 id="shufflenet">ShuffleNet</h2>
 <p>Reference implementation of <a href="https://arxiv.org/abs/1707.01083">shuffle-net</a>, without the final pooling &amp; Dense layer.</p>
@@ -320,15 +322,15 @@
 
 <ul>
 <li><strong>in_channels</strong>: channel number of unit input</li>
-<li><strong>out_channels</strong>: channel number of unit output, only used when <code>fusion_mode</code> = 'concat', and must &gt; <code>in_channels</code></li>
+<li><strong>out_channels</strong>: channel number of unit output, only used when <code>stride</code>&gt;1; when <code>stride1</code>=1, <code>out_channels</code> is fixed to <code>in_channels</code>.</li>
 <li><strong>border_mode</strong>: only <code>same</code> allowed</li>
 <li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
-<li><strong>stride, dilation</strong>: only used for depthwise separable convolution module inside, must be integer scalars</li>
+<li><strong>stride, dilation</strong>: only used for depthwise separable convolution module inside, must be integer scalars or tuple of integers.</li>
 </ul>
 <h2 id="shuffleunit_v2_stack">ShuffleUnit_v2_Stack</h2>
 <p>Reference implementation of shufflenet_v2 unit stack</p>
-<pre><code class="python">class ShuffleUnit_v2_Stack(in_channels, out_channels, batchnorm_mode=1, activation=relu, stack_size=3)
+<pre><code class="python">class ShuffleUnit_v2_Stack(in_channels, out_channels, batchnorm_mode=1, activation=relu, stack_size=3, stride=2)
 </code></pre>
 
 <ul>
@@ -337,6 +339,7 @@
 <li><strong>batchnorm_mode</strong>: {0 | <em>1</em> | 2}. 0 means no batch normalization applied; 1 means batch normalization applied to each cnn; 2 means batch normalization only applied to the last cnn</li>
 <li><strong>activation</strong>: default = relu. <strong>Note no activation applied to the last output.</strong></li>
 <li><strong>stack_size</strong>: number of shuffle-unit in the stack</li>
+<li><strong>stride</strong>: int or tuple of int, convolution stride for the first unit, default=2</li>
 </ul>
 <h2 id="shufflenet_v2">ShuffleNet_v2</h2>
 <p>Reference implementation of <a href="https://arxiv.org/abs/1807.11164">shufflenet_v2</a>, without the final pooling &amp; Dense layer.</p>
