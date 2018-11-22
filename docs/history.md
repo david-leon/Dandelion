@@ -1,7 +1,12 @@
 # History
 
+## version 0.17.17 [11-22-2018]
+* **NEW**: add `GroupNorm` module for group normalization implementation;
+* **MODIFIED**: expose `dim_broadcast` arg for `Module.register_param()` method;
+* **MODIFIED**: replace `spec = tensor.patternbroadcast(spec, dim_broadcast)` with `spec = theano.shared(spec, broadcastable=dim_broadcast)` for `util.create_param()`, due to the former would change tensor's type.
+
 ## version 0.17.16 [11-19-2018]
-* **FIXED**: wrong scale of `model_size` for `ext.visual.get_model_summary()`
+* **FIXED**: wrong scale of `model_size` for `ext.visual.get_model_summary()`;
 * **MODIFIED**: add `stride` arg for `ShuffleUnit_Stack` and `ShuffleUnit_v2_Stack`; add `fusion_mode` arg for `ShuffleUnit_Stack`; improve their documentation.
 
 ## version 0.17.15 [11-16-2018]

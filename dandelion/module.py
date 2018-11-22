@@ -1653,7 +1653,7 @@ class GroupNorm(Module):
     Group normalization is equivalent to layer normalization when `group_num`=1; and is equivalent to instance normalization when
     `group_num` = `channel_num`
     """
-    def __init__(self, channel_num, group_num=32, eps=1e-5, beta=init.Constant(0), gamma=init.Constant(1), name=None):
+    def __init__(self, channel_num, group_num=16, eps=1e-5, beta=init.Constant(0), gamma=init.Constant(1), name=None):
         """
         :param channel_num: input channel number, must be divisible by `group_num`
         :param group_num: group number for CNN channel dimension splitting

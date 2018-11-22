@@ -313,6 +313,15 @@ class Dense(input_dims, output_dim, W=init.GlorotUniform(), b=init.Constant(0.),
 * **output_dim**: output dimension
 * **W**, **b**: parameter initialization
 
+```python
+.forward(input)
+```
+* **input**: input of any shape
+
+```python
+.predict = .forward
+```
+
 _______________________________________________________________________
 ## Embedding
 Word/character embedding module.
@@ -323,10 +332,23 @@ class Embedding(num_embeddings, embedding_dim, W=init.Normal(), name=None)
 * **num_embeddings**: the Number of different embeddings
 * **embedding_dim**: output embedding vector dimension
 
+```python
+.forward(index_input)
+```
+* **index_input**: integer tensor
+
+```python
+.predict = .forward
+```
+
 _______________________________________________________________________
 ## BatchNorm
-Batch normalization module. The normalization is done as  
-$x' = \gamma * \frac{(x-\mu)}{\sigma} + \beta$
+Batch normalization module. The normalization is done as 
+$$
+\begin{align}  
+x' = \gamma * \frac{(x-\mu)}{\sigma} + \beta
+\end{align}
+$$
 
 ```python
 class BatchNorm(input_shape=None, axes='auto', eps=1e-4, alpha=0.1, beta=init.Constant(0), gamma=init.Constant(1), 
@@ -343,6 +365,39 @@ class BatchNorm(input_shape=None, axes='auto', eps=1e-4, alpha=0.1, beta=init.Co
 .forward(input, use_input_mean=True)
 ```
 * **use_input_mean**: default, use mean & std of input batch for normalization; if `False`, `self.mean` and `self.std` will be used for normalization. The reason that input mean is used during training is because at the early training stage, `BatchNorm`'s `self.mean` is far from the expected mean value and can be detrimental for network convergence. It's recommended to use input mean for early stage training; after that, you can switch to `BatchNorm`'s `self.mean` for training & inference consistency.
+
+
+_______________________________________________________________________
+## GroupNorm
+Group normalization, as described in [Group Normalization](https://arxiv.org/abs/1803.08494), only used for CNN output normalization. 
+The normalization is done as  
+$$
+\begin{align}  
+x' = \gamma * \frac{(x-\mu)}{\sigma} + \beta, \\ per sample, per group
+\end{align}
+$$ 
+1) With batch normalization, the normalization is usually done in per-channel way for an CNN output; whereas group normalization operates in per sample and per group way;   
+2) Group normalization use sample statistics for both forward and inference stage;  
+3) Group normalization only applies for 4D input with shape `(B, C, H, W)`;    
+4) Group normalization is recommended when batch size is small; for large batch size, batch normalization is still recommended;  
+5) Group normalization is equivalent to [Layer Normalization](https://arxiv.org/abs/1607.06450) when `group_num`=1; and equivalent to [Instance Normalization](https://arxiv.org/abs/1607.08022) when `group_num` = `channel_num`
+
+```python
+class GroupNorm(channel_num, group_num=16, eps=1e-5, beta=init.Constant(0), gamma=init.Constant(1), name=None)
+```
+* **channel_num**: group normalization assumes input of shape `(B, C, H, W)`, here `C` = `channel_num`
+* **group_num**: group number for CNN channel dimension splitting, `channel_num` must be divisible by `group_num`
+* **eps**: Small constant 𝜖 added to the variance before taking the square root and dividing by it, to avoid numerical problems
+* **gamma, beta**: these two parameters can be set to `None` to disable the controversial scale and shift. 
+
+```python
+.forward(input)
+```
+* **input**: input of shape `(B, C, H, W)`
+
+```python
+.predict = .forward
+```
 
 _______________________________________________________________________
 ## Center
