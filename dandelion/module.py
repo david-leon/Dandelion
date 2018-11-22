@@ -1646,7 +1646,6 @@ class LSTM2D(Module):
         else:
             return seq_h  # (H, W, B, hidden_dim) or (B, hidden_dim)
 
-
 class GroupNorm(Module):
     """
     Group normalization, as described in [Group normalization](https://arxiv.org/abs/1803.08494), only used for CNN output normalization.

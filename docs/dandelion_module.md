@@ -366,6 +366,9 @@ class BatchNorm(input_shape=None, axes='auto', eps=1e-4, alpha=0.1, beta=init.Co
 ```
 * **use_input_mean**: default, use mean & std of input batch for normalization; if `False`, `self.mean` and `self.std` will be used for normalization. The reason that input mean is used during training is because at the early training stage, `BatchNorm`'s `self.mean` is far from the expected mean value and can be detrimental for network convergence. It's recommended to use input mean for early stage training; after that, you can switch to `BatchNorm`'s `self.mean` for training & inference consistency.
 
+```python
+.predict(input)
+```
 
 _______________________________________________________________________
 ## GroupNorm
@@ -376,8 +379,8 @@ $$
 x' = \gamma * \frac{(x-\mu)}{\sigma} + \beta, \\ per sample, per group
 \end{align}
 $$ 
-1) With batch normalization, the normalization is usually done in per-channel way for an CNN output; whereas group normalization operates in per sample and per group way;   
-2) Group normalization use sample statistics for both forward and inference stage;  
+1) With batch normalization, the normalization is usually done in per-channel way for a CNN output; whereas group normalization operates in per sample and per group way;   
+2) Group normalization uses sample statistics for both forward and inference stage;  
 3) Group normalization only applies for 4D input with shape `(B, C, H, W)`;    
 4) Group normalization is recommended when batch size is small; for large batch size, batch normalization is still recommended;  
 5) Group normalization is equivalent to [Layer Normalization](https://arxiv.org/abs/1607.06450) when `group_num`=1; and equivalent to [Instance Normalization](https://arxiv.org/abs/1607.08022) when `group_num` = `channel_num`
