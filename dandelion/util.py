@@ -373,15 +373,18 @@ def create_param(spec, shape=None, name=None, dim_broadcast=None):
         if shape is not None and spec.shape != shape:
             raise ValueError("%s has shape %s, should be %s" %
                              (err_prefix % "numpy array", spec.shape, shape))
-        spec = theano.shared(spec)
+        if dim_broadcast is None:
+            spec = theano.shared(spec)
+        else:
+            spec = theano.shared(spec, broadcastable=dim_broadcast)
         # if shape is None:
             # spec = theano.shared(spec)
         # else:
             # bcast = tuple(s == 1 for s in shape)
             # spec = theano.shared(spec, broadcastable=bcast)
 
-    if dim_broadcast is not None:
-        spec = tensor.patternbroadcast(spec, dim_broadcast)
+    # if dim_broadcast is not None:
+        # spec = tensor.patternbroadcast(spec, dim_broadcast)
 
     if isinstance(spec, theano.Variable):
         # We cannot check the shape here, Theano expressions (even shared

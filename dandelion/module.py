@@ -32,10 +32,12 @@
                              3) remove all specified names for `register_param()` and `register_self_updating_variable()`. Leave the variables to be named automatically by
                              their parent module.
                 8,  2, 2018  modified: `Center` module, move `alpha` arg from class declaration to .forward() interface.
-                11, 2, 2018  add `.todevice()` interface to `Module` class
-                11, 5, 2018  add user warning that multi-GPU support of Theano is never finished, and `.todevice()` should NOT BE USED
-                11, 6, 2018  1) add 2D lstm implementation `LSTM2D`
+               11,  2, 2018  add `.todevice()` interface to `Module` class
+               11,  5, 2018  add user warning that multi-GPU support of Theano is never finished, and `.todevice()` should NOT BE USED
+               11,  6, 2018  1) add 2D lstm implementation `LSTM2D`
                              2) `Sequential` now support list input for `activation` param
+               11, 22, 2018  add `GroupNorm` module for small batch normalization;
+                             expose `dim_broadcast` arg for `Module.register_param()` method
 
   Note      :
     1) GRU & LSTM and their cell version have built-in activation (tanh), other modules have no built-in activations
@@ -234,7 +236,7 @@ class Module(object):
         if self.work_mode not in {'train', 'inference'}:
             raise ValueError('work_mode must be set to "train" or "inference"')
 
-    def register_param(self, x, shape=None, name=None):
+    def register_param(self, x, shape=None, name=None, dim_broadcast=None):
         """
          Register and possibly initialize a parameter tensor.
          Parameters to be updated by optimizer should be registered here.
@@ -254,6 +256,9 @@ class Module(object):
              to ``theano.shared`` when the variable is created, suffixed by the
              module's name.
 
+        dim_broadcast: tuple or list of boolean, indicating each dimension is broadcastable or not.
+                       if None, then no dimension is explicitly set as broadcastable.
+
          Returns
          -------
          Theano shared variable or Theano expression
@@ -262,7 +267,7 @@ class Module(object):
         if name is not None:
             name = "%s@%s" % (name, self.name)
         # create shared variable, or pass through given variable/expression
-        param = create_param(x, shape, name)
+        param = create_param(x, shape=shape, name=name, dim_broadcast=dim_broadcast)
         self.params.append(param)
         return param
 
@@ -1640,6 +1645,58 @@ class LSTM2D(Module):
             return (seq_h, *final_state)
         else:
             return seq_h  # (H, W, B, hidden_dim) or (B, hidden_dim)
+
+
+class GroupNorm(Module):
+    """
+    Group normalization, as described in [Group normalization](https://arxiv.org/abs/1803.08494), only used for CNN output normalization.
+    Group normalization is equivalent to layer normalization when `group_num`=1; and is equivalent to instance normalization when
+    `group_num` = `channel_num`
+    """
+    def __init__(self, channel_num, group_num=32, eps=1e-5, beta=init.Constant(0), gamma=init.Constant(1), name=None):
+        """
+        :param channel_num: input channel number, must be divisible by `group_num`
+        :param group_num: group number for CNN channel dimension splitting
+        :param eps: Small constant 𝜖 added to the variance before taking the square root and dividing by it, to avoid numerical problems
+        :param beta: set to None to disable the trainable shift
+        :param gamma: set to None to disable the trainable scale
+        :param name:
+        """
+        super().__init__(name=name)
+        if channel_num % group_num > 0:
+            raise ValueError('Group normalization requires that channel number must be divisible by group number')
+        self.channel_num = channel_num
+        self.group_num = group_num
+        self.eps    = eps
+        #--- beta & gamma are trained by BP ---#
+        if beta is None:
+            self.beta = None
+        else:
+            self.beta = self.register_param(beta, shape=(1, channel_num, 1, 1), dim_broadcast=(True, False, True, True))
+        if gamma is None:
+            self.gamma = None
+        else:
+            self.gamma = self.register_param(gamma, shape=(1, channel_num, 1, 1), dim_broadcast=(True, False, True, True))
+        self.predict = self.forward
+
+    def forward(self, input):
+        """
+        :param input: shape = (B, C, H, W)
+        :return:
+        """
+        B, C, H, W = input.shape
+        channel_num_per_group = self.channel_num // self.group_num
+        x = tensor.reshape(input, (B, self.group_num, channel_num_per_group, H, W))
+        mean = tensor.mean(x, axis=(2,3,4), keepdims=True)
+        var  = tensor.var(x, axis=(2,3,4), keepdims=True)
+        inv_std = tensor.inv(tensor.sqrt(var + self.eps))
+        x = (x - mean) * inv_std
+        x = tensor.reshape(x, (B, C, H, W))
+        if self.gamma is not None:
+            x = x * self.gamma
+        if self.beta is not None:
+            x = x + self.beta
+        return x
 
 
 if __name__ == '__main__':
