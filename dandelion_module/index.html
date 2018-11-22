@@ -623,6 +623,9 @@ $$</p>
 <ul>
 <li><strong>use_input_mean</strong>: default, use mean &amp; std of input batch for normalization; if <code>False</code>, <code>self.mean</code> and <code>self.std</code> will be used for normalization. The reason that input mean is used during training is because at the early training stage, <code>BatchNorm</code>'s <code>self.mean</code> is far from the expected mean value and can be detrimental for network convergence. It's recommended to use input mean for early stage training; after that, you can switch to <code>BatchNorm</code>'s <code>self.mean</code> for training &amp; inference consistency.</li>
 </ul>
+<pre><code class="python">.predict(input)
+</code></pre>
+
 <hr />
 <h2 id="groupnorm">GroupNorm</h2>
 <p>Group normalization, as described in <a href="https://arxiv.org/abs/1803.08494">Group Normalization</a>, only used for CNN output normalization. 
@@ -632,8 +635,8 @@ $$
 x' = \gamma * \frac{(x-\mu)}{\sigma} + \beta, \ per sample, per group
 \end{align}
 $$ 
-1) With batch normalization, the normalization is usually done in per-channel way for an CNN output; whereas group normalization operates in per sample and per group way; <br />
-2) Group normalization use sample statistics for both forward and inference stage;<br />
+1) With batch normalization, the normalization is usually done in per-channel way for a CNN output; whereas group normalization operates in per sample and per group way; <br />
+2) Group normalization uses sample statistics for both forward and inference stage;<br />
 3) Group normalization only applies for 4D input with shape <code>(B, C, H, W)</code>;  <br />
 4) Group normalization is recommended when batch size is small; for large batch size, batch normalization is still recommended;<br />
 5) Group normalization is equivalent to <a href="https://arxiv.org/abs/1607.06450">Layer Normalization</a> when <code>group_num</code>=1; and equivalent to <a href="https://arxiv.org/abs/1607.08022">Instance Normalization</a> when <code>group_num</code> = <code>channel_num</code></p>
