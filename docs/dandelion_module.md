@@ -325,7 +325,8 @@ class Embedding(num_embeddings, embedding_dim, W=init.Normal(), name=None)
 
 _______________________________________________________________________
 ## BatchNorm
-Batch normalization module.
+Batch normalization module. The normalization is done as  
+$x' = \gamma * \frac{(x-\mu)}{\sigma} + \beta$
 
 ```python
 class BatchNorm(input_shape=None, axes='auto', eps=1e-4, alpha=0.1, beta=init.Constant(0), gamma=init.Constant(1), 
@@ -335,6 +336,7 @@ class BatchNorm(input_shape=None, axes='auto', eps=1e-4, alpha=0.1, beta=init.Co
 * **axes**: `auto` or tuple of int. The axis or axes to normalize over. If `auto` (the default), normalize over all axes except for the second: this will normalize over the minibatch dimension for dense layers, and additionally over all spatial dimensions for convolutional layers.
 * **eps**: Small constant 𝜖 added to the variance before taking the square root and dividing by it, to avoid numerical problems
 * **alpha**: Coefficient for the exponential moving average of batch-wise means and standard deviations computed during training; the closer to one, the more it will depend on the last batches seen
+* **gamma, beta**: these two parameters can be set to `None` to disable the controversial scale and shift. According to [Deep Learning Book, Section 8.7.1](http://www.deeplearningbook.org/contents/optimization.html), disabling $\gamma$ and $\beta$ might reduce the expressive power of the neural network.
 * **mode**: `low_mem` or `high_mem`. Specify which batch normalization implementation that will be used. As no intermediate representations are stored for the back-propagation, `low_mem` implementation lower the memory usage, however, it is 5-10% slower than `high_mem` implementation. Note that 5-10% computation time difference compare the batch normalization operation only, time difference between implementation is likely to be less important on the full model fprop/bprop.
 
 ```python

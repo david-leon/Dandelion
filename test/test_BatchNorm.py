@@ -95,7 +95,7 @@ def test_case_1():
     B, C, H, W = 4, 1, 256, 256
     x = tensor.ftensor4('x')
     z = tensor.ftensor4('gt')
-    bn   = BatchNorm(input_shape=(B, C, H, W))
+    bn   = BatchNorm(input_shape=(B, C, H, W), beta=None, gamma=None)
     conv = Conv2D(in_channels=C, out_channels=C, kernel_size=(3,3), pad='same')
     model = Sequential([bn, conv], activation=relu)
     y = model.forward(x)
@@ -112,7 +112,7 @@ def test_case_1():
 
 if __name__ == '__main__':
 
-    test_case_0()
+    # test_case_0()
 
     test_case_1()
 
