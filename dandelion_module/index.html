@@ -117,6 +117,9 @@
     <li class="toctree-l3"><a href="#batchnorm">BatchNorm</a></li>
     
 
+    <li class="toctree-l3"><a href="#groupnorm">GroupNorm</a></li>
+    
+
     <li class="toctree-l3"><a href="#center">Center</a></li>
     
 
@@ -566,6 +569,15 @@ The input of <code>Dense</code> can have any dimensions, and note that we do not
 <li><strong>output_dim</strong>: output dimension</li>
 <li><strong>W</strong>, <strong>b</strong>: parameter initialization</li>
 </ul>
+<pre><code class="python">.forward(input)
+</code></pre>
+
+<ul>
+<li><strong>input</strong>: input of any shape</li>
+</ul>
+<pre><code class="python">.predict = .forward
+</code></pre>
+
 <hr />
 <h2 id="embedding">Embedding</h2>
 <p>Word/character embedding module.</p>
@@ -576,10 +588,23 @@ The input of <code>Dense</code> can have any dimensions, and note that we do not
 <li><strong>num_embeddings</strong>: the Number of different embeddings</li>
 <li><strong>embedding_dim</strong>: output embedding vector dimension</li>
 </ul>
+<pre><code class="python">.forward(index_input)
+</code></pre>
+
+<ul>
+<li><strong>index_input</strong>: integer tensor</li>
+</ul>
+<pre><code class="python">.predict = .forward
+</code></pre>
+
 <hr />
 <h2 id="batchnorm">BatchNorm</h2>
-<p>Batch normalization module. The normalization is done as<br />
-<span><span class="MathJax_Preview">x' = \gamma * \frac{(x-\mu)}{\sigma} + \beta</span><script type="math/tex">x' = \gamma * \frac{(x-\mu)}{\sigma} + \beta</script></span></p>
+<p>Batch normalization module. The normalization is done as 
+$$
+\begin{align}<br />
+x' = \gamma * \frac{(x-\mu)}{\sigma} + \beta
+\end{align}
+$$</p>
 <pre><code class="python">class BatchNorm(input_shape=None, axes='auto', eps=1e-4, alpha=0.1, beta=init.Constant(0), gamma=init.Constant(1), 
                 mean=init.Constant(0), inv_std=init.Constant(1), mode='high_mem', name=None)
 </code></pre>
@@ -598,6 +623,38 @@ The input of <code>Dense</code> can have any dimensions, and note that we do not
 <ul>
 <li><strong>use_input_mean</strong>: default, use mean &amp; std of input batch for normalization; if <code>False</code>, <code>self.mean</code> and <code>self.std</code> will be used for normalization. The reason that input mean is used during training is because at the early training stage, <code>BatchNorm</code>'s <code>self.mean</code> is far from the expected mean value and can be detrimental for network convergence. It's recommended to use input mean for early stage training; after that, you can switch to <code>BatchNorm</code>'s <code>self.mean</code> for training &amp; inference consistency.</li>
 </ul>
+<hr />
+<h2 id="groupnorm">GroupNorm</h2>
+<p>Group normalization, as described in <a href="https://arxiv.org/abs/1803.08494">Group Normalization</a>, only used for CNN output normalization. 
+The normalization is done as<br />
+$$
+\begin{align}<br />
+x' = \gamma * \frac{(x-\mu)}{\sigma} + \beta, \ per sample, per group
+\end{align}
+$$ 
+1) With batch normalization, the normalization is usually done in per-channel way for an CNN output; whereas group normalization operates in per sample and per group way; <br />
+2) Group normalization use sample statistics for both forward and inference stage;<br />
+3) Group normalization only applies for 4D input with shape <code>(B, C, H, W)</code>;  <br />
+4) Group normalization is recommended when batch size is small; for large batch size, batch normalization is still recommended;<br />
+5) Group normalization is equivalent to <a href="https://arxiv.org/abs/1607.06450">Layer Normalization</a> when <code>group_num</code>=1; and equivalent to <a href="https://arxiv.org/abs/1607.08022">Instance Normalization</a> when <code>group_num</code> = <code>channel_num</code></p>
+<pre><code class="python">class GroupNorm(channel_num, group_num=16, eps=1e-5, beta=init.Constant(0), gamma=init.Constant(1), name=None)
+</code></pre>
+
+<ul>
+<li><strong>channel_num</strong>: group normalization assumes input of shape <code>(B, C, H, W)</code>, here <code>C</code> = <code>channel_num</code></li>
+<li><strong>group_num</strong>: group number for CNN channel dimension splitting, <code>channel_num</code> must be divisible by <code>group_num</code></li>
+<li><strong>eps</strong>: Small constant 𝜖 added to the variance before taking the square root and dividing by it, to avoid numerical problems</li>
+<li><strong>gamma, beta</strong>: these two parameters can be set to <code>None</code> to disable the controversial scale and shift. </li>
+</ul>
+<pre><code class="python">.forward(input)
+</code></pre>
+
+<ul>
+<li><strong>input</strong>: input of shape <code>(B, C, H, W)</code></li>
+</ul>
+<pre><code class="python">.predict = .forward
+</code></pre>
+
 <hr />
 <h2 id="center">Center</h2>
 <p>Estimate class centers by moving averaging.</p>
