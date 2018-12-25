@@ -182,8 +182,10 @@ class LSTM( input_dims, hidden_dim, peephole=True, initializer=init.Normal(0.1),
 
 _______________________________________________________________________
 ## LSTM2D
-2D LSTM. Input shape now should be `(H, W, B, C)`, in which `C` usually comes from CNN channels.
-Note for current implementation, `LSTM2D` usually costs much more memories and runs slower than `LSTM`. It's recommended to apply `LSTM2D` only for small-sized feature maps.
+2D LSTM.  
+Input shape now should be `(H, W, B, C)`, in which `C` usually comes from CNN's channel dimension.  
+Note for current implementation, `LSTM2D` usually costs much more memories and runs slower than `LSTM` (due to graph history memorization which is required by autograd). It's recommended to apply `LSTM2D` only for small-sized feature maps.   
+As possible alternative, check [dandelion.model.Alternate_2D_LSTM](dandelion_model.md#alternate-2d-lstm)
 
 $$
 \begin{align}  
