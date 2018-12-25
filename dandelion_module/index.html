@@ -422,8 +422,10 @@ h_t &= o_t \odot \sigma_h(c_t)
 
 <hr />
 <h2 id="lstm2d">LSTM2D</h2>
-<p>2D LSTM. Input shape now should be <code>(H, W, B, C)</code>, in which <code>C</code> usually comes from CNN channels.
-Note for current implementation, <code>LSTM2D</code> usually costs much more memories and runs slower than <code>LSTM</code>. It's recommended to apply <code>LSTM2D</code> only for small-sized feature maps.</p>
+<p>2D LSTM.<br />
+Input shape now should be <code>(H, W, B, C)</code>, in which <code>C</code> usually comes from CNN's channel dimension.<br />
+Note for current implementation, <code>LSTM2D</code> usually costs much more memories and runs slower than <code>LSTM</code> (due to graph history memorization which is required by autograd). It's recommended to apply <code>LSTM2D</code> only for small-sized feature maps. <br />
+As possible alternative, check <a href="../dandelion_model/#alternate-2d-lstm">dandelion.model.Alternate_2D_LSTM</a></p>
 <div>
 <div class="MathJax_Preview">
 \begin{align}  
