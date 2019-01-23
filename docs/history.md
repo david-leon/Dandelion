@@ -1,5 +1,9 @@
 # History
 
+## version 0.17.18 [1-23-2019]
+* **NEW**: add `clear_nan` argument for `sgd`, `adam` and `adadelta` optimizers.
+* **MODIFIED**: add default value 1e-4 for `sgd`'s `learning_rate` arg.
+
 ## version 0.17.17 [11-22-2018]
 * **NEW**: add `GroupNorm` module for group normalization implementation;
 * **MODIFIED**: expose `dim_broadcast` arg for `Module.register_param()` method;

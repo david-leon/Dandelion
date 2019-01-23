@@ -1,46 +1,8 @@
-"""
-Functions to generate Theano update dictionaries for training.
-
-The update functions implement different methods to control the learning
-rate for use with stochastic gradient descent.
-
-Update functions take a loss expression or a list of gradient expressions and
-a list of parameters as input and return an ordered dictionary of updates:
-
-.. autosummary::
-    :nosignatures:
-
-    sgd
-    momentum
-    nesterov_momentum
-    adagrad
-    rmsprop
-    adadelta
-    adam
-    adamax
-
-Two functions can be used to further modify the updates to include momentum:
-
-.. autosummary::
-    :nosignatures:
-
-    apply_momentum
-    apply_nesterov_momentum
-
-Finally, we provide two helper functions to constrain the norm of tensors:
-
-.. autosummary::
-    :nosignatures:
-
-    norm_constraint
-    total_norm_constraint
-
-:func:`norm_constraint()` can be used to constrain the norm of parameters
-(as an alternative to weight decay), or for a form of gradient clipping.
-:func:`total_norm_constraint()` constrain the total norm of a list of tensors.
-This is often used when training recurrent neural networks.
-
-"""
+# coding:utf-8
+'''
+  Dandelion opitimizer pool, mainly inherited from Lasagne project (https://github.com/Lasagne/Lasagne)
+  Revised   :   1, 23, 2019    add `clear_nan` for adadelta & adam methods
+'''
 
 from collections import OrderedDict
 
@@ -51,6 +13,7 @@ import theano.tensor as T
 from . import util
 
 __all__ = [
+    "do_clear_nan",
     "sgd",
     "apply_momentum",
     "momentum",
@@ -65,6 +28,14 @@ __all__ = [
     "total_norm_constraint"
 ]
 
+
+def do_clear_nan(x):
+    """
+    Replace Nan in x with 0.0
+    :param x:
+    :return:
+    """
+    return T.switch(T.isnan(x), np.float32(0.0), x)
 
 def get_or_compute_grads(loss_or_grads, params):
     """Helper function returning a list of gradients
@@ -105,7 +76,7 @@ def get_or_compute_grads(loss_or_grads, params):
         return theano.grad(loss_or_grads, params)
 
 
-def sgd(loss_or_grads, params, learning_rate):
+def sgd(loss_or_grads, params, learning_rate, clear_nan=False):
     """Stochastic Gradient Descent (SGD) updates
 
     Generates update expressions of the form:
@@ -120,6 +91,8 @@ def sgd(loss_or_grads, params, learning_rate):
         The variables to generate update expressions for
     learning_rate : float or symbolic scalar
         The learning rate controlling the size of update steps
+     clear_nan: boolean
+        replace Nan in grads with 0
 
     Returns
     -------
@@ -130,7 +103,10 @@ def sgd(loss_or_grads, params, learning_rate):
     updates = OrderedDict()
 
     for param, grad in zip(params, grads):
-        updates[param] = param - learning_rate * grad
+        if clear_nan:
+            updates[param] = do_clear_nan(param - learning_rate * grad)
+        else:
+            updates[param] = param - learning_rate * grad
 
     return updates
 
@@ -440,11 +416,11 @@ def rmsprop(loss_or_grads, params, learning_rate=1.0, rho=0.9, epsilon=1e-6):
     return updates
 
 
-def adadelta(loss_or_grads, params, learning_rate=1.0, rho=0.95, epsilon=1e-6):
+def adadelta(loss_or_grads, params, learning_rate=1.0, rho=0.95, epsilon=1e-6, clear_nan=False):
     """ Adadelta updates
 
     Scale learning rates by the ratio of accumulated gradients to accumulated
-    updates, see [1]_ and notes for further description.
+    updates, see Ref. [1] and notes for further description.
 
     Parameters
     ----------
@@ -458,6 +434,9 @@ def adadelta(loss_or_grads, params, learning_rate=1.0, rho=0.95, epsilon=1e-6):
         Squared gradient moving average decay factor
     epsilon : float or symbolic scalar
         Small value added for numerical stability
+    clear_nan: boolean
+        replace Nan in grads with 0
+
 
     Returns
     -------
@@ -489,9 +468,7 @@ def adadelta(loss_or_grads, params, learning_rate=1.0, rho=0.95, epsilon=1e-6):
 
     References
     ----------
-    .. [1] Zeiler, M. D. (2012):
-           ADADELTA: An Adaptive Learning Rate Method.
-           arXiv Preprint arXiv:1212.5701.
+    .. [1] Zeiler, M. D. (2012): ADADELTA: An Adaptive Learning Rate Method. arXiv Preprint arXiv:1212.5701.
     """
     grads = get_or_compute_grads(loss_or_grads, params)
     updates = OrderedDict()
@@ -510,25 +487,34 @@ def adadelta(loss_or_grads, params, learning_rate=1.0, rho=0.95, epsilon=1e-6):
 
         # update accu (as in rmsprop)
         accu_new = rho * accu + (one - rho) * grad ** 2
-        updates[accu] = accu_new
+        if clear_nan:
+            updates[accu] = do_clear_nan(accu_new)
+        else:
+            updates[accu] = accu_new
 
         # compute parameter update, using the 'old' delta_accu
         update = (grad * T.sqrt(delta_accu + epsilon) /
                   T.sqrt(accu_new + epsilon))
-        updates[param] = param - learning_rate * update
+        if clear_nan:
+            updates[param] = do_clear_nan(param - learning_rate * update)
+        else:
+            updates[param] = param - learning_rate * update
 
         # update delta_accu (as accu, but accumulating updates)
         delta_accu_new = rho * delta_accu + (one - rho) * update ** 2
-        updates[delta_accu] = delta_accu_new
+        if clear_nan:
+            updates[delta_accu] = do_clear_nan(delta_accu_new)
+        else:
+            updates[delta_accu] = delta_accu_new
 
     return updates
 
 
 def adam(loss_or_grads, params, learning_rate=0.001, beta1=0.9,
-         beta2=0.999, epsilon=1e-8):
+         beta2=0.999, epsilon=1e-8, clear_nan=False):
     """Adam updates
 
-    Adam updates implemented as in [1]_.
+    Adam updates implemented as in Ref. [1].
 
     Parameters
     ----------
@@ -544,6 +530,8 @@ def adam(loss_or_grads, params, learning_rate=0.001, beta1=0.9,
         Exponential decay rate for the second moment estimates.
     epsilon : float or symbolic scalar
         Constant for numerical stability.
+    clear_nan: boolean
+        replace Nan in grads with 0
 
     Returns
     -------
@@ -552,16 +540,15 @@ def adam(loss_or_grads, params, learning_rate=0.001, beta1=0.9,
 
     Notes
     -----
-    The paper [1]_ includes an additional hyperparameter lambda. This is only
+    The paper [1] includes an additional hyperparameter lambda. This is only
     needed to prove convergence of the algorithm and has no practical use
     (personal communication with the authors), it is therefore omitted here.
 
     References
     ----------
-    .. [1] Kingma, Diederik, and Jimmy Ba (2014):
-           Adam: A Method for Stochastic Optimization.
-           arXiv preprint arXiv:1412.6980.
+    .. [1] Kingma, Diederik, and Jimmy Ba (2014): Adam: A Method for Stochastic Optimization. arXiv preprint arXiv:1412.6980.
     """
+
     all_grads = get_or_compute_grads(loss_or_grads, params)
     t_prev = theano.shared(util.floatX(0.))
     updates = OrderedDict()
@@ -583,9 +570,14 @@ def adam(loss_or_grads, params, learning_rate=0.001, beta1=0.9,
         v_t = beta2*v_prev + (one-beta2)*g_t**2
         step = a_t*m_t/(T.sqrt(v_t) + epsilon)
 
-        updates[m_prev] = m_t
-        updates[v_prev] = v_t
-        updates[param] = param - step
+        if clear_nan:
+            updates[m_prev] = do_clear_nan(m_t)
+            updates[v_prev] = do_clear_nan(v_t)
+            updates[param]  = do_clear_nan(param - step)
+        else:
+            updates[m_prev] = m_t
+            updates[v_prev] = v_t
+            updates[param]  = param - step
 
     updates[t_prev] = t
     return updates
