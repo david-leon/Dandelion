@@ -97,6 +97,15 @@
     <a class="current" href="./">dandelion.update</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#sgd">sgd</a></li>
+    
+
+    <li class="toctree-l3"><a href="#adam">adam</a></li>
+    
+
+    <li class="toctree-l3"><a href="#adadelta">adadelta</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -170,7 +179,64 @@
           <div role="main">
             <div class="section">
               
-                <p>Dandelion's <code>update</code> module is mostly inherited from <a href="https://github.com/Lasagne/Lasagne">Lasagne</a>, you're recommended to refer to <a href="http://lasagne.readthedocs.io/en/latest/modules/updates.html"><code>Lasagne.updates</code> document</a> for details.</p>
+                <p>Dandelion's <code>update</code> module is mostly inherited from <a href="https://github.com/Lasagne/Lasagne">Lasagne</a>, you're recommended to refer to <a href="http://lasagne.readthedocs.io/en/latest/modules/updates.html"><code>Lasagne.updates</code> document</a> for the following optimizers &amp; helper functions:  </p>
+<ul>
+<li>apply_momentum</li>
+<li>momentum</li>
+<li>apply_nesterov_momentum</li>
+<li>nesterov_momentum</li>
+<li>adagrad</li>
+<li>rmsprop</li>
+<li>adamax</li>
+<li>norm_constraint</li>
+<li>total_norm_constrain</li>
+</ul>
+<hr />
+<h2 id="sgd">sgd</h2>
+<p>Stochastic gradient descent optimizer.</p>
+<pre><code class="python">sgd(loss_or_grads, params, learning_rate=1e-4, clear_nan=False)
+</code></pre>
+
+<ul>
+<li><strong>loss_or_grads</strong>: a scalar loss expression, or a list of gradient expressions</li>
+<li><strong>params</strong>:  list of shared variables to generate update expressions for</li>
+<li><strong>learning_rate</strong>: float or symbolic scalar, learning rate controlling the size of update steps</li>
+<li><strong>clear_nan</strong>: boolean flag, if <code>True</code>, <code>nan</code> in gradients will be replaced with 0</li>
+</ul>
+<hr />
+<h2 id="adam">adam</h2>
+<p>Adam optimizer implemented as described in <em>"Kingma, Diederik, and Jimmy Ba (2014): Adam: A Method for Stochastic Optimization. arXiv preprint arXiv:1412.6980."</em></p>
+<pre><code class="python">adam(loss_or_grads, params, learning_rate=0.001, beta1=0.9,
+     beta2=0.999, epsilon=1e-8, clear_nan=False)
+</code></pre>
+
+<ul>
+<li><strong>loss_or_grads</strong>: a scalar loss expression, or a list of gradient expressions</li>
+<li><strong>params</strong>:  list of shared variables to generate update expressions for</li>
+<li><strong>learning_rate</strong>: float or symbolic scalar, learning rate controlling the size of update steps</li>
+<li><strong>clear_nan</strong>: boolean flag, if <code>True</code>, <code>nan</code> in gradients will be replaced with 0</li>
+<li><strong>beta1</strong>: float or symbolic scalar, exponential decay rate for the first moment estimates</li>
+<li><strong>beta2</strong>: float or symbolic scalar, exponential decay rate for the second moment estimates</li>
+<li><strong>epsilon</strong>: float or symbolic scalar, constant for numerical stability</li>
+</ul>
+<hr />
+<h2 id="adadelta">adadelta</h2>
+<p>Adadelta optimizer implemented as described in <em>"Zeiler, M. D. (2012): ADADELTA: An Adaptive Learning Rate Method. arXiv Preprint arXiv:1212.5701."</em></p>
+<pre><code class="python">adadelta(loss_or_grads, params, learning_rate=1.0, 
+         rho=0.95, epsilon=1e-6, clear_nan=False)
+</code></pre>
+
+<ul>
+<li><strong>loss_or_grads</strong>: a scalar loss expression, or a list of gradient expressions</li>
+<li><strong>params</strong>:  list of shared variables to generate update expressions for</li>
+<li><strong>learning_rate</strong>: float or symbolic scalar, learning rate controlling the size of update steps</li>
+<li><strong>clear_nan</strong>: boolean flag, if <code>True</code>, <code>nan</code> in gradients will be replaced with 0</li>
+<li><strong>rho</strong>: float or symbolic scalar, squared gradient moving average decay factor</li>
+<li><strong>epsilon</strong>: float or symbolic scalar, constant for numerical stability</li>
+</ul>
+<p><code>rho</code> should be between 0 and 1. A value of <code>rho</code> close to 1 will decay the moving average slowly and a value close to 0 will decay the moving average fast.<br />
+<code>rho</code> = 0.95 and <code>epsilon</code>=1e-6 are suggested in the paper and reported to work for multiple datasets (MNIST, speech).<br />
+In the paper, no learning rate is considered (so <code>learning_rate</code>=1.0). Probably best to keep it at this value. <code>epsilon</code> is important for the very first update (so the numerator does not become 0).</p>
               
             </div>
           </div>
