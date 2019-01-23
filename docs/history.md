@@ -1,6 +1,6 @@
 # History
 
-## version 0.17.18 [1-23-2019]
+## version 0.17.19 [1-23-2019]
 * **NEW**: add `clear_nan` argument for `sgd`, `adam` and `adadelta` optimizers.
 * **MODIFIED**: add default value 1e-4 for `sgd`'s `learning_rate` arg.
 
