@@ -1072,6 +1072,8 @@ class Dense(Module):
         self.W = self.register_param(W)
         if b is not None:
             self.b = self.register_param(b, shape=[output_dim])
+        else:
+            self.b = None
 
         self.predict = self.forward  # predict() is the same with forward() for this layer
 

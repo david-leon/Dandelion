@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.20 [2-11-2019]
+* **FIXED**: `self.b` should be set to `None` if not specified for `Dense` module
+
 ## version 0.17.19 [1-23-2019]
 * **NEW**: add `clear_nan` argument for `sgd`, `adam` and `adadelta` optimizers.
 * **MODIFIED**: add default value 1e-4 for `sgd`'s `learning_rate` arg.

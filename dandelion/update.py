@@ -76,7 +76,7 @@ def get_or_compute_grads(loss_or_grads, params):
         return theano.grad(loss_or_grads, params)
 
 
-def sgd(loss_or_grads, params, learning_rate, clear_nan=False):
+def sgd(loss_or_grads, params, learning_rate=1e-4, clear_nan=False):
     """Stochastic Gradient Descent (SGD) updates
 
     Generates update expressions of the form:
