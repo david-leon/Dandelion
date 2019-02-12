@@ -534,18 +534,18 @@ h_t &= o_t \odot \sigma_h(c_t)
 </code></pre>
 
 <ul>
-<li><strong>input_channels</strong>: int. Input shape of Conv2D module is (B, input_channels, H_in, W_in)</li>
-<li><strong>out_channels</strong>: int. Output shape of Conv2D module is (B output_channels, H_out, W_out)</li>
-<li><strong>kernel_size</strong>: int scalar or tuple of int. Convolution kernel size</li>
-<li><strong>stride</strong>: Factor by which to subsample the output</li>
-<li><strong>pad</strong>: <code>same</code>/<code>valid</code>/<code>full</code> or 2-element tuple of int. Control image border padding.</li>
+<li><strong>input_channels</strong>: int. Input shape of Conv2D module is <code>(B, input_channels, H_in, W_in)</code></li>
+<li><strong>out_channels</strong>: int. Output shape of Conv2D module is <code>(B, output_channels, H_out, W_out)</code>.</li>
+<li><strong>kernel_size</strong>: int scalar or tuple of int. Convolution kernel size.</li>
+<li><strong>stride</strong>: factor by which to subsample the output.</li>
+<li><strong>pad</strong>: <code>same</code>/<code>valid</code>/<code>full</code> or 2-element tuple of int. Control image border padding. For <code>valid</code> mode, output shape = input shape - filter shape + 1; for <code>full</code> mode, output shape = input shape + filter shape - 1.</li>
 <li><strong>dilation</strong>: factor by which to subsample (stride) the input.</li>
-<li><strong>num_groups</strong>: Divides the image, kernel and output tensors into num_groups separate groups. Each which carry out convolutions separately</li>
-<li><strong>W</strong>: initialization of filter bank, shape = (out_channels, in_channels, kernel_size[0], kernel_size[1])</li>
-<li><strong>b</strong>: initialization of convolution bias, shape = (out_channels,) if untie_bias is False; otherwise shape = (out_channels, H_out, W_out)</li>
-<li><strong>flip_filters</strong>: If <code>True</code>, will flip the filter rows and columns before sliding them over the input. This operation is normally referred to as a convolution, and this is the default. If <code>False</code>, the filters are not flipped and the operation is referred to as a cross-correlation.</li>
-<li><strong>input_shape</strong>: optional, (H_in, W_in)</li>
-<li><strong>untie_bias</strong>: If <code>False</code>, the module will have a bias parameter for each channel, which is shared across all positions in this channel. As a result, the b attribute will be a vector (1D). If <code>True</code>, the module will have separate bias parameters for each position in each channel. As a result, the b attribute will be a 3D tensor.</li>
+<li><strong>num_groups</strong>: divides the image, kernel and output tensors into <code>num_groups</code> separate groups each of which carrying out convolutions separately.</li>
+<li><strong>W</strong>: initialization of filter bank, shape = <code>(out_channels, in_channels//num_groups, kernel_size[0], kernel_size[1])</code>. You can reduce convolution parameter size by setting <code>num_groups</code> &gt; 1, however you won't expect much run-time acceleration due to the current underlining CuDNN group convolution implementation.</li>
+<li><strong>b</strong>: initialization of convolution bias, shape = <code>(out_channels,)</code> if <code>untie_bias</code> is <code>False</code>; otherwise shape = <code>(out_channels, H_out, W_out)</code></li>
+<li><strong>flip_filters</strong>: if <code>True</code>, will flip the filter rows and columns before sliding them over the input. This operation is normally referred to as a convolution, and this is the default. If <code>False</code>, the filters are not flipped and the operation is referred to as a cross-correlation.</li>
+<li><strong>input_shape</strong>: optional, <code>(H_in, W_in)</code></li>
+<li><strong>untie_bias</strong>: if <code>False</code>, the module will have a bias parameter for each channel, which is shared across all positions in this channel. As a result, the <code>b</code> attribute will be a vector (1D). If <code>True</code>, the module will have separate bias parameters for each position in each channel. As a result, the <code>b</code> attribute will be a 3D tensor.</li>
 </ul>
 <hr />
 <h2 id="convtransposed2d">ConvTransposed2D</h2>
