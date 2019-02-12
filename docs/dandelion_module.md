@@ -279,18 +279,18 @@ class Conv2D(in_channels, out_channels, kernel_size=(3,3), stride=(1,1), pad='va
              dilation=(1,1), num_groups=1, W=init.GlorotUniform(), b=init.Constant(0.), 
              flip_filters=True, convOP=tensor.nnet.conv2d, input_shape=(None,None), untie_bias=False, name=None)
 ```
-* **input_channels**: int. Input shape of Conv2D module is (B, input_channels, H_in, W_in)
-* **out_channels**: int. Output shape of Conv2D module is (B output_channels, H_out, W_out)
-* **kernel_size**: int scalar or tuple of int. Convolution kernel size
-* **stride**: Factor by which to subsample the output
-* **pad**: `same`/`valid`/`full` or 2-element tuple of int. Control image border padding.
+* **input_channels**: int. Input shape of Conv2D module is `(B, input_channels, H_in, W_in)`
+* **out_channels**: int. Output shape of Conv2D module is `(B, output_channels, H_out, W_out)`.
+* **kernel_size**: int scalar or tuple of int. Convolution kernel size.
+* **stride**: factor by which to subsample the output.
+* **pad**: `same`/`valid`/`full` or 2-element tuple of int. Control image border padding. For `valid` mode, output shape = input shape - filter shape + 1; for `full` mode, output shape = input shape + filter shape - 1.
 * **dilation**: factor by which to subsample (stride) the input.
-* **num_groups**: Divides the image, kernel and output tensors into num_groups separate groups. Each which carry out convolutions separately
-* **W**: initialization of filter bank, shape = (out_channels, in_channels, kernel_size[0], kernel_size[1])
-* **b**: initialization of convolution bias, shape = (out_channels,) if untie_bias is False; otherwise shape = (out_channels, H_out, W_out)
-* **flip_filters**: If `True`, will flip the filter rows and columns before sliding them over the input. This operation is normally referred to as a convolution, and this is the default. If `False`, the filters are not flipped and the operation is referred to as a cross-correlation.
-* **input_shape**: optional, (H_in, W_in)
-* **untie_bias**: If `False`, the module will have a bias parameter for each channel, which is shared across all positions in this channel. As a result, the b attribute will be a vector (1D). If `True`, the module will have separate bias parameters for each position in each channel. As a result, the b attribute will be a 3D tensor.
+* **num_groups**: divides the image, kernel and output tensors into `num_groups` separate groups each of which carrying out convolutions separately.
+* **W**: initialization of filter bank, shape = `(out_channels, in_channels//num_groups, kernel_size[0], kernel_size[1])`. You can reduce convolution parameter size by setting `num_groups` > 1, however you won't expect much run-time acceleration due to the current underlining CuDNN group convolution implementation.
+* **b**: initialization of convolution bias, shape = `(out_channels,)` if `untie_bias` is `False`; otherwise shape = `(out_channels, H_out, W_out)`
+* **flip_filters**: if `True`, will flip the filter rows and columns before sliding them over the input. This operation is normally referred to as a convolution, and this is the default. If `False`, the filters are not flipped and the operation is referred to as a cross-correlation.
+* **input_shape**: optional, `(H_in, W_in)`
+* **untie_bias**: if `False`, the module will have a bias parameter for each channel, which is shared across all positions in this channel. As a result, the `b` attribute will be a vector (1D). If `True`, the module will have separate bias parameters for each position in each channel. As a result, the `b` attribute will be a 3D tensor.
 
 _______________________________________________________________________
 ## ConvTransposed2D
