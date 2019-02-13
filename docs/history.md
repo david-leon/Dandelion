@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.21 [2-13-2019]
+* **NEW**: now `BatchNorm`'s `inv_std` can be set to `None` to disable variance scaling
+
 ## version 0.17.20 [2-11-2019]
 * **FIXED**: `self.b` should be set to `None` if not specified for `Dense` module
 
