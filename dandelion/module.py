@@ -38,6 +38,7 @@
                              2) `Sequential` now support list input for `activation` param
                11, 22, 2018  add `GroupNorm` module for small batch normalization;
                              expose `dim_broadcast` arg for `Module.register_param()` method
+               2,  13, 2019  `BatchNorm`'s `inv_std` can be set to None to disable variance scaling
 
   Note      :
     1) GRU & LSTM and their cell version have built-in activation (tanh), other modules have no built-in activations
@@ -1121,10 +1122,10 @@ class BatchNorm(Module):
                       and additionally over all spatial dimensions for convolutional layers.
         :param eps: Small constant 𝜖 added to the variance before taking the square root and dividing by it, to avoid numerical problems
         :param alpha:   mean = (1 - alpha) * mean + alpha * batch_mean
-        :param beta:
-        :param gamma:
+        :param beta:  set to None to disable this parameter
+        :param gamma: set to None to disable this parameter
         :param mean:
-        :param inv_std:
+        :param inv_std: set to None to disable this parameter
         :param mode:
         :param name:
         """
@@ -1159,7 +1160,10 @@ class BatchNorm(Module):
 
         #--- mean & inv_std are trained by self-updating ---#
         self.mean = self.register_self_updating_variable(mean, shape=shape)
-        self.inv_std = self.register_self_updating_variable(inv_std, shape=shape)
+        if inv_std is not None:
+            self.inv_std = self.register_self_updating_variable(inv_std, shape=shape)
+        else:
+            self.inv_std = None
 
     def forward(self, input, use_input_mean=True):
         """
@@ -1179,7 +1183,8 @@ class BatchNorm(Module):
 
         # these `update` will be collected and removed before theano compiling
         self.mean.update = (1 - self.alpha) * self.mean + self.alpha * input_mean
-        self.inv_std.update = (1 - self.alpha) * self.inv_std + self.alpha * input_inv_std
+        if self.inv_std is not None:
+            self.inv_std.update = (1 - self.alpha) * self.inv_std + self.alpha * input_inv_std
 
         broadcast_shape = [1] * input.ndim
         for i in range(input.ndim):
@@ -1187,10 +1192,16 @@ class BatchNorm(Module):
                 broadcast_shape[i] = self.input_shape[i]  # broadcast_shape = [1, C, 1, 1]
         if use_input_mean:
             mean = input_mean.reshape(broadcast_shape)
-            inv_std = input_inv_std.reshape(broadcast_shape)
+            if self.inv_std is not None:
+                inv_std = input_inv_std.reshape(broadcast_shape)
+            else:
+                inv_std = 1
         else:
             mean = self.mean.reshape(broadcast_shape)
-            inv_std = self.inv_std.reshape(broadcast_shape)
+            if self.inv_std is not None:
+                inv_std = self.inv_std.reshape(broadcast_shape)
+            else:
+                inv_std = 1
         beta = 0 if self.beta is None else tensor.reshape(self.beta, broadcast_shape)
         gamma = 1 if self.gamma is None else tensor.reshape(self.gamma, broadcast_shape)
 
@@ -1204,7 +1215,10 @@ class BatchNorm(Module):
             if i not in self.axes:
                 broadcast_shape[i] = self.input_shape[i]  # broadcast_shape = [1, C, 1, 1]
         mean    = self.mean.reshape(broadcast_shape)
-        inv_std = self.inv_std.reshape(broadcast_shape)
+        if self.inv_std is not None:
+            inv_std = self.inv_std.reshape(broadcast_shape)
+        else:
+            inv_std = 1
         beta    = 0 if self.beta is None else tensor.reshape(self.beta, broadcast_shape)
         gamma   = 1 if self.gamma is None else tensor.reshape(self.gamma, broadcast_shape)
 
