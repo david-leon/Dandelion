@@ -542,7 +542,7 @@ h_t &= o_t \odot \sigma_h(c_t)
 <li><strong>dilation</strong>: factor by which to subsample (stride) the input.</li>
 <li><strong>num_groups</strong>: divides the image, kernel and output tensors into <code>num_groups</code> separate groups each of which carrying out convolutions separately.</li>
 <li><strong>W</strong>: initialization of filter bank, shape = <code>(out_channels, in_channels//num_groups, kernel_size[0], kernel_size[1])</code>. You can reduce convolution parameter size by setting <code>num_groups</code> &gt; 1, however you won't expect much run-time acceleration due to the current underlining CuDNN group convolution implementation.</li>
-<li><strong>b</strong>: initialization of convolution bias, shape = <code>(out_channels,)</code> if <code>untie_bias</code> is <code>False</code>; otherwise shape = <code>(out_channels, H_out, W_out)</code></li>
+<li><strong>b</strong>: initialization of convolution bias, shape = <code>(out_channels,)</code> if <code>untie_bias</code> is <code>False</code>; otherwise shape = <code>(out_channels, H_out, W_out)</code>. You can set it to <code>None</code> to disable the bias when it's not necessary, for example when <code>Conv2D</code> is used with <code>BatchNorm</code> following.</li>
 <li><strong>flip_filters</strong>: if <code>True</code>, will flip the filter rows and columns before sliding them over the input. This operation is normally referred to as a convolution, and this is the default. If <code>False</code>, the filters are not flipped and the operation is referred to as a cross-correlation.</li>
 <li><strong>input_shape</strong>: optional, <code>(H_in, W_in)</code></li>
 <li><strong>untie_bias</strong>: if <code>False</code>, the module will have a bias parameter for each channel, which is shared across all positions in this channel. As a result, the <code>b</code> attribute will be a vector (1D). If <code>True</code>, the module will have separate bias parameters for each position in each channel. As a result, the <code>b</code> attribute will be a 3D tensor.</li>
@@ -569,7 +569,7 @@ The input of <code>Dense</code> can have any dimensions, and note that we do not
 <ul>
 <li><strong>input_dims</strong>: integer or list of integers. If scalar, input dimension = input_dims; if list of integers, input dimension = sum(input_dims), and Dense’s parameter <code>W</code> will be initialized unevenly by integers specified in input_dims</li>
 <li><strong>output_dim</strong>: output dimension</li>
-<li><strong>W</strong>, <strong>b</strong>: parameter initialization</li>
+<li><strong>W</strong>, <strong>b</strong>: parameter initialization, you can set <code>b</code> to <code>None</code> to disable the bias.</li>
 </ul>
 <pre><code class="python">.forward(input)
 </code></pre>
