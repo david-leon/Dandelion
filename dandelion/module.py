@@ -943,6 +943,8 @@ class Conv2D(Module):
                 self.b = self.register_param(b, shape=[out_channels, output_shape[0], output_shape[1]])
             else:
                 self.b = self.register_param(b, shape=[out_channels])
+        else:
+            self.b = None
 
         self.predict = self.forward                # predict() is the same with forward() for this layer
 

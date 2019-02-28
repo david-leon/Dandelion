@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.22 [2-28-2019]
+* **FIXED**: `self.b` should be set to `None` if not specified for `Conv2D` module
+
 ## version 0.17.21 [2-13-2019]
 * **NEW**: now `BatchNorm`'s `inv_std` can be set to `None` to disable variance scaling
 
