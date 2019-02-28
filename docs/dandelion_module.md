@@ -287,7 +287,7 @@ class Conv2D(in_channels, out_channels, kernel_size=(3,3), stride=(1,1), pad='va
 * **dilation**: factor by which to subsample (stride) the input.
 * **num_groups**: divides the image, kernel and output tensors into `num_groups` separate groups each of which carrying out convolutions separately.
 * **W**: initialization of filter bank, shape = `(out_channels, in_channels//num_groups, kernel_size[0], kernel_size[1])`. You can reduce convolution parameter size by setting `num_groups` > 1, however you won't expect much run-time acceleration due to the current underlining CuDNN group convolution implementation.
-* **b**: initialization of convolution bias, shape = `(out_channels,)` if `untie_bias` is `False`; otherwise shape = `(out_channels, H_out, W_out)`
+* **b**: initialization of convolution bias, shape = `(out_channels,)` if `untie_bias` is `False`; otherwise shape = `(out_channels, H_out, W_out)`. You can set it to `None` to disable the bias when it's not necessary, for example when `Conv2D` is used with `BatchNorm` following.
 * **flip_filters**: if `True`, will flip the filter rows and columns before sliding them over the input. This operation is normally referred to as a convolution, and this is the default. If `False`, the filters are not flipped and the operation is referred to as a cross-correlation.
 * **input_shape**: optional, `(H_in, W_in)`
 * **untie_bias**: if `False`, the module will have a bias parameter for each channel, which is shared across all positions in this channel. As a result, the `b` attribute will be a vector (1D). If `True`, the module will have separate bias parameters for each position in each channel. As a result, the `b` attribute will be a 3D tensor.
@@ -313,7 +313,7 @@ class Dense(input_dims, output_dim, W=init.GlorotUniform(), b=init.Constant(0.),
 ```
 * **input_dims**: integer or list of integers. If scalar, input dimension = input_dims; if list of integers, input dimension = sum(input_dims), and Dense’s parameter `W` will be initialized unevenly by integers specified in input_dims
 * **output_dim**: output dimension
-* **W**, **b**: parameter initialization
+* **W**, **b**: parameter initialization, you can set `b` to `None` to disable the bias.
 
 ```python
 .forward(input)
