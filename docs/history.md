@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.23 [3-5-2019]
+* **NEW**: now `BatchNorm`'s `mean` can be set to `None` to disable mean substraction
+
 ## version 0.17.22 [2-28-2019]
 * **FIXED**: `self.b` should be set to `None` if not specified for `Conv2D` module
 

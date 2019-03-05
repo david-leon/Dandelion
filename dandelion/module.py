@@ -1161,7 +1161,10 @@ class BatchNorm(Module):
             self.gamma = self.register_param(gamma, shape=shape)
 
         #--- mean & inv_std are trained by self-updating ---#
-        self.mean = self.register_self_updating_variable(mean, shape=shape)
+        if mean is not None:
+            self.mean = self.register_self_updating_variable(mean, shape=shape)
+        else:
+            self.mean = None
         if inv_std is not None:
             self.inv_std = self.register_self_updating_variable(inv_std, shape=shape)
         else:
@@ -1184,7 +1187,8 @@ class BatchNorm(Module):
         input_inv_std = tensor.inv(tensor.sqrt(input.var(self.axes) + self.eps))
 
         # these `update` will be collected and removed before theano compiling
-        self.mean.update = (1 - self.alpha) * self.mean + self.alpha * input_mean
+        if self.mean is not None:
+            self.mean.update = (1 - self.alpha) * self.mean + self.alpha * input_mean
         if self.inv_std is not None:
             self.inv_std.update = (1 - self.alpha) * self.inv_std + self.alpha * input_inv_std
 
@@ -1204,6 +1208,7 @@ class BatchNorm(Module):
                 inv_std = self.inv_std.reshape(broadcast_shape)
             else:
                 inv_std = 1
+        mean = 0 if self.mean is None else mean
         beta = 0 if self.beta is None else tensor.reshape(self.beta, broadcast_shape)
         gamma = 1 if self.gamma is None else tensor.reshape(self.gamma, broadcast_shape)
 
@@ -1216,7 +1221,10 @@ class BatchNorm(Module):
         for i in range(input.ndim):
             if i not in self.axes:
                 broadcast_shape[i] = self.input_shape[i]  # broadcast_shape = [1, C, 1, 1]
-        mean    = self.mean.reshape(broadcast_shape)
+        if self.mean is not None:
+            mean    = self.mean.reshape(broadcast_shape)
+        else:
+            mean    = 0
         if self.inv_std is not None:
             inv_std = self.inv_std.reshape(broadcast_shape)
         else:

@@ -573,7 +573,7 @@ def theano_safe_run(fn, input_list):
         else:
             raise e
 
-class Finite_Memory_Array(object):
+class finite_memory_array(object):
 
     def __init__(self, array=None, shape=None, dtype=np.double):
         if array is not None:
@@ -607,6 +607,8 @@ class Finite_Memory_Array(object):
             return self.array[:, :self.curpos]
         else:
             return self.array
+
+Finite_Memory_Array = finite_memory_array
 
 def pad_sequence_into_array(Xs, maxlen=None, truncating='post', padding='post', value=0.):
     """
@@ -660,6 +662,54 @@ def get_time_stamp():
     :return:
     """
     return time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
+
+class sys_output_tap:
+    """
+    Helper class to redirect sys output to file meanwhile keeping the output on screen
+    Based on code snippet from https://github.com/smlaine2/tempens/blob/master/train.py#L30
+    Example:
+        #--- setup ---#
+        stdout_tap = sys_output_tap(sys.stdout)
+        stderr_tap = sys_output_tap(sys.stderr)
+        sys.stdout = stdout_tap
+        sys.stderr = stderr_tap
+        #--- before training ---#
+        stdout_tap.set_file(open(os.path.join(save_folder, 'stdout.txt'), 'wt'))
+        stderr_tap.set_file(open(os.path.join(save_folder, 'stderr.txt'), 'wt'))
+    """
+    def __init__(self, stream):
+        self.stream = stream
+        self.buffer = ''
+        self.file = None
+        pass
+
+    def write(self, s):
+        self.stream.write(s)
+        self.stream.flush()
+        if self.file is not None:
+            self.file.write(s)
+            self.file.flush()
+        else:
+            self.buffer = self.buffer + s
+
+    def set_file(self, f):
+        assert(self.file is None)
+        self.file = f
+        self.file.write(self.buffer)
+        self.file.flush()
+        self.buffer = ''
+
+    def flush(self):
+        self.stream.flush()
+        if self.file is not None:
+            self.file.flush()
+
+    def close(self):
+        self.stream.close()
+        if self.file is not None:
+            self.file.close()
+            self.file = None
+
 
 
 if __name__ == '__main__':
