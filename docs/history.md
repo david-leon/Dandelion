@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.24 [4-3-2019]
+* **NEW**: Add [`Anti-996 License`](https://github.com/996icu/996.ICU/blob/master/LICENSE) as auxiliary license
+
 ## version 0.17.23 [3-5-2019]
 * **NEW**: now `BatchNorm`'s `mean` can be set to `None` to disable mean substraction
 
