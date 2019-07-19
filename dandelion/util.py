@@ -677,15 +677,22 @@ class sys_output_tap:
         stdout_tap.set_file(open(os.path.join(save_folder, 'stdout.txt'), 'wt'))
         stderr_tap.set_file(open(os.path.join(save_folder, 'stderr.txt'), 'wt'))
     """
-    def __init__(self, stream):
+    def __init__(self, stream, only_output_to_file=False):
+        """
+
+        :param stream: usually sys.stdout/sys.stderr
+        :param only_output_to_file: flag. Whether disable output to original stream, default False.
+        """
         self.stream = stream
         self.buffer = ''
         self.file = None
+        self.only_output_to_file = only_output_to_file
         pass
 
     def write(self, s):
-        self.stream.write(s)
-        self.stream.flush()
+        if not self.only_output_to_file or self.file is None:
+            self.stream.write(s)
+            self.stream.flush()
         if self.file is not None:
             self.file.write(s)
             self.file.flush()
@@ -700,7 +707,8 @@ class sys_output_tap:
         self.buffer = ''
 
     def flush(self):
-        self.stream.flush()
+        if not self.only_output_to_file or self.file is None:
+            self.stream.flush()
         if self.file is not None:
             self.file.flush()
 
