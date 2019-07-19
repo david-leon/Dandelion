@@ -1,5 +1,8 @@
 # History
 
+## version 0.17.25 [7-19-2019]
+* **NEW**: Add `only_output_to_file` arg to `util.sys_output_tap` class. You can disable screen output by set this flag to `True`, this will make the script run *silently*.
+
 ## version 0.17.24 [4-3-2019]
 * **NEW**: Add [`Anti-996 License`](https://github.com/996icu/996.ICU/blob/master/LICENSE) as auxiliary license
 
