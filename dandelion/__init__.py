@@ -8,5 +8,5 @@ from . import functional
 from . import model
 from . import ext
 
-__version__ = "0.17.25"
+__version__ = "0.17.26"
 __author__  = "David Leon (Dawei Leng)"

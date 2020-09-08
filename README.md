@@ -1,7 +1,7 @@
 # Dandelion
-[![License: MPL 2.0](https://img.shields.io/badge/license-MPL%202.0,%20NPL-brightgreen.svg)](https://github.com/david-leon/Dandelion/blob/master/LICENSE)
-[![Python 3.x](https://img.shields.io/badge/python-3.x-brightgreen.svg)](https://www.python.org/downloads/release)
 [![PyPI version](https://badge.fury.io/py/Dandelion.svg)](https://badge.fury.io/py/Dandelion)
+[![License: MPL 2.0](https://img.shields.io/badge/license-MPL%202.0-brightgreen.svg)](https://github.com/david-leon/Dandelion/blob/master/LICENSE)
+[![Python 3.x](https://img.shields.io/badge/python-3.x-brightgreen.svg)](https://www.python.org/downloads/release)
 [![Travis CI](https://travis-ci.org/david-leon/Dandelion.svg?branch=master)](https://travis-ci.org/david-leon/Dandelion)
 
 A quite light weight deep learning framework, on top of Theano, offering better balance between flexibility and abstraction
